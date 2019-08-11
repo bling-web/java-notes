@@ -1,0 +1,63 @@
+## Session
+
+### 概念
+
+**服务端会话技术，在一次会话中多次请求之前共享数据，将数据保存在服务器端的一个对象中。HttpSession**
+
+### 快速入门
+
+* 获取Session对象
+  * request.getSession();
+
+* 方法
+  * getAttribute(String name);
+  * setAttribute(String name, Object value);
+  * removeAttribute(String name);
+
+### 原理 
+
+* Session的实现是基于Cookie来实现的。
+
+### 问题
+
+* 如果客户端关闭后，服务器不关闭，两次获取的session是否一样？
+
+  * 默认不一样，可以创建JSESSIONID得Cookie，设置最大存活时间，让Cookie再浏览器重新打开之后还在，可以实现一样。
+
+  ```java
+  HttpSession session = request.getSession();
+  // 设置JSESSIONID Cookie得失效时间
+  Cookie cookie = new Cookie("JSESSIONID", session.getId());
+  cookie.setMaxAge(60 * 60);
+  response.addCookie(cookie);
+  ```
+
+* 如果客户端不关闭，服务器关闭后，两次session是否一样？
+
+  * 两次session获取的不是同一个对象，但是要确保数据不能丢失。
+    * session的钝化：在服务器正常关闭之前，将session数据序列化到磁盘保存。
+    * session的活化：在服务器启动之后，将文件反序列化到内存中。
+
+* session什么时候被销毁?
+
+  * 服务器关闭
+
+  * session调用方法invalidate();
+
+  * web.xml中配置session超时时间
+
+    ``` xml
+    <session-config>
+           <session-timeout>30</session-timeout>
+    </session-config>
+    ```
+
+### session特点
+
+* session用于存储一次会话中的多次请求数据，存储在服务器中。
+* session可以存储任意类型的数据，任意大小的数据。
+* session和cookie的区别：
+  * session存储数据在服务器端，cookie在客户端。
+  * session没有数据大小限制，cookie有限制。
+  * session数据安全，cookie相对不安全。
+

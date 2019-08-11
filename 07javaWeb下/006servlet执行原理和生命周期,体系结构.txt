@@ -1,0 +1,61 @@
+一.servlet体系结构.
+   1.继承关系
+     Servlet(接口) -- 接口
+
+  	-- GenericServlet ---抽象类
+
+  	 	-- HttpServlet --- 抽象类
+
+   2.GenericServlet ： 将Servlet接口中除service方法外的其他方法做了默认空实现，不需要我们自建实现。
+
+   3.HttpServlet：对http协议的一种封装，简化开发。
+       继承与GenericServlet,不需要我们自己判断是那种请求方式,默认我们直接重写doPost()和doGet()方法.
+
+
+
+### Servlet配置
+
+* urlparttern：Servlet访问路径
+  * 一个Servlet可以定义多个访问路径：@WebServlet({"/demo05", "/d5", "/dem5"})
+  * 路径定义规则：
+    * `/***`: 单层目录
+    * `/***/***`： 多层路径。目录结构，层次更清晰；适合多模块系统路径命令。
+    * `*.do`: 后缀命名。
+
+
+一.执行原理.
+   1.  当服务器接收客户端浏览器请求后，会解析请求的url路径，获取访问Servlet资源路径。
+   2.  通过资源路径去web.xml中查找是否有对应`<url-pattern>`
+   3.  如果有，则继续找对应的`<servlet-class>`标签对应的Class
+   4.  web容器通过反射会将字节码文件加载进内存中，并且创建这个对象
+   5.  调用这个对象的service方法
+
+
+
+
+二.生命周期：
+   1.被创建时:
+       执行init()方法.这个方法只执行一次.也就是servlet只会被创建一次.是单例的.
+       是单例的，在多用户同时访问时，可能存在线程安全问题。尽量不要在Servlet中定义成员变量，或者说不要修改成员变量** 
+
+
+   2.被访问时:
+      执行service()方法.这个方法执行多次,只要被访问就会执行一次.
+
+   3.被销毁时:
+     执行destroy()方法,这个方法也是只执行一次,被正常关闭时执行,通常用于释放资源.
+
+
+
+
+说明:
+   <servlet>
+       <servlet-name>demo02</servlet-name>
+       <servlet-class>com.cc.web.servlet.ServletDemo02</servlet-class>
+       <load-on-startup>5</load-on-startup>
+   </servlet>
+   
+
+   如果`<load-on-startup>`标签体中的值为负数表明servlet在第一次被访问时创建，如果<load-on-startup>`标签体中的值为0或者整数表明在服务器启动时创建；
+
+  

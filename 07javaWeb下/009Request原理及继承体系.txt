@@ -1,0 +1,24 @@
+## Request
+
+### Request对象和Response对象的原理
+
+1. request和response对象是由服务器创建的，开发者来使用。
+2. request对象是用来获取请求消息，response对象是用来设置响应消息。
+
+
+
+### Request继承体系结构
+
+ServletRequest(接口)
+
+	-- 继承
+
+        HttpServletRequest(接口)
+
+	-- 实现
+
+	org.apache.catalina.connector.RequestFacade(web容器中/tomcat)
+
+
+
+

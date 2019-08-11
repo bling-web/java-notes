@@ -1,0 +1,26 @@
+### JSP指令
+
+* 作用：用于配置JSP页面，导入资源。
+* 格式：`<%@ 指令名称 属性名1=属性值1 属性名2=属性值2 属性名3=属性值3.... %>`
+* 分类：
+  * page : 配置JSP页面。
+    * `contentType:` : 等同于response.setContentType(); 设置响应体的mime类型以及字符集。
+    * `pageEncoding:` 文件编码。
+    * `import：` 导包。
+    * `errorPage:` 当前页面发生错误时，会自动跳转到指定的错误页面。
+    * `isErroPage:` 标识当前jsp页面是否为错误页面。
+      * true:  可以使用exception内置对象，获取异常信息。
+      * false: 不可以使用exception内置对象。
+  * include : 包含jsp页面。导入页面资源文件。
+    * `<%@include file="left.jsp"%>`
+  * taglib : 导入标签库/资源。
+    * `<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>`
+
+
+
+### JSP注释
+
+* HTML注释/客户端注释
+  * `<!-- 内容 -->`: 只能注释html代码片段
+* JSP注释/服务端注释：**推荐使用**
+  * `<%-- --%>`: 可以注释html和java片段。

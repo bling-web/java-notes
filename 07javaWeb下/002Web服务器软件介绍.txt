@@ -1,0 +1,16 @@
+一.服务器.
+   安装了服务器软件的计算机.
+ 
+二.服务器软件
+   能够接受用户请求,处理请求,做出相应的软件.
+ 
+三.web服务器软件(java相关)
+   接收浏览器客户端请求,处理请求,做出响应.在web服务器中,可以部署web项目,让客户端浏览器来访问这些项目.
+
+四.常用的web服务器软件(java相关)
+   1.Weblogic:oracle公司的,这是一款大型的商业级的javaEE服务器.支持所有的javaEE规范.
+   2.websphere:IBM公司的,也是一款大型的商业的javaEE服务器.支持所有的javaEE规范.
+   3.JBOSS:JBOSS公司的,支持所有的javaEE规范.
+   4.Tamcat:开源的中小型javaEE服务器,支持少量的javaEE规范,Apache基金会组织的.
+      
+     补充:javaEE:java语言在企业级开发的使用的技术和规范.

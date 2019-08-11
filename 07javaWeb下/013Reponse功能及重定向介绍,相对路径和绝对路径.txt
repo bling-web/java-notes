@@ -1,0 +1,65 @@
+### Response功能
+
+* 设置响应行
+  * 格式： HTTP/1.1 200 ok
+  * 设置状态码：setStatus(int sc);
+* 设置响应头
+  * setHeader(String name, String value);
+* 设置相应体
+  * 获取输出流
+    * 字符输出流：PrintWriter getWriter();
+    * 字节输出流：ServletOutputStream getOutputStream();
+  * 使用输出流输出数据到客户端浏览器。
+
+
+
+### Response重定向
+
+**是一种资源的跳转方式**， 
+
+`面试题：请求转发和重定向的区别？(forward和redirect的区别)`
+
+* 重定向代码
+
+  // 1. 设置响应状态码: 302
+  //response.setStatus(SC_MOVED_TEMPORARILY);
+  // 2. 设置响应头 location
+  //response.setHeader("location", "/chapter08/responseDemo03");
+  response.sendRedirect("/chapter08/responseDemo03");
+  ```
+
+  
+
+* 重定向特点
+
+  * 地址栏路径改变
+  * 可以访问外部服务器资源
+  * 是两次请求
+
+* 转发特点
+
+  * 地址栏路径不变
+  * 只能访问当前服务器内部资源
+  * 是一次请求
+
+* 路径写法
+
+  * 相对路径：**通过相对路径不可以确定唯一资源**
+    *  ./ 代表当前目录.
+    *  ./ 可以省略
+    * 规则：找到当前资源和目标资源之间的相对位置关系
+            就是以当前目录开始找.
+
+
+  * 绝对路径： **通过绝对路径可以确定唯一资源**
+    * 以'/'开头
+    * "/ "不可以省略
+    * 规则：确认资源地址是给谁用的？判断请求将从什么地方发出。
+      * 给客户端浏览器使用：需要加上虚拟目录(项目的访问路径)
+      * 给服务器使用：不需要加虚拟目录.
+
+  
+
+
+
+
