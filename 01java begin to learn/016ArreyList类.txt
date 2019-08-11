@@ -1,0 +1,79 @@
+一.引入对象数组:(数组里装的是对象)
+步骤:
+    1.创建数组,只不过原来是类型的地方换成一个类
+    例:int[] student= new int[];
+       把int换成一个类;
+    2.为数组中每个元素都创建一个对象(这个对象所属的类和第一步的类要一致);
+    3.将每个对象赋值到数组相应的位置(这时数组中所存储的实际是对象的地址)
+
+例:
+    1.Student[] student=new Student[3];//Student是一个类,数组名称叫student,其实和其它类型数组一样,只不过不是int,String等型
+    2.               
+        Student s1=new Student();       
+        Student s2=new Student();
+        Student s3=new Student();//创建三个对象
+    3.student[0]=s1;
+      student[0]=s1;
+      student[0]=s1;//进行赋值
+
+说明:到目前为止,我们想要存储对象数据,选择的容器,只有对象数组.而数组的长度是固定的,无法适应数据变化的要求.所以java提供了java.util.ArrayList集合类,使我们可以更便捷的存储和操作对象数组所以ArrayList是大小可变的数组的实现
+二.使用步骤:
+    1.导入java.util.ArrayList
+    2.创建'数组'  
+         ArrayList<String> list =new ArrayList<>();//
+      定义元素:
+         String s1="王亮";
+    3对元素的操作(几个重要的,API中还有很多).    
+        a.add(E)方法://public boolean add(E)
+          给ArrayList<>数组加一个元素,注意元素的类型必须是<>里面的类型
+          例:list.add(s1);
+          还有在指定位置加元素的函数,只能挨着加,中间不能有空的
+
+        b.remove(int index)方法//public E remove(int index)
+          移除ArrayList指定位置的元素,并返回该元素
+          例:int a=list.remove(0);
+
+        c.get(int index)方法//public E get(int index)
+          返回指定位置的元素
+          例:int a=list.get(9);
+
+        d.size()方法//public int size()
+          返回集合中的元素总数
+          例:int a=list.size();
+     
+        e.clear()方法.清除集合中所有元素
+  
+        f.indexof(object)方法.返回集合中首次出现元素的下标
+        
+        g.lastindexof(object)方法.返回集合中最后一次出现元素的下标
+
+        h.toArray()方法,
+          将ArrayList转换为数组,
+          例:Integer [] arr=new Integer[3];
+             list.toArray(arr);
+          注意:arr的类型和list类型必须一致
+
+        i.contains(object)方法
+          如果集合中包含某个元素,则返回true,否则返回false
+
+        j.set(index,object)方法
+          在集合中指定位置替换某元素
+
+        k.addAll(c)方法
+          将另一个集合c按顺序添加到该集合末尾
+          addAll(index,c)方法
+          将另一个集合c从索引为index的地方添加到该集合中
+
+
+注意:
+1.java.util.ArrayList<E>
+        b.<E>,表示一种指定的数据类型,叫做泛型,在出现E的地方,我们使用一种引用数据类型将其代替即可,表示我们将存储哪种引用类型的元素,代码如下:
+         ArrayList(String);
+         ArrayList(一个类)
+2.ArrayList里面可以有重复元素,如果要按元素删除remove()的话,删除首次出现的元素
+3.特殊用法.
+  ArrayList<Integer> list=new ArrayList<>();  
+  ArrayList<Integer> smallList=list;
+  数组也可以这样用
+
+ 

@@ -1,0 +1,55 @@
+选择排序
+    例:
+    int [] arr = {3,6,70,5,55,100,15};
+
+    for(int i=0;i<arr.length-1;i++) {   //外层循环每次提出一个元素,最后一个元素不需要比较,排除最后一个元素
+	for(int j=i+1;j<arr.length;j++) { //内层循环的起始位置为外层提出元素的后一个元素,为i+1;长度是原有长度
+	    if(arr[i]>arr[j]) {         
+		int temp=arr[i];
+		arr[i]=arr[j];
+		arr[j]=temp;
+	    }
+	}
+    }
+    for(int i=0;i<arr.length;i++) {
+	System.out.println(arr[i]);
+    }
+
+冒泡排序:
+    例1:
+    int [] arr= {3,57,5,67,10};
+	for(int i= 0;i<arr.length;i++) {
+	    for(int j =0;j<(arr.length-i-1);j++) {//外层循环一次,内层循环一遍会选出一个最大值放在最后,所以内层长度会减去外层循环次数,                                                   最后一个元素不需要再比较,所以会-1
+		if(arr[j]>arr[j+1]) {
+		    int temp=arr[j];
+		    arr[j]=arr[j+1];
+		    arr[j+1]=temp;
+		}
+	     }
+			
+        }
+	for(int i =0;i<arr.length;i++) {
+	    System.out.println(arr[i]);
+	}
+
+     结果:将数组从从小到大排列
+
+    例2:for(int i= 0;i<arr.length;i++) {
+	    for(int j =0;j<(arr.length-i-1);j++) { //该循环不会像上面循环一样,内层循环一遍就会选出一个最值,它会使排序慢慢浮出水面,但最                                                     后也肯定会完后排序
+ 		if(arr[j]<arr[j+1]) {
+		    int temp=arr[j];
+		    arr[j]=arr[j+1];
+		    arr[j+1]=temp;
+		}
+	     }
+			
+        }
+	for(int i =0;i<arr.length;i++) {
+	    System.out.println(arr[i]);
+	}
+
+总结: 不论选择还是冒泡,,注意内层循环的起始值和判断条件,已经排好的数值就不要再动了,选择排序中一定要把选出的最值赋给相应的位置
+
+
+
+    
