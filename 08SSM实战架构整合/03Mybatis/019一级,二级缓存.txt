@@ -1,0 +1,72 @@
+
+Mybatis 
+一.缓存什么?
+     缓存是存放于内存中的临时数据.
+   为什么使用缓存?
+     减少数据的压力，提供应用程序性能
+
+
+
+二.Mybatis中的缓存
+   1.一级缓存.默认开启.
+     mybatis中SqlSession对象的缓存
+     当我们执行查询之后，查询结果会同时SqlSession中。当我们再次查询的同样的数据时，mybatis会先去sqlSession中查询，有的话就直接返回，不查询数据库。sql对象消失后，一        级缓存也就失效。
+   举例:
+     @Test 
+     public void testFirstCache() { 
+         User user1 = userDao.findById(5); 
+         logger.info(user1); 
+         User user2 = userDao.findById(5); 
+         logger.info(user2); 
+         logger.info(user1 == user2);      //结果为true.返回缓存中的对象.
+     }
+     @Test 
+     public void testFirstCache1() {
+         User user1 = userDao.findById(5); 
+         logger.info(user1); 
+         sqlSession.close(); 
+         sqlSession = sqlSessionFactory.openSession(true); 
+         userDao = sqlSession.getMapper(UserMapper.class); 
+         User user2 = userDao.findById(5); 
+         logger.info(user2); 
+         logger.info(user1 == user2);     //结果为false.sqlSession关闭,缓存失效.
+     }
+
+    2.二级缓存
+       指的是mybatis中SqlSessionFactory对象的缓存，由同一个factory对象创建的sqlSession对象共享其缓存。
+      a.二级缓存默认是关闭的.如需使用需要手动开启.
+      b.开启步骤.   
+        a.全局缓存开启:
+            mybatis-config.xml中 cacheEnabled=true
+        b.每一个mapper映射文件需要配置缓存支持
+            在文件顶头写 <cache/>
+        c.每一个statement中说明是否使用缓存。
+            在需要使用的select或其他标签中加上useCache="true"
+     例:
+      a.mybatis-config.xml中
+       <settings>
+          <setting name="cacheEnabled" value="true"/>    //全局缓存开启
+       </settings>
+     
+      b.mapper中
+       <!-- 当前mapper支持缓存 -->
+       <cache/>
+    
+       <select id="findById" parameterType="int" resultType="user" useCache="true">  //当前方法支持缓存
+          <include refid="query" />
+          where id = #{id}
+       </select>
+   
+     注意:
+       1.二级缓存存储的方式是将对象序列化到本地磁盘中,然后再反序列化回来,所以要将相关类实现serialable接口.
+       2.如果还用下面这个方法测试,结果还是false,因为反序列化回来的对象是不一样的,但是缓存确实生效了,因为可以看到只查询了一次.
+         User user1 = userDao.findById(5); 
+         logger.info(user1); 
+         sqlSession.close(); 
+         sqlSession = sqlSessionFactory.openSession(true); 
+         userDao = sqlSession.getMapper(UserMapper.class); 
+         User user2 = userDao.findById(5); 
+         logger.info(user2); 
+         logger.info(user1 == user2); 
+   
+       

@@ -1,0 +1,27 @@
+一.Spring创建Bean对象的三种方式.
+    1.<!--通过默认构造函数创建对象-->(就是通过反射调用默认构造函数创建对象)
+      <bean id="userService" class="com.cc.spring.service.Impl.UserServiceImpl"></bean>
+       说明:该方式也可以设置使用自定义的构造函数
+             <bean id="userService" class="com.cc.spring.service.Impl.UserServiceImpl" >
+                <constructor-arg name="name" value="王"/>                                    //这三个都是自定义构造函数的参数
+                <constructor-arg name="age" value="18"/>
+                <constructor-arg name="date" ref="now"/>
+             </bean>
+             <bean id="now" class="java.util.Date"></bean>
+       
+
+
+    2.<!--通过工厂模式调用普通方法创建对象-->(适用于没有默认构造函数情况)
+      <bean id="instanceFactory" class="com.cc.spring.Factory.instanceFactory"/>
+      <bean id="userService1" factory-bean="instanceFactory" factory-method="createUserService"></bean>
+      对应类中的方法:
+         public UserServiceImpl createUserService(){
+             return new UserServiceImpl();
+         }
+    3.<!--通过工厂模式调用静态方法创建对象-->
+      <bean id="userService2"  class="com.cc.spring.Factory.instanceFactory" factory-method="createUserService2"></bean>
+      对应类中的方法:
+        public  static UserServiceImpl createUserService2(){
+            return new UserServiceImpl();
+        }
+  

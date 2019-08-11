@@ -1,0 +1,85 @@
+一.AOP相关概念.
+   在软件行业,AOP是面向切面编程,通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术.AOP是OOP(面向对象编程)的延续,是软件开发中的一个热点,也是spring框架中的一个重要内容,是函数式编程的一种衍生泛型,利用AOP可以对业务逻辑的各个部分进行隔离,从而使得业务逻辑各部分的耦合度降低,提高程序的可重用性,同时提高了开发的效率.
+
+二.AOP中相关术语.
+   1.joinpoint(连接点)
+     被拦截到的点,所有方法都可以作为连接点.
+   2.Pointcut(切入点)
+     切入点是指我们要对哪些joinPoint进行拦截.
+   3.Advice.(通知,增强)
+     在invoke方法中,除了调用原有的方法外,其余的操作都是通知.
+     通知的类型:前置通知 ,后置通知,异常通知,最终通知,环绕通知(整个invoke方法).
+   4.Target(目标对象)
+     被代理对象
+   5.Weaving(织入)     
+     就是创建代理类的整个过程.
+   6.Proxy.(代理)
+     织入过程产生的结果就是代理.
+   7.Aspect(切面)
+     切点和通知的结合.
+三.使用.
+   1.引入依赖.(当然还有spring-context的依赖,只要用到spring就要加这个)
+     <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.8.12</version>
+     </dependency>
+   2.配置约束.(在springAPI文件中)
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+    </bean>
+   3.配置aop.
+     a.配置切面.
+       * id:给切面一个唯一标识.
+       * ref:指定通知类的bean的id.(要添加操作的id)
+     b.配置通知.
+       aop:before:标识前置通知.(在哪增强,前面还是后面)
+           method:对切入点执行的附加操作
+           pointCut:用于指定切入点表达式,该表达式的含义是指对业务代码中哪些方法增强.(切入点).
+     c.切入点表达式写法.
+        关键字:execution(表达式)
+        表达式:修饰符 返回值 包名...类名.方法名(参数列表)
+           
+     例:
+          <aop:config>
+           <aop:aspect id="serviceAop" ref="logUtil">       //这个ref就是为了注入前置通知这个方法所在类的对象
+               <aop:before method="printLog" pointcut="execution(public void com.cc.spring.aop.Service.impl.UserServiceImpl.savUser               ())"></aop:before>
+           </aop:aspect>
+       </aop:config>
+
+
+
+二.表达式的写法(详细)
+   1.访问修饰符可以省略.
+     void com.cc.spring.aop.Service.impl.UserServiceImpl.savUser()
+   2.返回值可以使用通配符*代替,表示任意返回值.
+     * com.cc.spring.aop.Service.impl.UserServiceImpl.savUser()
+   3.包名可以使用通配符代替.表示任意包,注意有几层就需要写几层.
+     * *.*.*.*.*.*.UserServiceImpl.savUser()
+   4.包名可以使用..代替.表示当前包或子包.
+     * *..UserServiceImpl.savUser()
+   5.类名和方法名都可以使用通配符来代替.
+     * *..*.*()
+   6.参数列表:
+       a.可以直接写类型:
+           基本类型直接写名称:int
+           引用类型加上限定:java.lang.String
+       b.可以使用通配符表示任意类型.(在有参数的情况下)
+       c.可以使用..代替.表示任意参数(有参无参均可)
+
+   说明:1.也就是说所有都可以使用通配符来代替.可以使用..表示当前包,可以使用..表示任意参数类型.
+        2.在实际中并不推介全通配,一般* com.cc.spring.aop.Service.ipml.*.*(..)这样写.
+    
+    
+
+补充:* *..*.*()执行过程中,出现BeanNotOfRequiredTypeException异常,好像是因为有些没有继承接口的类使用了动态代理,而这些类会被默认转成     cglib代理模式,就会出现错误.
+解决方法:
+    在aop:config标签中加上proxy-target-class="true"即可.
+
+     

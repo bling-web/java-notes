@@ -1,0 +1,55 @@
+一： 组件类注解
+     @Component ：标准一个普通的spring Bean类。
+     @Repository：标注一个DAO组件类。
+     @Service：标注一个业务逻辑组件类。
+     @Controller：标注一个控制器组件类。表明该类会作为与前端作交互的控制层组件
+
+     1.这些都是注解在平时的开发过程中出镜率极高，@Component、@Repository、@Service、@Controller实质上属于同一类注解，用法相同，功能相         同区别在于标识组件的类型。
+     2.@Component可以代替@Repository、@Service、@Controller，因为这三个注解是被@Component标注的。
+    
+    注意:
+     1、被注解的java类当做Bean实例，Bean实例的名称默认是Bean类的首字母小写，其他部分不变。@Service也可以自定义Bean名称，但是必须是唯一        的！
+     2、尽量使用对应组件注解的类替换@Component注解，在spring未来的版本中，@Controller，@Service，@Repository会携带更多语义。并且便于开        发和维护！
+     3、指定了某些类可作为Spring Bean类使用后，最好还需要让spring搜索指定路径，在Spring配置文件加入如下配置：
+        <!-- 自动扫描指定包及其子包下的所有Bean类 -->
+        <context:component-scan base-package="org.springframework.*"/>
+
+
+
+
+
+
+二：装配bean时常用的注解
+    @Autowired(自动装配)：属于Spring 的org.springframework.beans.factory.annotation包下,可用于为类的属性、构造器、方法进行注值
+    @Resource：不属于spring的注解，而是来自于JSR-250位于java.annotation包下，使用该注解,spring会从上下文中找到唯一的bean进行装配(注入               依赖,传一个对象的引用)
+    @PostConstruct 和 @PreDestroy 方法 实现初始化和销毁bean之前进行的操作.
+    
+   1.Autowired和Resoure区别和共同点.
+     相同点:@Resource的作用相当于@Autowired，均可标注在字段或属性的setter方法上。
+     不同点:a：提供方 @Autowired是Spring的注解，@Resource是javax.annotation注解，而是来自于JSR-250，J2EE提供，需要JDK1.6及以上。
+            b：注入方式 @Autowired只按照Type 注入；@Resource默认按Name自动注入，也提供按照Type 注入；
+            c：属性:
+               @Autowired注解可用于为类的属性、构造器、方法进行注值。默认情况下，其依赖的对象必须存在（bean可用），如果需要改变这种默                认方式，可以设置其required属性为false。
+                还有一个比较重要的点就是，@Autowired注解默认按照类型装配，如果容器中包含多个同一类型的Bean，那么启动容器时会报找不到指                定类型bean的异常，解决办法是结合@Qualified注解进行限定，指定注入的bean名称。
+               @Resource有两个中重要的属性：name和type。name属性指定byName，如果没有指定name属性，当注解标注在字段上，即默认取字段的名                称作为bean名称寻找依赖对象，当注解标注在属性的setter方法上，即默认取属性名作为bean名称寻找依赖对象。
+                需要注意的是，@Resource如果没有指定name属性，并且按照默认的名称仍然找不到依赖对象时， @Resource注解会回退到按类型装配                  但一旦指定了name属性，就只能按名称装配了。
+
+            总体来说:@Resource注解的使用性更为灵活，可指定名称，也可以指定类型 ；@Autowired注解进行装配容易抛出异常，特别是装配的                           bean类型有多个的时候，而解决的办法是需要在增加@Qualitied进行限定。
+
+
+这里目前只总结了两类,全部总结在该网址找中.https://www.cnblogs.com/aflyun/p/7258506.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  

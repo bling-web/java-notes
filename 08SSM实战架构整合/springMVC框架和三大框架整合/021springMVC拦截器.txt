@@ -1,0 +1,69 @@
+一.springMVC中的拦截器.
+   1.springMVC中的拦截器用于对处理器进行预处理和后处理.用户可以自定义一些拦截器来实现特定的功能.
+   2.拦截器和过滤器的区别.
+     a.过滤器是servlet规范中的一部分,任何java web工程都能使用,在url-pattern中配置了/*之后,可以对所有要访问任何资源的请求拦截.
+     b.拦截器是springMVC框架自己的,只有使用了springMVC框架的工程才能用,拦截器只会拦截访问控制器方法的请求,如果访问的是jsp,html,css等       静态页面是不会进行拦截的.
+     总的来说,拦截器只拦截动态资源请求,过滤器啥都能过滤.
+
+
+二.springMVC拦截器的实际应用.
+      比如在一个真实项目中,有些资源时登陆后才能访问的,而有些资源是游客也能访问的,那么当游客去访问登陆后才能查看的内容,就需要进行拦截.     然后返回到登陆页面.
+
+
+三.实际运用:
+   1.实现拦截器的类要实现HandlerInterceptor接口.
+     在该类中一般重写三个方法.
+        a.preHandler
+          在控制器方法之前执行.return true-->放行,执行后续方法
+                                      false-->不放行,后面方法均不执行.
+          所以可以在该方法中实现逻辑,比如已经登录,就执行. 
+                                         没登录,跳到登陆页面.
+        b.postHandler.
+          在控制器方法执行后,控制器方法返回的的jsp页面执行之前 执行.
+
+        c.afterHandler.
+
+   2.配置拦截器.
+     <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/interceptor/**"/>                              //配置拦截的请求,就是访问路径,这个可以配置多个
+            <bean class="com.cc.springMVC.intercept.Intercept"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+   
+   配置好之后即可拦截请求.
+
+   小问题:配置这个bean的作用是什么?
+            在spring中,那些组成你应用程序的主体及由springLoc容器所管理的对象都被称之为bean.
+            java是面向对象的,调用一个类中的方法必须创建其对象,配置bean的作用就是通过反射获取创建类的对象,以便能调用其中的方法.
+          那为什么添加了注解@Controller的控制层不需要配置bean呢?
+            因为添加了注解之后,spring能找到这个类,所以可以直接为其创建对象,所以不用配置bean.
+
+
+ 
+   
+
+
+说明:控制器方法和拦截器方法的执行顺序:
+        preHandler
+        控制器方法执行
+        postHandler
+        控制器方法返回的jsp页面执行
+        afterCompletion
+      
+
+四.拦截链.
+    对一个请求可以有多个拦截器进行拦截,也就是拦截链.
+    在拦截链中多个拦截器的执行顺序由在spring-mvc.xml的配置顺序而决定.
+      举例:对一个请求的两个拦截器的执行顺序
+           preHandler
+           preHandler1
+           控制器方法执行
+           postHandler1
+           postHandler
+           控制器方法返回的jsp页面执行
+           afterCompletion1
+           afterCompletion
+
+
+     

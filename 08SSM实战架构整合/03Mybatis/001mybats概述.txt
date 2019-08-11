@@ -1,0 +1,27 @@
+一.分层开发下常见的框架
+   1.解决数据持久化问题的框架：Mybatis，Hibernate
+   2.解决WEB层问题的MVC框架：Spring MVC，Struts1/2
+   3.解决技术整合问题的框架：Spring
+
+二.Mybatis概述
+   1.JDBC操作数据库的步骤回顾.
+     a.建立数据库连接
+       Class.forName("dirver");
+     b.使用PrepareStatement执行sql语句
+       Connection connection = DriverManager.getConnection(URL,USERNAME,PASSWORD);
+       String sql = "select * from user";
+       PrepareStatment pstmt = connection.prepareStatement(sql);
+     c.获取执行sql结果(int result)或者结果集(ResultSet)
+       int result = pstmt.executeUpdate();// 增加、删除、改
+       ResultSet resultSet = pstmt.executeQuery();// 查询
+       // 获取所有列
+       ResultSetMetaData metaData = resultSet.getMetaData();
+     d.释放资源
+       resultSet.close();
+       connection.close();
+   2.概念.
+     Mybatis是一个基于java语言编写的持久层框架，对jdbc api进行了封装，使开发人员只需要关注sql语句本身，而不需要花费精力去处理驱动加载、创建连接、创建Statement、资源释       放等繁杂过程。
+   3.ORM（Object Relationship Mapping）
+     就是把数据库和实体以及实体的属性对应起来、让开发人员可以操作实体类就完成操作数据库表。
+
+

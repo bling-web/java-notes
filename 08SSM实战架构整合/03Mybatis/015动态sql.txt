@@ -1,0 +1,75 @@
+
+一.动态sql:
+   概念:
+      就是可以根据不同的情况执行不同的sql语句,并返回不同的结果.
+   举例:
+      比如查询一个id=3的数据,如果有id=3的字段,那么就查询该字段.
+        select  * from user where id=3
+      那么如果,没有id=3的字段,则查询这个数据库所有的字段.
+        select * from user
+   动态sql主要依靠各种标签来实现,比如if,foreach等标签.
+
+
+
+
+1.if标签.
+  <select id="findByCondition" parameterType="user" resultType="user">
+        select id,name,username,password,type from user where 1=1       //这个1=1是为了和后面的连接起来.如果不想用这个可以加上where标签.
+        <if test="username != null">
+            and username = #{username}
+        </if>
+        <if test="name != null">
+            and name = #{name}
+        </if>
+   </select>
+
+2.where标签.
+    <select id="findByVo" parameterType="queryVo" resultType="user">
+        select id,name,username,password,type from user                 //下面运用了where标签衔接,就不需要1=1来连接了.
+        <where>                                        
+            <if test="user.username != null">
+                and username = #{user.username}
+            </if>
+            <if test="user.name != null">
+                and name = #{user.name}
+            </if>
+        </where>
+    </select>
+
+3.foreach标签.
+  a.执行findByIds方法:
+    @Test
+    public void testFindByIds() {
+        QueryVo vo = new QueryVo();
+        List<Integer> ids = new ArrayList<Integer>();
+        ids.add(1);
+        ids.add(5);
+        ids.add(6);
+        ids.add(11);
+        vo.setIds(ids);
+        List<User> userList = userDao.findByIds(vo);
+        for (User user : userList) {
+            logger.info(user);
+        }
+    }
+  b.对应mapper.xml文件中的foreach标签的运用.
+    <select id="findByIds" parameterType="queryVo" resultType="user">
+        select id,name,username,password,type from user
+        <where>
+            <if test="ids != null and ids.size() > 0">                   //这个ids是queryVo中的一个属性.
+                <foreach collection="ids" open="id in ( " close=")" separator="," item="ddd">
+                    #{ddd}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    foreach标签说明:
+        collections:遍历的集合.
+        open:遍历的内容左边拼接的内容.
+        close:遍历的内容右边拼接的内容.
+        item:把每一个遍历的内容每次赋给item.
+  
+   所以这个foreach最后的执行的sql语句是:
+         select id,name,username,password,type from user where id in (1,5,6,11)
+   
+   

@@ -1,0 +1,121 @@
+说明:转账操作的是多个账户,如果是用的默认的queryRunner的连接对象,每执行一个sql语句,都会是一个新的connection对象(每一个connection都有对       应的提交,回滚等操作,也就是每一个connection都有一个事务的控制,默认执行完对应的sql语句就会自动提交,),所有如果对多个账户进行操作,必       须放在一个事务中,也就是必须用一个connection对象.
+
+问题:在实际操作中,减少库存量、增加一条流水台账、修改总账，这些操纵的代码分别位于不同的模块类,不同的方法中,那怎么使这些操作使用相同的数      据库连接对象呢?
+      
+     答:这些操作通常在一个线程中,所有可以将connection与当前线程进行绑定,这样就可以保证使用同一个connection了.
+     
+
+一.绑定原理:(使用Threadlocal将connection与当前线程进行绑定)
+      1.线程对象调用全局ThreadLocal对象的set方法,就相当于往其内部的map中增加一条记录,key分别是个自己的线程,value是各自的set方法传进去          的值,调用get方法时会根据线程取当前值.从而进行了绑定.
+      2.不使用queryRunner自己获取的connection对象,使用线程绑定的,在执行具体方法时作为参数传入即可.
+   
+   例:
+
+   1.在ConnectionUtils中:
+
+    private ThreadLocal<Connection> t1=new ThreadLocal<Connection>();
+    @Resource
+    private static DataSource dataSource;
+    private static Connection connection=null;
+    public ThreadLocal<Connection> getT1() {
+        return t1;
+    }
+    /***
+     * 获取连接对象
+     * @return
+     */
+    public Connection getConnection(){
+         connection= t1.get();
+        if(connection==null){
+            try {
+                connection = dataSource.getConnection();
+                t1.set(connection);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return connection;
+    }
+
+   2.在TransactionManage中:
+
+    public class TransactionManage {
+    @Resource
+    private ConnectionUtils cu;
+    /**
+     * 开启事务
+     */
+    public void beginTransaction(){
+        try {
+            cu.getConnection().setAutoCommit(false);//设置不自动提交,相当于开启事务
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    /***
+     * 提交事务
+     */
+    public void commitTransaction(){
+        try {
+            cu.getConnection().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    /***
+     * 回滚事务
+     */
+    public void rollbackTransaction(){
+        try {
+            cu.getConnection().rollback();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    /***
+     * 释放资源
+     */
+    public void release(){
+
+        try {
+            cu.getConnection().close();//关闭连接对象,将其返回连接池中,放回连接池则这个歌对象就没有使用权了.
+            cu.getT1().remove();//将这个线程绑定的connection对象删除,因为已经返回连接池中,获取的还是同一个,但是不能用了
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+   3.在执行转账方法时:
+       tm.beginTransaction();
+        try{
+            //1.查询账户是否存在
+            Account SourceAccount = accountDao.findAccount(SourceAccountId);
+            if(SourceAccount==null){
+                throw new RuntimeException("the Account is empthy");
+            }
+            Account TargetAccount = accountDao.findAccount(TargetAccountId);
+            if(TargetAccount==null){
+                throw new RuntimeException("the Account is empthy");
+            }
+            //判断转出账户余额是否充足
+            if(SourceAccount.getMoney()<money){
+                throw new RuntimeException("the money Of SourceAccount is not enough");
+            }
+            //转账
+            SourceAccount.setMoney(SourceAccount.getMoney()-money);
+            TargetAccount.setMoney(TargetAccount.getMoney()+money);
+            //保存,将改变更新到数据库.
+            accountDao.updateAccount(SourceAccount);
+            int a=2/0;
+            accountDao.updateAccount(TargetAccount);
+            //提交事务
+            tm.commitTransaction();
+        }catch (Exception e){
+            //回滚事务
+            tm.rollbackTransaction();
+            e.printStackTrace();
+        }finally {
+            //释放资源
+            tm.release();
+        }
+   ThreadLocal中保存的是key.value数据,key就是当前线程,value就是我们要存储的值.
+   所以set()要把自己保存的值存进去,get()则可以直接调用,因为默认key是当前线程.

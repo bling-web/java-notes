@@ -1,0 +1,85 @@
+一.绑定的机制.   
+   我们都知道,表单中请求参数是基于key,value的形式,SpringMVC绑定请求参数的过程是通过把请求参数作为控制器方法参数进行绑定的.
+
+
+二.基本类型.
+   直接在方法参数中写对应参数即可.
+    @GetMapping(value="/rm2",headers = "Accept")
+    public String hello5(String name,Integer age) {
+        System.out.println(name);
+        System.out.println(age);
+        return FILENAME;
+    }
+
+
+三.引用类型.
+   问题:如果接受的参数很多,都写在参数上岂不是很麻烦?
+        这时候就可以用到引用类型,搞一个对应的实体类来接收,方法参数用对象来传递即可.
+   注意:这个类必须要可序列化.
+   说明:这个具体类的对象是调用者创建的,也就是DispatcherServlet创建的.
+   例:
+    @PostMapping("/rm3")
+    public String hello6(User user) {
+        System.out.println(user);
+        return FILENAME;
+    }
+
+提问1:如果一个引用类型中含另一个引用类型,在输入页面要怎么写?
+     用属性关联方法:
+<form action="/test/spring-mvc/rm3" method="post">                            //这个例子就是User类里面包含Address类
+    账户:<input type="text" name="username"><br/>
+    密码:<input type="text" name="password"><br/>
+    性别:<input type="text" name="gender"><br/>
+    年龄:<input type="text" name="age"><br/>
+    省:<input type="text" name="address.privace"><br/>
+    市:<input type="text" name="address.city"><br/>
+    地区:<input type="text" name="address.area"><br/>
+    街道:<input type="text" name="address.distract"><br/>
+    <input type="submit" value="提交">
+</form>
+
+提问2:如果一个对象中含有集合,map要怎么表示?
+      提示:map中的key是不需要接收,直接写上去的,需要接受的只有value.
+    例:
+jsp页面中的内容:
+<form action="/test/spring-mvc/rm3" method="post">  
+    超级管理员账号:<input type="text" name="list[0].username"><br/>            //list是User类中的一个属性
+    超级管理员密码:<input type="text" name="list[0].password"><br/>
+    超级管理员账号2:<input type="text" name="map['SuperUser'].username"><br/>  //map也是User类中的一个属性
+    超级管理员密码2:<input type="text" name="map['SuperUser'].password"><br/>
+</form>
+User类中的属性:
+    private List<SuperUser> list;
+    private Map<String,SuperUser> map;
+SuperUser类中的属性:
+    private String username;
+    private String password;
+
+
+四.中文乱码问题.
+   在输入表表单内容时有可能出现乱码问题,springMVC的解决方法如下,在web.xml中配置.
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>
+            org.springframework.web.filter.CharacterEncodingFilter
+        </filter-class>
+        <!-- 设置过滤器中的属性值 -->
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <!-- 启动过滤器 -->
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <!-- 过滤所有请求 -->
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    
+   
+   

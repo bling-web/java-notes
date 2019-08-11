@@ -1,0 +1,49 @@
+一.POM:
+   Project Object Modul (java项目对象模型).就java项目各部分信息封装成对象,便于操作和管理的模型.
+
+二.仓库.
+     概念:存储maven执行所依赖的插件,jar包.(maven执行时会去本地仓库里找相应资源,没有会去网络上下载,然后存到仓库中)
+   1.分类:
+     a.本地仓库:
+       为当前电脑所有的Maven工程服务.默认存储路径是:C:\Users\sunli\.m2    (sunli是自己的用户名)
+     b.远程仓库:
+       私服:
+           搭建在局域网环境下,为当前局域网范围内所有的Maven工程服务(就是公司中有一个人在互联网中下载了资源,这个局域网内所有的可以直接           在局域网下载即可)
+       中央仓库:
+           搭建在互联网上,为全世界Maven项目服务.
+       中央仓库镜像       
+           搭建在各个州,为中央仓库分担流量,减轻中央仓库的压力,同时更快的响应用户请求.
+
+三.仓库中的文件.
+   1.Maven自身需要的插件.
+   2.第三方架构工具的jar包.
+   3.自己开发的jar包(mvn install 就是将jar包导入本地文件)
+
+四.坐标.
+   在Maven中,groupid,artifactId,version三个向量可以在仓库(整个互联网)中唯一确定一个maven工程.
+   1.groupid:公司名称或组织名称倒序+项目名称.
+      <groupId>com.cc.maven</groupId>
+   2.artifactid:项目名称或工程名称.
+      <artifactId>hello-maven</artifactId>
+   3.version:版本
+      <version>1.0-SNAPSHOT</version>
+      版本号约定:
+        SNAPSHOT:快照版本(开发版本/不稳定版本)              例:0.0.1SNAPSHOT.
+        RELEASE或者不带SNAPSHOT的版本号:发布版本/稳定版本.  例:0.0.1   
+   其实groupid和artifactid就是对应的一个唯一路径,version对应文件名称.
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+ 

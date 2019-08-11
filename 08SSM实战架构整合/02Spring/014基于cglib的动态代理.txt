@@ -1,0 +1,62 @@
+  
+  上一节讲的是基于接口实现的动态代理.其实代理本质就是在执行被代理方法之前执行一定行为的操作.
+
+
+一.基于cglib的动态代理:
+   1.被代理类不需要实现接口,也就是直接对被代理类进行加工.
+   2.和基于接口创建动态代理的区别是:
+     a.基于接口创建的动态代理就是一个代理类.
+     b.基于cglib创建的动态代理其实还是一个被代理类,只不过进行了一定加工   
+
+
+二.实现步骤.
+   1.引入依赖.
+      <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+   2.通过Enhancer.create方法创建.
+     参数:class:被代理类的字节码.
+          Callback:用于提供增强代码.
+   例:
+   *** 被代理类Producer ***
+  
+  public class Producer  {
+    public void spanMoney(double money) {
+        System.out.println("花费"+money+"元");
+    }
+  } 
+  
+  *** 动态生成被代理类的加工,测试 ***
+  
+  public class Consumer {
+    public static void main(String[] args) {
+        //new一个被代理对象,因为代理类执行被代理类的方法时,需要用到被代理类的对象
+         final Producer producer = new Producer();
+        Producer cglibProducer = (Producer) Enhancer.create(producer.getClass(), new MethodInterceptor() {
+            /**
+             * 执行被代理类中任意方法时,都会经过该方法
+             * @param o 动态代理对象
+             * @param method 正在执行的方法
+             * @param arg 正在执行的方法所传的参数
+             * @param methodProxy 当前执行方法的代理对象
+             * @return 和执行方法返回的值相同
+             * @throws Throwable
+             */
+            public Object intercept(Object o, Method method, Object[] arg, MethodProxy methodProxy) throws Throwable {
+                System.out.println(methodProxy);
+                Double money = (Double) arg[0];
+                return method.invoke(producer, money*0.8);
+            }
+        });
+        cglibProducer.spanMoney(1000);
+    }
+  }
+
+
+
+
+
+
+  

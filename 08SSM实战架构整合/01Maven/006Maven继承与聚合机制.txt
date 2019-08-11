@@ -1,0 +1,72 @@
+一.Maven继承机制
+   1.为什么需要继承机制?
+     由于非compile的依赖信息是不能在依赖链中传递的,所以有需要的工程只能单独去配置,如果项目需要将各个非compile的依赖版本进行统一管理.那么需要使用继承机制来讲依赖信息统一提取到父工程中进行统一管理.
+   
+   2.总结:
+      1.可以统一进行版本管理.
+      2.为聚合做铺垫,方便统一操作.
+
+   3.使用步骤:
+     a.建立父工程:跟建立java工程一样,只是packaging(打包方式)标签需要设置为pom.(删除src)
+        <packaging>pom</packaging>
+
+     b.在父工程中添加依赖管理:(注意把所有的版本号提出来设为变量)
+       把整个项目中所有要用的依赖都加进来.
+       说明:
+          在<dependencyManagement> <dependecy>这两个标签中添加依赖
+          在<properties>标签中管理版本
+       例:
+     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <jsp-api.version>2.1.1</jsp-api.version>
+        <junit.version>4.11</junit.version>
+        <servlet-api.version>3.1.0</servlet-api.version>
+        <maven.version>1.0-SNAPSHOT</maven.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>jsp-api</artifactId>
+                <version>${jsp-api.version}</version>                //引用版本
+                <scope>provided</scope>
+            </dependency>
+    <dependencyManagement/>
+
+     c.在子工程中引入父工程.
+     <parent>
+        <groupId>com.cc.maven</groupId>
+        <artifactId>sms-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../sms-parent/pom.xml</relativePath>          //从子文件pom.xml找父文件pom.xml的相对路径.
+    </parent>
+    <artifactId>sms-webapps</artifactId>                            //这是子工程的,groupid和版本号均不用写,和父工程一致.
+       
+     d.在子工程中中添加依赖.
+       从父工程的依赖直接复制出来.然后把版本号删除.
+         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>                                        //像这样
+
+
+说明:建的parent的工程一定是前面是一个小m图片的文件,否则不能子工程不能继承它.
+     如果不是可以add as modul 即可.
+
+二.Maven聚合机制.(依赖于继承机制)
+   为什么使用聚合?
+      批量进行maven工程的安装,打包,和清理等工作,如果不聚合,只能单个进行安装,打包等,并且每个maven必须安装到本地仓库后,依赖才能生效.
+
+   步骤:在parent工程中使用<modules><module>标签组合,里面添加相对路径即可(使用继承时一般会自动生成)
+   
+   例:
+    <modules>
+        <module>../sms-dao</module>                          //注意这里的顺序,一定是被依赖的放前面.
+        <module>../sms-service</module>
+        <module>../sms-webapps</module>
+    </modules>
+   说明:这里聚合并不是一下子把所有都打包,还是一个一个来.如果先执行servlet,发现其引入的依赖在本地仓库上找不到还是会报错.
+  

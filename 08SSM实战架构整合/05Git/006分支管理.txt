@@ -1,0 +1,50 @@
+一.概念.
+   在版本控制中,使用多条线同时推进多个任务.
+  
+二.分支的好处.
+   1.可以同时并行推进多个功能开发,提高开发效率.
+   2.各个分支在开发过程中,如果一个分支开发失败,不会对其他分支有影响.
+
+三.分支操作.
+   1.查看分支
+     git branch -v
+   2.创建分支
+     分支名约定:
+        a.feature/名称:开发一个新功能
+        b.bugfix/名称:修复bug
+        c.hotfix/名称:紧急修复线上bug
+        d.develop/名称:开发分支,开发分支下有各种的功能分支,一个总的名字.
+        e.release/名称:发布分支
+     命令:
+        git branch [分支名称]
+   3.切换分支.
+     git checkout [分支名称]
+   4.分支合并.
+     a.切换到被合并的分支上
+     b.执行merge命令
+       git merge [需要合并的分支名]
+   5.冲突管理:
+     a.产生.
+       当两个人对不同分支上的同一个文件进行操作时,比如a分支上有abc.txt文件,b分支上也有abc.txt文件,当都对其进行更新之后,合并时就会产生冲突.
+       例:
+          $ git merge master
+          Auto-merging c.txt
+          CONFLICT (add/add): Merge conflict in c.txt
+          Automatic merge failed; fix conflicts and then commit the result.
+       产生冲突后的文件:
+          <<<<<<< HEAD     //符号一
+          你好,大家好
+          sdsabhsbchsd
+          =======          //符号二
+          hdiahda`
+          >>>>>>> master   //符号三
+
+     b.解决.
+       编辑该冲突文件,把符号删除,然后再次提交即可.
+       注意:由缓存区提交本地库时,后面不能加提交文件名称,直接< git commit -m '解决冲突'> 即可
+            否则出现错误fatal: cannot do a partial commit during a merge.
+
+       
+
+
+      

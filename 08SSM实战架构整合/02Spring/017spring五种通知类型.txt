@@ -1,0 +1,38 @@
+一.五种类型:
+   1.before:前置通知.(一定会执行)
+   2.after:后置通知(方法正常执行完后才会执行)
+   3.after-returning:返回通知(一定会执行)
+   4.after-throwing:异常通知(出现异常才会执行)
+   5.around:环绕通知,spring框架为我们提供一种可以在代码中手动控制增强方法何时执行的方式。相当于一个代理,在里面可以写方法的执行,和其它执行程序.
+            说明:如果一个切点配置了环绕通知却不在该方法里面显示调用切点方法..,则该切点的方法不会执行.
+             
+
+二.使用around环绕通知例子.
+    <aop:config>
+        <aop:pointcut id="pt" expression="execution(* *..UserServiceImpl.saveUser())"/>
+        <aop:aspect id="aopActive" ref="logUtil">
+            <aop:around method="printAroundLog" pointcut-ref="pt"/>
+        </aop:aspect>
+    </aop:config>
+   
+    /**
+     * 环绕通知相当于一个代理,spring为我们提供了一个接口ProceedingJoinPoint,调用该接口的proceed的方法.
+     *   就相当于调用切点方法,需要传入参数的话.直接proceedingJoinPoint.getArgs().
+     * 何时调用,调不调用切入点方法由我们说了算.
+     * @param proceedingJoinPoint
+     */
+    public Object printAroundLog(ProceedingJoinPoint proceedingJoinPoint){
+        Object obj=null;
+        try {
+            System.out.println("这里相当于前置通知");
+            obj= proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+            System.out.println("这里相当于后置通知");
+        } catch (Throwable throwable) {
+            System.out.println("这里相当于异常通知");
+            throwable.printStackTrace();
+        }finally {
+            System.out.println("这里相当于返回通知");
+        }
+        return obj;
+    }
+  

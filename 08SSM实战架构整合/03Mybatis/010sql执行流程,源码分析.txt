@@ -1,0 +1,17 @@
+
+  主要分为几个大的步骤:
+  
+一:获取sqlSession对象.
+   主要通过new DefaultSqlSession()的对象来获取sqlSession对象,在创建该对象的时候把Configration,executer对象都传了进去.
+     executer是最终执行sql语句的对象,里面封装了envirement对象,envirement对象中有数据和事物的配置.  
+     Configation对象则是要去读取mybatis的配置信息.
+
+
+二.获取代理类对象.
+   在mybatis中,是有MapperProxy动态代理咱们的dao,
+    mapperProxyFactory最终执行了Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);这个方法来实现的动态代理.
+
+三.具体执行流程.
+   mapperProxy拿到了代理对象,最后会执行sqlSession中的crud的方法.
+   最后一层一层调用,会来到SimpleExecutor的doQuery方法,在 该方法中调用StatementHandler(封装了statement)的query方法.
+   在该query方法中,原形毕露,执行了PrepareStatement的executer方法.

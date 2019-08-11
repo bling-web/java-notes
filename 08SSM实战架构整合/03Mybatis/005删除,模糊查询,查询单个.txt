@@ -1,0 +1,50 @@
+
+  以下的删除,模糊查询,查询单个都是针对于user来说的.
+
+1.UserMapper中. 
+    /**
+     * 根据用户id查询用户对象
+     * @param id
+     * @return
+     */
+    User findById(Integer id);
+
+    /**
+     * 根据用户id删除记录
+     * @param id
+     */
+    void deleteById(Integer id);
+
+    /**
+     * 根据用户名称模糊查询记录
+     * @param name
+     * @return
+     */
+    List<User> findByName(String name);
+
+    /**
+     * 根据用户名模糊查询记录
+     * @param user
+     * @return
+     */
+    List<User> findByUserName(User user);
+
+2.UserMapper中.
+     
+     <delete id="deleteById" parameterType="int">          //删除方法
+        delete from user where id = #{id}
+    </delete>
+
+    <select id="findById" resultType="UsEr">               //单个查询
+        select * from user where id = #{id}
+    </select>
+
+    <select id="findByName" resultType="user" parameterType="string">
+        <!-- select * from user where name like concat(concat('%',#{name},'%')) 
+        select * from user where name like "%"#{name}"%"   //模糊查询.%代表任意匹配一个或多个字符.
+    </select>
+
+    <select id="findByUserName" resultType="user" parameterType="user">
+        <bind name="p1" value="'%' + _parameter.username + '%'"></bind>
+        select * from user where username like #{p1}       //模糊查询
+    </select>

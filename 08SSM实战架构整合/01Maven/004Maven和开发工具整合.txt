@@ -1,0 +1,31 @@
+一.Maven和idea整合.
+   1.基础配置
+    setting-->搜索Maven
+    a.Maven home directory 指向自己下载的Maven目录
+    b.user setting file 指向自己新下载中的Maven下的set.xml文件
+    c.local repository:本地仓库,自己新建一个包存储插件和jar包.
+      说明:(在set.xml中直接改也可以) <localRepository>D:\java.software\Maven\m2</localRepository>
+
+    在最右边有MavenProject点开即可以使用编译,测试等操作.
+
+   2.新建web项目.
+    a.新建一个project,然后选maven-->勾选Create from archetype-->选择后缀名为webapp的模板.
+      然后一步一步按步骤来即可.
+    b.新建项目没有完整的包java,resources,可以自己设置加上     选择项目,右键-->open module setting.
+      注意:Main下的java Markas Sources, resources Markas Resources .
+           test下的java Markas TestSource,resource Markas TestResources.
+    c.工具栏中的add Configration 新增一个Tomcat.配置基本设置,然后deploment下面新增一个war包.
+      (工具栏可以通过view-->Toolbar添加)
+      说明:1.想要修改类时就刷新,Update action的两个选项框都选择Hot Swap Classes.
+    d.建成之后是没有,不能使用jsp.jar和servlet.jar的,需要引入依赖.(在下一节笔记中)
+     
+    
+
+二.Maven和eclipse整合
+   window-->preference-->Maven
+    1.installations-->add 自己下载的maven,然后选择自己的.-->apply
+    2.User setting中的三个选项框全都改成自己的.前两个改成setting,后一个是仓库.
+   然后新建一个Maven Project.需要写程序的时候直接新建一个class.(在选项框中新建包)
+   
+   点pom.xml右键run as即可运行.
+   

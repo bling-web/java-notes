@@ -1,0 +1,38 @@
+
+  在上一节中,在配置类中,我们是把DriverClass,jdbcurl,user,password写成常量写在代码中的,这样是很不应该的.我们可以用value注解注入.
+   
+
+  例:
+    @PropertySource("classpath:db.properties")
+    public class jdbc {
+        @Value("${driverClass}")                 //注意这里用el表达式取.
+        private String driverClass;
+        @Value("${jdbcurl}")
+        private String jdbcurl;
+        @Value("${user}")
+        private String user;
+        @Value("${password}")
+        private String password;
+        @Bean
+        public QueryRunner queryRunner(ComboPooledDataSource dateSource){     //该方法中的参数会默认从spring 容器中找对应的bean
+            return new QueryRunner(dateSource);
+        }
+       @Bean
+       public ComboPooledDataSource dateSource(){
+            ComboPooledDataSource dataSource = new ComboPooledDataSource();
+            try {
+                dataSource.setDriverClass(driverClass);
+                dataSource.setJdbcUrl(jdbcurl);
+                dataSource.setUser(user);
+                dataSource.setPassword(password);
+            } catch (PropertyVetoException e) {
+                e.printStackTrace();
+       }
+            return dataSource;
+
+       }
+   }
+
+
+
+

@@ -1,0 +1,57 @@
+步骤:
+  1.需要模拟一个远程服务器.
+    就是新建一个项目.然后开启.
+    a.注意这里有一个问题:当本地服务器请求在远程服务器新增文件时,必须有这个权限(增删改). 
+      而我们新建项目的默认权限是只读的.(read only),所以需要修改配置.在对应项目中的conf文件.
+      <init-param>
+          <param-name>readonly</param-name>
+          <param-value>false</param-value>
+      </init-param>
+    b.当我们使用idea部署这个时,上面所配置的会被改回来.所以需要手动在tomcat上部署目录.
+      * 可以在conf/localhost/Catalina下的配置文件中加上项目路径即可.
+      * 然后需要改原tomcat下conf中的web.xml.将上面的权限设置加上去即可.
+      * 注意端口问题.
+      * 手动在tomcat部署项目时,新加的文件夹会在webapps里面.所以需要加对应目录时,要加在webapps中.
+   
+   
+
+
+
+    上面是老师的解决方法,而我在实际操作过程中,用idea部署项目.发现只需要把配置权限的代码加到原tomcat下conf中的web.xml.就可以直接解决权    限问题(注意上传目录一定要存在)
+
+ 
+        
+  
+  2.上传远程需要添加依赖.
+       <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>1.18.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>1.18.1</version>
+        </dependency>
+
+  3.Controller层中代码.
+    @PostMapping("/file2")
+    public String test7( MultipartFile Myfile2) throws IOException {
+        //获取文件名
+        String originalFilename = Myfile2.getOriginalFilename();//相当于com.io中的getName()
+        String id = UUID.randomUUID().toString().replace("-", "");
+        String name=id+originalFilename;
+        //上传文件
+        //获取客户端对象
+        Client client = Client.create();
+        //读取配置文件(这个配置文件要放在resources中)
+        InputStream resourceAsStream = Test.class.getClassLoader().getResourceAsStream("Config.properties");
+        Properties properties = new Properties();
+        properties.load(resourceAsStream);
+        String  url = (String) properties.get("url");
+        //连接远程服务器.
+        WebResource resource = client.resource(url+name);
+        //文件上传
+        resource.put(Myfile2.getBytes());
+        return Content.FILENAME;
+    }

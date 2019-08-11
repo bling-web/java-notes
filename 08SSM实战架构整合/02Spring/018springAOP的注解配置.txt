@@ -1,0 +1,61 @@
+一通常步骤:
+  1.引入依赖
+  2.给一个Config类.类上使用注解()
+    @Configration
+    @Component("要扫描的包")
+  3.给需要加入spring容器的类配置上对应注解.
+  
+
+二.其实以上都是通常配置.针对aop的配置主要由三步.
+   1.在对应的Config类上加上注解,就是为了告诉spring,我要使用aop了.
+     @EnableAspectJAutoProxy. 
+     相当于aop:Config.   里面有proxyTargetClass属性
+     @Configuration
+     @ComponentScan("com.cc.spring.anaop")
+     @EnableAspectJAutoProxy                    //这个注解就是为了告诉spring,我要使用aop了.
+     public class SpringConfiguration {
+     }
+
+
+   2.在代理类上(就是要给切入点添加附加操作的类)
+     @Aspect.                  
+     相当于aop:Aspect
+
+   3.在对应的方法上添加通知类型.
+     @Before("execution(* *..UserServiceImpl.saveUser())")  
+      注意切点配置在里面.
+
+
+例:只放了要添加附加操作的类.
+@Component
+@Aspect
+public class LogUtil {
+    @Pointcut("execution(* *..UserServiceImpl.saveUser())")
+    public void pt(){}                                          //这个方法里面的方法体即使有也并不会执行.只是承托这个注解的一个载体,因为切面就有切点加通知.
+
+
+    public void printLog(){
+        System.out.println("打印日志");
+    }
+    @Before("pt()")
+    public void printBeforeLog(){
+        System.out.println("执行printBeforeLog");
+    }
+    @After("pt()")
+    public void printAfterLog(){
+
+        System.out.println("执行printAfterLog");
+    }
+    @AfterReturning("pt()")
+    public void printAfterReurningLog(){
+
+        System.out.println("执行AfterReurningLog");
+    }
+    @AfterThrowing("pt()")
+    public void printAfterThrowingLog(){
+        System.out.println("执行printAfterThrowingLog");
+    }
+}
+
+
+    

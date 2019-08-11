@@ -1,0 +1,64 @@
+一.spring注解配置.
+   1.引入依赖.spring-context.
+   2.配置文件中引入对应的schame
+     <?xml version="1.0" encoding="UTF-8"?>
+     <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+     </beans>
+   3.告诉spring去哪里找注解.
+     <context:component-scan bease-package="com.cc.spring.annotation">
+   4.使用注解.
+
+二.常用注解.
+   1.创建对象类注解.
+      a.@component.
+          用于产生当前类的实例对象,并存入spring容器中.
+        属性:value:相当于配置bean时的id.(默认就是当前类名,首字母变成小写)
+      b.@Controller @Service   @Repository
+       这三个注解都具有component注解的作用,是基于component衍生的语义化注解.不过各自有其他的标识作用.
+         Controller:用于控制层.
+         Service:用于业务层.
+         Repository:用于持久层.
+
+   2.注入类注解.
+     注入其他bean类型.
+      a.@Autowired(自动装配)
+         作用:自动按照类型注入,只要容器中有唯一的一个bean对象类型和要注入的类型一样.就可以注入成功.
+              如果loc容器中没有任何bean对象类型和其匹配,则会报错.
+              如果loc容器中有多个bean对象类型和要注入的类型一样,则按照类名(默认id)进行匹配,有相同则匹配成功,没有则报错.
+
+      b.@Qualifer(限定标识符)
+         作用:在按照类型注入的基础之上再按照名称注入,它在给类成员注入变量时不能单独使用.
+              说明:这个按照名称注入必须写出来,不能是默认的类名(默认id),不论是bean类型,还是要注入的类型.
+   
+      c.@Resource
+         作用:默认按照名称进行装配,名称可以通过name指定.
+              如果没有指定name,则按照默认名称进行装配,当找不到与名称匹配的bean时才按照类型进行装配.
+              说明:如果指定属性name,就只会按照名称进行装配.
+   
+     注入基本类型和String类型.
+      a.value
+         作用:用于指定数据的值,它可以是基本类型和String,支持Spel(spring的el表达式).${}
+        
+   
+  
+   3.改变范围注解
+     Scope:
+       和xml配置bean的scope属性一样.
+ 
+
+   4.和生命周期相关注解.(作用在方法上)
+     a.PostContruct:初始化方法.
+     b.PreDestroy:销毁方法
+          
+
+ 
+
+说明:按type类型进行匹配时一个接口和他的实现类是一种类型.
+      
+ 
