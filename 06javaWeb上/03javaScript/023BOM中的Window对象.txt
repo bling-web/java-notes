@@ -1,0 +1,95 @@
+BOM(Brower Object Model) 浏览器对象模型
+  将浏览器的各个组成部分封装成对象.
+   window对象:窗口对象
+   Navigator对象:浏览器对象
+   Screen对象:屏幕对象
+   History对象:历史记录对象
+   Location对象:地址栏对象
+
+
+一.window对象:窗口对象
+   
+方法:
+   1.弹窗相关方法.
+     a.alert().显示带有一段信息以及确定按钮的警告框
+     b.confirm().显示带有一段信息以及确定和取消按钮的警告框.
+       注意:该方法会返回一个true或false的结果,根据这个结果,再执行后续的操作.
+       例:
+          var result=confirm("你确定退出吗");
+          if(result){
+            执行退出操作.
+          }
+          else{
+            继续执行操作.
+          }
+     c.prompt():显示提示用户输入的对话框.
+       注意:需要接受用户输入的东西.
+       例:
+         var result=prompt("请输入年龄")
+         然后先判断输入的年龄是否符合规则.再用接收的年龄做其他操作.
+     
+   2.打开与关闭相关方法.
+      a.open("某个网址").打开一个新的浏览器窗口或查找一个已知名窗口.
+        注意:1.该方法默认打开空白页.
+             2.会返回一个打开网页的对象.
+      b.close().关闭浏览器窗口.
+        注意:谁调用该函数,关闭谁.所以如果想关闭哪个网页,用这个网页的对象去调用这个函数.
+        例:
+          <input id=openBid type=button value="打开网页">
+          <input id="closeBid" type="button" value="关闭网页">
+          <script>
+          var openBid=document.getElementById("openBid") //这是获取id的一个方法,也是注册一个事件.
+          openBid.onclick=function(){
+            newWindow=open("https://www.baidu.com");     //返回该窗口对象
+          }
+          var close=document.getElementById("closeBid");
+          close.onclick=function () {
+            newWindow.close();                           //该窗口对象调用关闭函数.
+         }
+         </script>
+  
+   3.定时器相关方法.
+      a.setTimeout("表达式",时间):在指定的毫秒数后,调用函数或计算表达式.
+        例:(设置定时并取消)
+           var id=setTimeout("fun()",2000);
+           var fun=function(){
+             alert("你好哦,小哥哥");
+           }
+           clearTimeout(id);           //取消设置方法
+            
+        注意:1.该方法只执行一次.
+             2.这个方法会返回该定时器的唯一标识,该标识用于clear函数取消个该指定的定时器.
+      b.clearTimeout():清除setTimeOut设置的timeout.
+      c.setInterval():按照指定的周期(以毫秒记),执行函数或计算表达式.
+        例:(设置定时并取消)
+           var fun=function(){
+             alert("你好哦,小哥哥");
+           }
+           id=setInterval("fun()",2000); 
+
+           clearInterval(id);            //取消设置方法
+        注意:该方法如果不取消会一直执行.
+      d.clearInterval(():清除setInterval设置的timeout.
+
+
+属性:
+   1.获取其他BOM对象:
+      a.window.navigator.获取直接navigator获取.
+      b.screen.
+      c.location.
+      d.history.
+   2.获取其他DOM对象.
+      a.document.
+     
+  
+特点:
+   1.不需要创建对象,可以直接用方法名调用,类似全局对象.
+
+
+特殊说明:一个方法作为某一个参数传进去时有两种格式.
+         1."方法名()"
+         2.直接方法名
+        例:setInterval("fun()",2000);
+           setInterval(fun,2000);
+
+   

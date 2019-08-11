@@ -1,0 +1,52 @@
+
+二.使用html dom元素的属性.
+    各种标签里面的属性,比如img里面的src.
+    使用方式:
+       对象.属性.
+
+三.控制样式.
+ 1.通过style关键字.
+   例:
+   <div id="text">
+        hello
+   </div>
+   <div>
+   <a id="font_big " onclick= big() href="javaScript:;">增大字体</a>          //将事件的绑定放在标签里.就不会报错.还不用创建对象
+   <a id="font_little " onclick= little() href="javaScript:;">减小字体</a>
+   </div>
+   <script>
+       //增大字体
+       var text_obj=document.getElementById("text");
+       function big() {
+           text_obj.style.fontSize="60px";
+       }
+       function little() {
+           text_obj.style.fontSize="20px";
+       }
+
+   </script>
+
+     注意:如果出现Connot set property 'onclick' of null.
+          解决方法就是将事件的绑定放在标签里.具体原因还不是太清楚.
+     
+     已经找到原因,是因为没有获取到对应的对象.
+         比如id="font_big "(有空格).我写成了var font_big_obj=document.getElementById("font_big");(没有空格)
+         导致font_big_obj=null.
+         
+
+.
+  2.通过className控制样式.
+    必须要提前定义好class样式,才能通过className控制.
+    例:
+       <style>
+          .t1{
+              border:1px solid red;
+              color:black;
+          }
+       </style>
+       <a id="font_little " onclick= changeStyle() href="javaScript:;">更改样式</a>
+       <script>
+       function changeStyle(){
+          text_obj.className="t1";
+       }
+       </script>

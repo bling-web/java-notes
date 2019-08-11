@@ -1,0 +1,93 @@
+表单标签:
+  用于采集用户输入的数据,和服务器交互.  
+  一.<form></form> 定义表单,定义一个范围,范围代表采集用户数据的范围.
+     属性:
+       1.action:指定提交数据的地址.登陆地址
+         登陆成功后进入该地址,后面可以跟网址,也可以跟本地资源(放在程序文件里)
+         
+       2.method:指定提交的方式(面试可能问几种方式,区别)
+         七种方式,常用get和post
+         get和post的区别.(post方式将登陆信息封装到header文件里)
+         a.get方式请求参数会在地址栏显示
+           post方式则不会显示
+         b.get方式请求参数长度有限制
+           post方式没有限制
+         c.get方式不太安全
+           post方式相对安全
+
+       3.name:表单的名称
+       4.id:表单的id(唯一标识)
+
+  二.表单项.input 
+     属性:(都用type指定)
+     输入框;
+       1.text:文本框  
+       2.password:密码输入框
+       3.palcehoder:提示用户输入信息.注意:该属性不需要type指定.直接在输入框中设置即可.
+     例:
+       <form name="log" id="log" method="post" action="">
+       用户名:<input type="text" name="em"  placeholder="请输入用户名"><br>
+       密码:&nbsp&nbsp&nbsp<input type="password" name="um" placeholder="请输入密码"><br>
+       <input type="submit" value="登陆"><br><br><br>
+       </form>
+
+     其他框:
+       3.submit:提交按钮,value可以指定按钮上的文字
+           <input type="submit" value="登陆">
+
+       4.radio:单选框(要想实现在多个单选框中只能选一个,name必须一样,并且必须指定value值)
+               说明:a.该value中的内容是提交给服务器,后台看的.
+                    b.加上checked就会默认该属性
+           <input type="radio" checked name="select" value="登陆">登陆    //默认选择登陆
+           <input type="radio" name="select" value="注册">注册<br>
+
+       5.checkbox:复选框(也是name必须一样,并指定value值)
+           <input type="checkbox" name="habby" value="coding"> 编程
+           <input type="checkbox" name="habby" value="watching movie"> 看电影
+           <input type="checkbox" name="habby" value="play basketball"> 打篮球<br>
+
+       6.file:文件选择框
+           <input type="file" name="name">
+
+       7.hidden:隐藏域.(有时需要提交一些东西到服务器,但是不需要用户看到,就需要用隐藏域),
+               说明:一般要指定value,提交给服务器的内容.
+           <input type="hidden" name="用户id" value="id">
+
+       8.button:普通按钮,value指定按钮上的文字.
+           <input type="button" value="进入" >
+
+       9.image:图片提交按钮.也相当于提交按钮.
+           <input type="image"width="30" height="30" src="https://imgsa.baidu.com/news/q                                                %3D100/sign=a42ed9792ea4462378caa162a8227246/902397dda144ad34908e2484dea20cf431ad8584.jpg">
+  
+       10.color:拾色器(一个小框可以选择rgb颜色)
+           选择颜色:<input type="color" name="color"> 
+   
+       11.date:选择日期.
+           日期:<input type="date" name="birthday"> 
+                   
+       12.datetime:选择时间
+           时间:<input type="datetime-local" name="time"> 
+  
+       13.email:邮箱地址(和普通输入框不一样的是会检查是否是邮箱地址)
+           邮箱地址:
+   
+   三.表单项select
+       就是一个下拉链表,同样的需要指定name和value
+       1.<option></option>  指定链表中内容.
+         例:
+           地址:<select name="地址" >
+           <option value="">--请选择--</option>
+           <option value="1">--北京--</option>
+           <option value="2">--上海--</option>
+           <option value="3">--深圳--</option>
+           <option value="4">--天津--</option>
+           </select>  
+   四.表单项textarea
+      就是一个文本框,可以输很多的文字,还可以自动扩展.
+      1.rows:行
+      2.cols:列
+        例:
+          建议:<textarea   rows="5"  cols="20"></textarea>
+
+  声明:1.表单中的数据要想被提交,必须要指定其name属性.每一个提交的数据都需要指定name属性
+       2.要提交的表单项必须在表单范围内.才能提交到服务器.(就是放在两个<form></form>包裹的中间)

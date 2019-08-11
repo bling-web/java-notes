@@ -1,0 +1,74 @@
+1.selector选择器.(它是一个类)
+  方法:Element select(String cssQuery)
+       例:
+         a.元素选择:document .select(cssQuery:"firstName")  //document是一个解析的文本对象.
+         b.id选择器:document select(cssQuery:"#id")
+         d.class选择器:document select(cssQuery:".class")
+  
+   其实,以上也可以通过document方法获取.但是选择器可以在方法参数里写一些直接的结点包含关系.更方便.
+
+       例:document.select("#001 age")     //获取id是001的元素下的age大小.
+
+   说明:E F: E元素中的所有F子元素.  
+        E>F:E元素中的直接F子元素.
+        E+F:紧挨着E的F元素.
+        
+
+
+
+
+二.Xpath:Xpath是XML路径语言(XML Path Language).用来确定文档中某部分XML位置的语言.(即独立于xml的语言).
+   说明:使用新的语言需要导入额外的包.
+        JsoupXpath-0.3.2.jar和commons-lang3-3.5.jar
+        然后add as library.
+     
+   遇到具体问题需要查文档使用.https://www.w3cschool.cn/xpath/
+   
+   语法:
+     表达式            描述
+     nodename          选取此节点的所有子节点
+     /                 从根节点选取
+     //                选择所有的元素,不管他们的位置.
+     .                 选择当前节点
+     ..                选择当前节点的父节点
+     @                 选取属性
+   
+   使用步骤:
+       1.获取Document对象(按以前的方法获取即可)
+       2.获取JxDocument对象.
+         JxDocument jxDocument=new Jxdocument(document对象);
+       3.使用方法JxDocument.seIN().//输入表达式即可
+   
+   例:
+        //获取document对象
+        String path = XPathTest.class.getClassLoader().getResource("jsoup/Teacher.xml").getPath();
+        Document document = Jsoup.parse(new File(path), "UTF-8");
+
+        //获取JxDocumnet对象
+        JXDocument jxDocument=new JXDocument(document);
+
+        //查询所有的id属性的值
+        List<JXNode> jxNodes = jxDocument.selN("//@id");
+
+        //查询所有带有id属性的teacher元素
+        List<JXNode> jxNodes4 = jxDocument.selN("//teacher[@id]");
+       
+        //查询所有的name元素标签
+        List<JXNode> jxNodes1 = jxDocument.selN("//name");
+      
+        //查询所有的teacher且id=002的元素
+        List<JXNode> jxNodes2 = jxDocument.selN("//teacher[@id='002']");
+
+        //查询teachers下面的teacher的下面的所有age元素.
+        List<JXNode> jxNodes3 = jxDocument.selN("//teachers/teacher/age");
+       
+
+   
+
+
+
+
+
+
+ 
+      

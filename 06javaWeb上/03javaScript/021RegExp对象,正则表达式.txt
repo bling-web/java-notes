@@ -1,0 +1,60 @@
+正则表达式(RegExp):
+  1.用来定义字符串组成的规则.
+  2.用来检索某些单词.
+规则:
+  单个字符:检查用户输入的单个字符是否符合定义的规则.
+           [ab]代表单个字符只允许出现a或b.   [a-zA-Z0-9_]:只允许大小写字符和数字,下划线.
+           
+           说明: 特殊字符:[\d]代表单个数字字符[0-9].      
+                          [\w]代表26个字母和数字,下划线[0-9a-zA-Z_]
+
+  量词字符:检查用户输入的某个或全部字符数量是否符合定义的规则.
+           ?:某个字符出现0次或1次.
+           *:某个字符出现0次或多次.
+           +:某个字符出现1次或者多次.
+           {m,n}:全部字符的数量>=m次,并且<=n次.(如果m缺省{,n},代表最多出现n次.如果n缺省{m,},代表最少出现m次)
+           {m}:仅允许出现m次.
+
+           例:[\w]{0,16}:表示只能出现字母,数字,并且位数在0-16之间.
+  开始结束符号:开始^    结束$(测试时一定要加这两个符号,否则无法正确定义规则)
+
+
+创建方式:
+   1.var reg=new RegExp("正则表达式");  //加""
+     说明:此方式输入\w时前面要加转义符\.否则不能正确识别\w.
+     例:
+        var str=new RegExp("^\\w{0,10}\\d$"); //加了开始,结束符号,转义符.
+        var result=str.test("fhjg367");
+        alert(result);
+   
+   2.var reg=/正则表达式/;              //不加""
+     例:
+        var str=/^\d{0,11}$/;
+        var result=str.test("11234567890677");
+        alert(result);
+
+
+方法:test().
+   
+
+手机号的正则表达式:
+   str=/^1[34578]\d{9}$/
+邮箱正则表达式
+   ^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$
+汉字的正则表达式
+   [\u4E00-\u9FA5]
+
+
+
+
+
+检索例子:
+var testString = "Ada Lovelace and Charles Babbage designed the first computer and the software that would have run on it.";
+
+
+// 举例
+
+var expressionToGetSoftware = /software/gi;
+  
+//software是要检索的单词.   g代表在全局范围内检索(不止第一次检索到就返回)  i代表不区分大小写.
+var softwareCount = testString.match(expressionToGetSoftware).length;        

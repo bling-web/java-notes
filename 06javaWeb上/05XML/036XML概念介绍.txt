@@ -1,0 +1,11 @@
+XML概念:
+  可扩展标记语言(Extensible Markup Language)
+  1.可扩展:xml的标签都是自己定义的
+  2.功能:
+      a.配置文件
+      b.可以在网络中传输(web service):异构系统的数据交互.(比如python和java两种不同语言系统)
+  3.区别:
+      a.xml标签都是自定义的,html标签都是预定义的.
+      b.xml语法严格,html语法松散.
+      c.xml是用来存储数据的,html用来显示数据的.
+  4.w3c:万维网联盟.

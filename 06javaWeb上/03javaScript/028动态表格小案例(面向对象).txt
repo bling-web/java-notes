@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册小案例</title>
+    <style>
+        #top{
+            margin-left:10.5cm;
+            margin-top: 50px;
+
+        }
+        table tr td{
+            width:3cm;
+            text-align: center;
+        }
+        table{
+            margin:auto;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+<div id="top">
+    <input id="number" type="text" placeholder="请输入编号">
+    <input id="name" type="text" placeholder="请输入姓名">
+    <input id="gender" type="text" placeholder="请输入性别">
+    <input id="register" type="button" value="添加">
+</div>
+
+<table id="table" border="1" cellspacing="0">
+    <caption>学生信息表</caption>
+    <tr >
+        <td>
+            编号
+        </td>
+        <td>
+            姓名
+        </td>
+        <td>
+            性别
+        </td>
+        <td>
+            操作
+        </td>
+    </tr>
+</table>
+<script>
+    //假设已经获取到用户输入的信息,直接开始创建结点
+    // 1.先给添加注册一个事件
+    var reg=document.getElementById("register");
+    reg.onclick=function () {
+        //先创建行结点,
+        line=document.createElement("tr");
+        // 添加行结点
+        var tableBid=document.getElementById("table");
+        tableBid.appendChild(line);
+        //依次创建并添加编号,姓名,性别,操作结点
+        //a.编号结点
+        var td1=document.createElement("td");
+        var numberBid=document.getElementById("number");
+        numberText=numberBid.value;
+        var number_node=document.createTextNode(numberText);         //创建文本结点对象
+        td1.appendChild(number_node);
+        line.appendChild(td1);
+        //b.姓名结点
+        var td2=document.createElement("td");
+        var nameBid=document.getElementById("name");
+        nameText=nameBid.value;
+        var name_node=document.createTextNode(nameText); 
+        td2.appendChild(name_node);  
+        line.appendChild(td2);
+        //c.性别结点
+        var td3=document.createElement("td");
+        var genderBid=document.getElementById("gender");
+        genderText=genderBid.value;
+        var genderText=document.createTextNode(genderText);
+        td3.appendChild(genderText);
+        line.appendChild(td3);
+        //d.操作结点
+        // 先创建并添加td
+        td4=document.createElement("td");
+        line.appendChild(td4);
+        //创建并添加里面的结点a
+        link=document.createElement("a");
+        link.href="javaScript:;";
+        link.innerText="删除";
+        //这一句的意思是在a标签中设置onclick=fun().这样就不用获取a表签的对象了.直接调用方法即可
+        // 这个this指的是当前属性,就是这个a标签
+        link.setAttribute("onclick","deldate(this)")
+        td4.appendChild(link);
+    }
+    function deldate(obj){
+        var table_obj=obj.parentNode.parentNode.parentNode;    //通过层级关系获取到table对象
+        var tr_obj=obj.parentNode.parentNode;                  //通过层级关系获取到tr对象
+        table_obj.removeChild(tr_obj);
+    }
+</script>
+</body>
+</html>
+
+这是面向对象的一种写法.还有一种用innerHTML写的,更加简便.
+
+小结:
+   1.注意可以在一个标签里面注册一个事件,这样就不需要再获取这个标签的对象了,直接写方法就好了.
+     例:
+        <a href="javaScript" onclick=fun()>点我</a>
+
+   2.如果要定位某一个标签,可以通过this+层级关系的方式.不需要再通过专门的一个flag变量id来定位.
+
+   3.在javaScript中,所有的方法或者事件.一开始是不会加载的(只有调用或触发才会启动).其他会在程序一开始就加载.
+    
+     所以不要在一开始加载的地方 用事件或方法里面的变量或其他.
+
+
+
+

@@ -1,0 +1,56 @@
+DOM:
+  通过DOM,可访问HTML文档中所有元素(包括html的所有属性和CSS)
+  所以:javaScript能改变页面中所有的html的元素和属性.
+       javaScrpt能改变CSS所有的属性.
+       javaScript能对页面中所有事件作出反应.
+
+W3C DOM标准被分为三部分.
+  一.核心DOM.针对任何结构化文档的标准模型.(包括html和xml)
+     1.Document 文档对象
+     2.Element  元素对象
+     3.attribute属性对象
+     4.text     文本对象
+     5.Comment  注释对象
+     6.Note     结点对象
+
+  二.HTML DOM:针对HTML的标准文档.
+
+  三.XML DOM:针对XML的标准文档
+
+
+
+
+
+Document:
+  1.创建:
+      也是通过window对象直接获取.
+  2.方法
+    获取Element的方法
+      a.getElementById().通过元素的id获取元素对象.id是唯一的
+      b.getElementByClassName().用过元素的class获取元素对象.返回一个数组.                     
+          就算只有一个也是一个数组,用的时候加上下标.
+          就算只有一个也是一个数组,用的时候加上下标.
+      c.getElementByTagName("div") 通过元素名称获取获取元素对象.返回一个数组.                 就算只有一个也是一个数组
+      d.getElementByName():通过元素的name属性获取元素对象(比如input中的name属性),返回一个数组.就算只有一个也是一个数组
+    创建元素的方法:
+      a.createElement()
+        1.创建结点并不会在原有的程序中显示,但会在显示页面中显示效果.
+        2.创建结点,必须加入后才会显示创建的结点.
+          例:
+           //创建结点
+           var newNode=document.createElement("img");
+           newNode.setAttribute("src","IMG_20181030_233024.JPG");    //设置该结点中的属性
+           /增加结点
+           // 1.先获取需要的已知的结点对象
+           var node=document.getElementById("1");
+           node.appendChild(newNode);                                //增加结点.
+
+      b.createAttribute().
+      c.createComment().
+      d.createTextNode().
+   
+      
+      
+  3.属性.
+  
+ 

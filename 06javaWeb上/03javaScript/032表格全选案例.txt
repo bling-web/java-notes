@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>全选案例</title>
+    <style>
+        .style_over{
+            background-color:aquamarine;
+        }
+        .style_out{
+            background-color:white;
+        }
+
+    </style>
+    <script>
+        window.onload=function () {
+            //全选
+            document.getElementById("selectALL").onclick=function () {
+                alert(document.getElementById("selectALL"));
+                var check_obj=document.getElementsByName("box");
+                for (var i = 0; i < check_obj.length; i++) {
+                    check_obj[i].checked=true;
+                }
+            }
+            //全不选
+            document.getElementById("selectNone").onclick=function () {
+                var check_obj=document.getElementsByName("box");
+                for (var i = 0; i < check_obj.length; i++) {
+                    check_obj[i].checked=false;
+                }
+            }
+            //反选
+            document.getElementById("selectOpposite").onclick=function () {
+                var check_obj=document.getElementsByName("box");
+                for (var i = 0; i < check_obj.length; i++) {
+                    check_obj[i].checked=!check_obj[i].checked;
+                }
+            }
+            //第一个选
+            document.getElementById("first").onclick=function (ev) {
+                var check_obj=document.getElementsByName("box");
+                for (var i = 0; i < check_obj.length; i++) {
+                    check_obj[i].checked=this.checked;           //this谁调用就指代谁
+                }
+            }
+            //样式的改变
+            var tr_obj=document.getElementsByClassName("line");
+
+            for (var i = 0; i < tr_obj.length; i++) {
+                tr_obj[i].onmouseover=function(){
+                    this.className="style_over";                 //注意:这里只能用this.不能用tr_obj[i].会显示未定义.暂时记住就好
+                }
+                tr_obj[i].onmouseout=function(){
+                    this.className="style_out";                  
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+<table  border="1" cellspacing="0">
+    <caption>学生信息表</caption>
+    <tr class="line">
+        <td>
+            <input type="checkbox" id="first" name="box">
+        </td>
+        <td>
+            编号
+        </td>
+        <td>
+            姓名
+        </td>
+        <td>
+            性别
+        </td>
+        <td>
+            操作
+        </td>
+    </tr>
+    <tr class="line">
+        <td>
+            <input type="checkbox" name="box">
+        </td>
+        <td>
+            1
+        </td>
+        <td>
+            王亮
+        </td>
+        <td>
+            男
+        </td>
+        <td>
+            <a href="javaScript:;"  >删除</a>
+        </td>
+    </tr>
+    <tr class="line">
+        <td>
+            <input type="checkbox" name="box">
+        </td>
+        <td>
+            2
+        </td>
+        <td>
+            来静
+        </td>
+        <td>
+            女
+        </td>
+        <td>
+            <a href="javaScript:;"  >删除</a>
+        </td>
+    </tr>
+    <tr class="line">
+        <td>
+            <input type="checkbox" name="box">
+        </td>
+        <td>
+            3
+        </td>
+        <td>
+            小胖
+        </td>
+        <td>
+            男
+        </td>
+        <td>
+            <a href="javaScript:;"  >删除</a>
+        </td>
+    </tr>
+</table>
+<div>
+    <input type="button" id="selectALL" value="全选">
+    <input type="button" id="selectNone" value="全不选">
+    <input type="button" id="selectOpposite" value="反选">
+</div>
+</body>
+</html>
+  
+总结:
+   1.获取,设置单选框是否选中用checked属性.  查找相关属性可以到HTML DOM对象中找.
+   2.注意this的引用.谁调用含this的方法就指代谁.
+   3.同一个方法中控制样式不要同时用两种方式,会出现异常,用一种方法控制样式.
+   4.控制样式中,CSS控制样式中能力居首位,如果在标签设置样式不起作用,有可能是CSS其他控制样式影响了.
