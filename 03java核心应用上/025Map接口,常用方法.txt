@@ -1,0 +1,27 @@
+
+  生活中常有一一对应得关系,比如夫妻,身份证和人,标志性建筑物和某个城市.java中提供了专门的集合类来存储这种关系的对象,java.util.Map接口.
+  Collection中的集合,元素是孤立存在的,向集合中存储元素采用一个个元素的方式存储,
+  Map中的集合,元素是成对存在的,每个元素由键和值两部分存在,通过键可以找到对应的值. 
+    特点:1.键是唯一的.
+         2.键和值一一对应.
+         3.靠键来维护映射关系.
+ 
+    Map<K,V> 键值对集合
+       K:键
+       V:值
+常用实现类.
+  一.HashMap:存储数据采用的哈希表结构,不能保证存储顺序一致,因为要保证键的唯一性,所以需要重写hashcode和equals方法.
+             (如果不重写hashcode方法就会默认返回内存地址的哈希值,肯定不一样,所以必须重写,重写会返回内容(自己理解))
+  二.LinkedHashMap:(hashMap的子类)存储数据采用的哈希表+链表结构,链表结构可以保证元素的存储顺序一致,哈希表结构可以保证键的唯一性,需要重写hashcode和equals方法.
+
+常用方法:(增删查改)
+  1.public V put(K key,V put).将指定的键和值添加到集合中.(增,改)
+    返回当前被替换的值,如果没有被替换,返回null.
+  2.public V remove(object key).将指定的键 所对应的键值对元素 从Map集合中删除,返回被删除元素的值.(删)
+  3.public V get(object key).返回指定的键所对应的值.(查)
+  4.public Set<V> keySet().获取集合中所有的键,存储到set集合中.(通常遍历Map集合使用)
+  5.public Set<Map.Entry<K,V>> entrySet().获取集合中所有的键值对对象,存储到set集合中.(通常遍历集合使用)
+  6.public int size.返回集合中元素的个数.
+  7.public collection<V> values.返回包含所有值的collection集合.(查)
+  8.public boolean containsKey();查看是否包含当前key值.
+

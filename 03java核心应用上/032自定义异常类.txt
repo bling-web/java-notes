@@ -1,0 +1,45 @@
+
+    Java中不同的异常类,分别表示着某一种具体的异常情况,那么在开发中总是有一些异常情况是没有定义好的,此时我们需要根据自己的业务情况来定义异常类,例如年龄负数问题,考试成绩负数问题.
+
+1.编译期异常类:在编译时候必须处理的异常,不处理就会报错,要么声明抛出,要么捕获.
+    修饰符 class 异常类名 extends Exception{
+      //
+    }
+2.运行时异常类:在编译或开发的时候可以不处理,运行时有异常会中断程序.
+   修饰符 class 异常类名 extends RuntimeException{
+      //
+   }
+
+例:
+public class TestDefineException {
+    public static void main(String[] args) {
+        //1.new 异常对象
+        DefineException e = new DefineException("00000", "用户登录名已经存在");           //这个异常是自定义的
+        //2.新建一个ArrayList数组,存放已有的用户名
+        List<String> list=new ArrayList<>();
+        Collections.addAll(list,"王亮亮","来静","潘磊","宇杰","啊黄","建宇","清远","宏利","荣荣");
+        //3.键盘录入登陆名,无限循环直到登陆成功
+        while(true){
+            // 这一句位置很关键,整个循环一遍后,会清空当前flag的状态,不被上一次所干扰,清空记忆.
+            //如果不清空,第一次输入错误后,falg状态(为1是有重复值)保留,第二次无论是否重复都会被认为有重复值.
+            int flag=0;
+
+            System.out.println("请输入您的登陆名");
+            Scanner scanner = new Scanner(System.in);
+            String name=scanner.next();
+            //遍历数组,匹配用户名,如果有相同的则输出异常
+            for (String s : list) {
+                if( name.equals(s)){
+                   // System.out.println(e);
+                    e.printStackTrace();
+                    flag++;
+                }
+            }
+
+            if (flag==0) {
+                System.out.println("恭喜您,登陆成功");
+                break;
+            }
+        }
+   }
+}

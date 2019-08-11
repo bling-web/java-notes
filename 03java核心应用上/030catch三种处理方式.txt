@@ -1,0 +1,80 @@
+Throwable 常用方法
+    1.public void printStackTrace.打印异常的详细信息.
+    2.public String getMessage;获取异常发生的原因.
+    3.public String toString;获取异常的类型和异常描述信息.(不用)
+      通过输出函数调用.
+
+catch处理异常的三种处理方式
+1.日志输出.(暂时不用,没有学习日志框架)
+2.打印信息.(调用printStackTrace方法),不会中断函数
+3.继续抛出异常(运行时,运行时异常在编译时可以不处理).会中断函数(也可以在编译时处理,就不会中断函数)
+
+理解:只有把异常抛给虚拟机去处理.才会中断程序,程序自身处理异常不会中断程序.
+
+例:
+ public static void main(String[] args) {
+       try {
+           decument("jdbv");                          //用try/catch方法处理                                     
+       }
+       catch(FileNotFoundException e){
+           //System.out.println(e);                   //打印异常信息(一般不用)
+           //e.printStackTrace();                     //打印详细信息,不会中断函数
+           //throw new RuntimeException(e);           //继续抛出异常(注意是运行时).运行时异常在编译时可以不处理.也可以处理
+        }                                               会中断程序.
+    }
+    private static void decument(String i) throws FileNotFoundException {   //把这里的异常抛给调用者main方法
+        if(!i.equals("/dbhff/d")){
+            throw new FileNotFoundException("文件不存在");
+        }
+
+    }
+}
+
+多个异常同时存在,处理方式
+1.多个异常分别处理.
+  例:
+  public class tryCatch {
+    public static void main(String[] args) {
+        String str = "2019年";
+        try {
+            decument("fvk");                  //处理FileNotFoundException.
+            try {
+                progrom("str");               //处理ParseException.
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+       
+    }
+    //给调用者(main方法)抛出FileNotFoundException.
+    private static void decument(String i) throws FileNotFoundException {
+        if (!i.equals("/dbhff/d")) {
+            throw new FileNotFoundException();
+        }
+    }
+    //给调用者(main方法)抛出ParseException.
+    private static void  progrom(String str) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        simpleDateFormat.parse(str);
+    }
+  } 
+2.多个异常一次捕获,多次处理.(其余代码和上面一样,这里只写不一样的部分)
+  try {                                              
+            decument("fvk");
+            progrom("str");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+   }
+3.多个异常一次捕获,一次处理.(其余代码和上面一样,这里只写不一样的部分)
+   try {
+            decument("fvk");
+            progrom("str");
+        } catch (Exception e) {                    //因为Exception是所有异常的父类,直接写就包括了所有异常
+            e.printStackTrace();
+        } 
+   }

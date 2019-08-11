@@ -1,0 +1,22 @@
+
+List子类Vector,ArrayList,LinkedeList都重写了String方法,可以直接输出数组,链表的内容.
+一.java.util.ArrayList
+    
+    由于日常开发中最常用的就是查找,返回元素,所以ArrayList是最常用的集合.
+    特点:数据结构:数组
+         查找快,增删慢
+       
+         线程非安全,效率高.
+
+二.java.util.LinkedList(双向链表)
+   
+  实际开发中对一个集合元素的添加和删除经常涉及到首位操作,而LinkedList提供了大量首尾操作的方法.这些方法我们作为了解即可.
+
+  常用方法:addFirst(E e);   将指定的元素添加到集合首位.
+           getFiest();      返回集合首位元素.
+           getLast();       返回集合末尾元素.
+           removeFirst();   删除并返回第一个元素.
+           removeLast();    删除并返回最后一个元素.
+           pop();           从 此列表所表示的堆栈中弹出一个元素.(其实是调用的removeFirst函数)
+
+    

@@ -1,0 +1,41 @@
+遍历Map集合的方法
+  1.通过get(),keyset()方法.
+  例:
+    public static void main(String[] args) {
+        //1.创建集合
+        Map<String, String> map = new HashMap<>();
+        //2.添加元素
+        map.put("李白", "刺客,战士");
+        map.put("韩信", "刺客");
+        map.put("关羽", "战士,坦克");
+        map.put("张飞", "坦克");
+        map.put("后裔", "射手");
+        //3.遍历元素.map.keySet(),map.get()
+        
+        for (String i : map.keySet()) {                              //keySet,获取所有的键,通过键获取所有的值.
+            System.out.println(i + " 的职业是  " + map.get(i));
+        }
+
+    }
+  2.通过entrySet方法.
+    键值对对象介绍:
+     Map中存放的是两种对象,一种称为Key键,一种称为value(值),他们在Map中是一一对应关系,这一对对象又称作Map中的Entry项,Entry将键值对的对应关系封装成了对象,即键值对对象,这样我们在遍历Map集合时,这样我们就可以从每一个键值对对象获取键和对应的值.
+     
+     注意:entry这个对象有自己的方法,getKey和getValue.
+
+     public static void main(String[] args) {
+        //1.创建集合
+        Map<String, String> map = new HashMap<>();
+        //2.添加元素
+        map.put("李白", "刺客,战士");
+        map.put("韩信", "刺客");
+        map.put("关羽", "战士,坦克");
+        map.put("张飞", "坦克");
+        map.put("后裔", "射手");
+        //3.遍历元素.map.keySet(),map.get()
+        
+        for (Map.Entry<String, String> entry : map.entrySet()) {        //entrySet获取对象集合,遍历这个集合
+            System.out.println("键 :"+entry.getKey()+", 值 "+entry.getValue());
+        }
+
+    }

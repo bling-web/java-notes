@@ -1,0 +1,11 @@
+java.long.System类中提供了大量的静态方法,可以获取与系统相关的信息或系统级(JVM虚拟机)操作.
+
+常用方法:
+   1.public static long currentTimeMillis()方法,返回以毫秒为单位的当前时间.
+     该方法通常用来获得时间差.
+     例如某段代码执行的时间,前后获取下当前时间即可.
+   
+
+                                    源数组     起始位置    目标数组    起始位置     拷贝长度
+   2.public static void arraycopy(Object src,int srcPos,Object dest,int destPos,int length)
+     将数组中指定的数据拷贝到另一个数组中.
