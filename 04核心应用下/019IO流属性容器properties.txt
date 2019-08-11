@@ -1,0 +1,31 @@
+
+  java.util.Properties继承于Hashtable,来表示一个持久的属性集.它使用键值结构存储数据,每个键及对应值都是一个字符串.该类也被许多Java类使用,比如获取系统属性时,System.getProperties方法就是返回一个Properties对象.
+
+一.构造方法
+   1.public Properties();创建一个空的属性列表.
+
+二.方法
+   1.public Object setProperty(String key,String value): 保存一对属性.(增)
+ 
+   2.public String getProperty(String key):使用此列表中指定的键搜索值.(查)
+
+   3.public Sct<String> stringPropertyName();所有键的名称的集合.
+     2+3遍历该容器.
+   与流相关的方法:
+  
+   4.public void load(InputStream inStream):读取该字节流对象文件中的键值对.
+     参数中使用了字节输入流,通过流对象,可以关联到某文件上,这样就能够加载文本中的数据了.
+     .public void load(Reader reader):
+    
+    
+
+
+   也可以通过该方法遍历该容器.
+        properties.forEach((key,value)->{
+            System.out.println("key:"+key+" , value"+value);
+        });
+
+  注意:如果要使用该容器遍历某个文件,想要出现键值对形式,文件内容必须遵循以下格式.
+        a=b
+        c=f
+   

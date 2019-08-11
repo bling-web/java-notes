@@ -1,0 +1,60 @@
+一.字节输出流OutPutStream
+  java.io.OutPutStream抽象类是表示字节输出流的所有类的超类.将指定的字节信息写出到目的地.
+  定义了字节输出流的基本共性功能方法.
+  
+方法:
+  1.public void close();关闭此输出流并释放与此流相关联的任何系统资源.
+     当完成流的操作时,必须调用此操作,释放系统资源
+
+  2.public void flush();刷新此输出流,并强制任何缓冲的输出字节被写出
+ 
+  3.public void write(byte[] b):将指定的数组中b.length的字节写入此输出流.
+
+  4.public void write(byte[] b,int off ,int len):将指定的字节数组写入len字节.
+    off代表起始位置,len代表长度
+
+  5.public abstract void write(int b):将指定的字节输出.
+    每次只可以写入一个字节.
+
+二.OutPutStream的子类FileOutPutStream
+    java.io.FileOutPutStream类是文件输出流.用于将数据写出文件
+ 
+构造方法:
+   1.public FileOutPutStream(File file):
+     创建文件输出流,写入数据到该file对象所表示的文件
+
+   2,public FileOutPutStream(String name):
+     创建文件输出流.并写入数据到该名称所表示的文件
+ 
+   注意:对于1和2来说,当你创建一个流对象时,必须传入一个文件路径,该路径下,如果没有这个文件,会创建该文件,如果有该文件,会清空这个文件的数据.
+   例:
+        FileOutputStream fileOutputStream=new FileOutputStream("F:\\$360RTLOG$\\test.txt");  //创建输出流对象
+        byte[] a="我好厉害".getBytes();               
+        byte[] b="adcdefghij".getBytes();
+        fileOutputStream.write(97);                                                          //写入字节a
+        fileOutputStream.write(a);                                         
+        fileOutputStream.write(b,1,9);
+        fileOutputStream.close();                                                            //操作流完后,一定关闭资源.
+   输出结果:a我好厉害dcdefghij
+
+   3.public FileOutPutStream(File file,boolean append);
+     创建文件输出流,如果后面参数为true,则表示保持原有数据不变,追加新数据.false则表示清空原有数据
+    
+   4.public FileOutPutStream(String name,boolean append);
+     创建文件输出流,如果后面参数为true,则表示保持原有数据不变,追加新数据.false则表示清空原有数据
+     3和4区别传入参数不一样.
+
+三.小知识
+  1.输出换行:
+    byte[] c="\r\n".getBytes();
+    
+    写入c即可.
+    file.write("\r\n".getByte());
+  2.系统中的换行:
+    (1)Windows系统里.每行结尾是 回车+换行, 即\r\n;
+    (2)Linux系统里,每行结尾只有换行,即\n;
+    (3)Mac系统里.每行结尾是回车,即\r;
+ 
+  注:回车符\r:回到一行的开头.
+     换行符\n:下一行.
+    

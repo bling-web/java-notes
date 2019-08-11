@@ -1,0 +1,52 @@
+文件搜索:
+  private static void searchMethods(File file) {
+        File[] files = file.listFiles();                           //把所有的文件放到一个数组中
+        for (File file1 : files) {                  
+            if(file1.isFile()){                                    //判断是否为文件
+                if(file1.getName().endsWith(".txt")){              //如果是文件判断文件名称
+                    System.out.println(file1);                     //打印该文件
+                }   
+            }
+            if (file1.isDirectory()){
+                searchMethods(file1);
+            }
+        }
+    }
+文件过滤器:
+    private static void searchMethods1(File file) {
+        File[] files = file.listFiles(new FileFilter() {            //和上面的listFiles方法不一样
+            @Override
+            public boolean accept(File pathname) {
+                if (pathname.isDirectory() || pathname.getName().endsWith(".txt")) {
+                    return true;                                    //如果符合条件的文件,加到数组里,否则不加
+                }
+                return false;
+            }
+        });
+        for (File file1 : files) {
+            if(file1.getName().endsWith(".txt")){
+                System.out.println(file1);
+            }
+            else {
+                searchMethods1(file1);
+            }
+        }
+    }
+lambda表达式的文件搜索:
+   private static void searchMethods2(File file) {
+        File[] files = file.listFiles((pathname -> {                   //和文件过滤器一样,只不过只有方法参数和方法体.
+            if (pathname.isDirectory() || pathname.getName().endsWith(".txt")) {
+                return true;
+            }
+            return false;
+        }));
+        for (File file1 : files) {
+            if(file1.getName().endsWith(".txt")){
+                System.out.println(file1);
+            }
+            else{
+                searchMethods2(file1);
+            }
+
+        }
+    }

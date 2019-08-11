@@ -1,0 +1,65 @@
+
+线程状态:
+  1.NEW(新建),线程创建但没启动.
+  2.Runnable(可运行),线程在JVM运行的状态,可能运行代码,也可能没有,取决于操作系统处理器.
+  3.Blocked(锁阻塞),线程等待使用锁对象的状态.(两个正在上厕所的人,一个在里面上,一个在外面等)
+    当线程A和B同时使用锁对象时,A先获取到时,A就进入Runnable,B进入Blocked
+  4.Waiting(无限等待).一个线程等待另一个线程执行唤醒动作时,则该线程进入Waiting状态.不能自动唤醒,只能等待另一个线程调用notify或notifyAll才能唤醒.
+    注意:一个线程在同步锁里面处于Waiting状态时,另一个线程可直接进入该同步锁中.
+`    (1).调用wait()方法使正在运行的线程进入Waiting状态.
+         注意:a.必须在同步代码块和同步方法中.
+              b.必须是用同步锁调用.(和同步代码块中的锁对象是同一个对象,且不能是Lock类对象,自己目前认为)
+         例:
+          synchronized (lock){                                                            //使用同步代码块
+                   System.out.println("线程状态"+Thread.currentThread().getState());      //查看当前线程状态
+                   try {
+                       lock.wait();                                                        //用同步锁调用wait()函数
+                   } catch (InterruptedException e) {
+                       e.printStackTrace();
+                   }
+               }
+     (2).调用notify()方法使线程脱离Waiting状态
+         注意:a.notify也是必须在同步代码块中,也必须使用同步锁调用
+              b.调用wait()方法的同步锁和调用notify()方法的同步锁必须一致才能唤醒.
+              c.如果有多个线程在一个同步锁调用的Waiting语句中休息.
+                再使用该同步锁调用notify语句,激活的一般是等待时间长的那个线程.(只激活一个线程)
+          例:
+         //t1线程.进入Waiting状态
+        static Object object=new Object();                 //定义锁对象object
+
+        Thread t1=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (object){
+                    try {
+                        object.wait();                     //进入Waiting状态
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println("t1线程等待状态被唤醒");
+            }
+        },"等待线程");
+        t1.start();
+        //t2线程.唤醒t1线程
+        Thread t2=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (object){
+                    object.notify();                         //唤醒语句
+                }
+            }
+        },"等待线程");
+        t2.start();
+       
+     (3).调用notifyAll()方法使所有的线程脱离Waiting状态.
+  5.Timed Waiting(计时等待).该状态与Waiting的区别当达到超时期可以自动唤醒.也可以被唤醒.
+     (1).sleep(毫秒)函数就可使其进入计时等待.单线程就可完成,不需要其他线程协作.
+     (2).为了使其他线程有执行机会,在run方法中调用Thread.sleep()才能计时等待.
+     (3).sleep与锁无关,计时结束就会自动唤醒.
+  6.Teminated(被终止),因为run方法正常退出而死亡,或者因为没有捕获异常使run方法终止而死亡.
+
+
+注意:1.wait()方法和notify()方法,属于Object方法,不属于线程方法
+     2.当线程A唤醒线程B时,线程A会先执行完自己的run()方法,在A执行自己的run()方法期间,线程B有WAITING变成BLOCKED状态,当线程A执行完后,线程       B开始运行自己剩下的代码,变成RUNNABLE状态.(注意该情况是在有锁的情况下).
+

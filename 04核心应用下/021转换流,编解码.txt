@@ -1,0 +1,33 @@
+
+  一.常识:计算机中存储的信息都是二进制数表示的,而我们屏幕上看到的数字,英文,标点符号,汉字等字符是二进制转换之后的结果.
+  编码:按照某种规则,将字符存储到计算机中.
+  解码:按照某种规则,将存储在计算机中的字符解析出来.
+  字符编码Character Encoding:就是一套自然语言的字符与二进制之间的对应规则.
+
+  注意:按照A规则存储,A规则解码,就会显示正确的文本符号,如果A规则存储,B规则解析,就会出现乱码现象.
+ 
+  字符集Charset:是一个系统支持的所有字符的集合,包括各国家文字,标点符号,图形符号,数字等.计算机要准确的存储和识别各种字符集符号,需要进行字符编码,一套字符集必然至少有一套字符编码.常见的字符集有ASCII字符集.GBK编码,Unicode字符集等.
+  ASCII字符集-----ASCII编码
+  GBK字符集-----GBK编码
+  Unicode字符集-----UTF-8,UTF-16,UTF32编码
+
+二.IO流InputStreamReader类
+   转换流java.io.InputStreamReader,是Reader的子类,是从字节流到字符流的桥梁,它读取字节,并使用指定的字符集将其解码为字符.它的字符集可以由名称指定,也可以接受平台默认的字符集.
+  
+  1.构造方法
+    (1).InputStreamReader(InputStream in):创建一个使用默认字符集的字符流.
+    (2).InputStreamReader(InputStream in,String charsetName):创建一个使用指定字符集的字符流.
+        即指定用什么样的规则解码.解码,解码.
+     
+   
+    方法用Reader类的方法即可.
+
+二.OutputStreamReader类
+   该类和InputStreamReader一样
+  
+  1.构造方法:
+    (1).OutPutStreamReader(OutputStream in):创建一个使用默认字符集的字符流.
+    (2).OutPutStreamReader(OutputStream in,String charsetName):创建一个使用指定字符集的字符流.
+        即指定用什么样的规则编码.编码,编码.
+    
+                     

@@ -1,0 +1,28 @@
+Thread类
+  构造方法:
+      通过继承Thread类,构造新线程.
+        1.Thread().无参构造
+          不传名字,默认命名规则是Thread-0/1/2/3,依次类推
+        2.Thread(String name).通过指定名称构造线程对象
+          一般在子类中调用父类该构造方法(super(name))
+      通过实现Runnable接口,构造新线程.
+        3.Thread(Runnable target)
+          子类实现Runable接口,new Thread对象时调用该构造方法.传目标对象参数.
+        4.Thread(Runnable target,String name)
+          和3使用方法一样,区别是这个构造方法可以给新线程命名
+  
+  方法:
+      1.getName().获取线程的名称
+      2.start().开启线程
+      3.run().线程需要执行的任务代码
+      4.getState().获取当前线程的状态.
+      5.join();等待该线程终止,当线程a调用了线程b的join方法时,线程a进入阻塞状态,等待线程b执行完毕
+    静态方法:
+      1.sleep(long millis).使当前线程休息指定毫秒数.
+      2.currentThread().返回当前线程对象的引用.
+        例:获取main方法线程的名称
+        Thread.currentThread().getName();      //输出结果为main.
+      3.yield().暂停正在执行的线程对象,并执行其他线程.
+
+
+    

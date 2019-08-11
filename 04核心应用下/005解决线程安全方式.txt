@@ -1,0 +1,101 @@
+
+    当我们使用多线程用同一资源时,并写对同一资源有写操作时,就容易出现线程安全问题.解决多线程并发访问同一资源的安全问题,需要使用java提供的同步机制(synchronized)
+    使用这种方式就能保证数据的一致性.
+    特点:线程不安全效率高.
+         线程安全效率低.
+
+同步方式:
+    一.同步代码块(灵活)
+      1.格式:
+         synchronzied(锁对象){
+           //需要同步的代码
+         }
+
+      2.说明:可以用在方法体里,实现资源的互斥访问.
+        锁对象:又称为同步锁,只是一个概念,可以想象成一把锁,只不过这个锁也是对象
+      3.要求:(1).可以为任何类型
+             (2).多个线程使用同一个锁.(否则有的线程就不能够访问)
+  
+      例:
+      int TicketNumnle=100;
+      Object luck=new Object();             //new锁对象
+        @Override
+      public void run() {
+        while(true){
+            synchronized (luck){           //把该锁的代码锁住,只允许一个线程访问.互斥访问
+                if(TicketNumnle>0){
+                    //出票
+                    try {
+                        Thread.sleep(1001);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println(Thread.currentThread().getName()+"正在出票"+TicketNumnle--);
+
+                }
+            }
+
+        }
+      }
+      
+    二.同步方法(没有代码块灵活)
+      1.格式:
+        访问修饰符 synchronized 返回值类型 方法名(参数){
+          //需要同步的代码体,方法块
+        }
+      2.说明:这个方法里面全部的代码都可以实现互斥访问.
+      3.问:同步方法的锁对象是什么?
+         如果是非静态方法:锁对象是this.即调用该run()方法的对象  
+         如果是静态方法:锁对象就是方法所在类的字节码对象(类名.class)
+      
+      例:
+      int TicketNumnle=100;
+        @Override
+      public void run() {
+        while(true){
+            synchronizedprint();                           //调用有锁的方法.这个方法里面的代码都实现互斥访问
+        }
+      }           
+      public synchronized void synchronizedprint(){        //该方法中的代码均实现互斥访问
+        if(TicketNumnle>0){
+            //出票
+            try {
+                Thread.sleep(1001);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName()+"正在出票"+TicketNumnle--);
+        }
+      }
+     理解:当对象调用run()方法时.执行到synchronizedprint()方法,
+          该方法有synchronized声明,此时该对象就会自动充当为锁对象.
+    三.锁
+      JDK1.5以后提供的新同步机制.
+      1.优势:1.更符合面向对象的编程思想
+             2.更加灵活.
+      2.格式:
+        Lock lock=new ReentrantLock();       //Lock是一个接口,ReentrantLock是它的实现类.
+        lock.lock();
+          //实现互斥访问的代码
+        lock.unlock();
+
+     例:
+      int TicketNumnle=100;
+      Lock lock=new ReentrantLock();
+        @Override
+      public void run() {
+        while(true){
+            lock.lock();
+            if(TicketNumnle>0){
+                //出票
+                try {
+                    Thread.sleep(1001);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName()+"正在出票"+TicketNumnle--);
+            }
+            lock.unlock();
+        }
+      } 
+       

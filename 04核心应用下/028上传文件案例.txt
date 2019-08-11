@@ -1,0 +1,138 @@
+//服务端
+public class Server {
+    public static void main(String[] args) {
+        ServerSocket serverSocket=null;
+        BufferedReader bufferedReader=null;
+        BufferedWriter bufferedWriter=null;
+        PrintWriter printWriter=null;
+
+        //1.建立服务端对象
+        try {
+            serverSocket=new ServerSocket(7901);//对象,但是该对象要传输数据,得关闭
+
+            //2.开启等待,等待客户端请求
+            Socket socket = serverSocket.accept();//返回客户端的对象,该对象在客户端关闭,这里不需要关闭
+
+            //5.服务端接收数据,并写到指定上传文件中
+            bufferedReader= new BufferedReader //流,需要关闭
+                    (new InputStreamReader(socket.getInputStream()));
+
+              //设置写出文件对象
+            bufferedWriter=new BufferedWriter(new FileWriter("F:\\transfer1.txt"));
+
+              //设置相应输出数据对象(发送数据给客户端)
+            printWriter=new PrintWriter(socket.getOutputStream());
+            String temp=null;
+
+            while(true){
+                temp=bufferedReader.readLine();
+                if(temp!=null){
+                    bufferedWriter.write(temp);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+
+                    //6.发送服务端响应数据
+                    printWriter.println("文件上传成功");   //这个服务端接收信息和向客户端发送回应信息必须写在一起.不然不会执行,原因
+                    printWriter.flush();                     暂时不清楚
+                } else{
+                    
+                    break;
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(printWriter!=null){
+            printWriter.close();
+        }
+        if(bufferedWriter!=null){
+            try {
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(bufferedReader!=null){
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(serverSocket!=null){
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+}
+//客户端
+public class Client {
+    public static void main(String[] args) {
+        Socket socket=null;
+        BufferedReader bufferedReader=null;
+        PrintWriter printWriter=null;
+        BufferedReader bufferedReader1=null;
+
+        //3建立客户端对象
+        try {
+            socket=new Socket("127.0.0.1",7901);
+
+            //4.主动发送数据请求给服务端
+            //读取文件内容,读取之后发送给客户端
+            bufferedReader= new BufferedReader(new FileReader("F:\\$360RTLOG$\\test3.txt"));
+            printWriter= new PrintWriter(socket.getOutputStream());
+            String temp=null;
+            while((temp=bufferedReader.readLine())!=null){
+                printWriter.println(temp);                   //该语句就是发送数据到服务器端
+                printWriter.flush();
+            }
+
+            //7.客户端接受服务端响应数据
+            bufferedReader1= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String temp2=null;
+            while((temp2=bufferedReader1.readLine())!=null){
+                System.out.println(temp2);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(bufferedReader1!=null){
+            try {
+                bufferedReader1.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(printWriter!=null){
+            printWriter.close();
+        }
+        if(bufferedReader!=null){
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(socket!=null){
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
+总结:
+   1.服务端new ServerSorket对象,然后用accept()得到倾听sorket对象.开启等待接受数据.
+   2.客户端new Socket对象,然后将从本地读出来的数据,利用printWriter对象发送给服务端.
+   3.服务端接受数据后,再写到本地另一个文件中,完成文件上传.注意资源的关闭.
+

@@ -1,0 +1,57 @@
+
+为什么要使用配置文件:
+   1.把配置属性放在配置文件中,在代码中可能多次用到这个属性,从配置文件改,改一处就够了,从代码改很麻烦.
+   2.当一个项目放到生产环境,开发人员是不会维护的,有专门的维护人员,如果有哪些地方需要修改,维护人员更改配置文件重启就ok了.
+
+使用配置文件:在src下新建一个file(名称一般为Config.properties).写入需要配置的属性
+   格式如下:(中间用等号隔开)
+      ClassName=Reflect.Person
+      Method=print
+
+读取配置文件的步骤:
+   1.获取该类字节码对象
+   2.获取类加载器对象(通过字节码对象调用getClassLoader()方法)
+   3.获取配置文件资源,得到字节流对象(通过字节流对象调用getResourceAsStream()方法)
+   4.将字节流对象加载到properties容器中.(注意要new properties对象)
+   5.读取内容.
+
+
+  例子:
+         //1.读取配置文件
+           //获取类加载器,通过类加载器可以读取配置文件
+           //Test.class获取本类的字节码对象,然后通过字节码对象调用getClassLoader方法,获取类加载器
+           ClassLoader classLoader = Test.class.getClassLoader();
+
+           //调用getResourceAsStream方法获取,并发返回一个对象
+           InputStream in = classLoader.getResourceAsStream("config.properties");
+
+           // 将返回对象的内容加载到Properties容器中.
+           Properties properties=new Properties();
+           properties.load(in);
+
+           //正式读取
+           String className= (String) properties.get("ClassName");
+           String method=(String)properties.get("Method");
+
+        //2.获取对应类字节码对象
+        Class person = Class.forName(className);
+
+        //3获取相应的类对象
+        Person p = (Person)person.getConstructor().newInstance();
+
+        //4.获取相应的方法
+        Method method1 = person.getMethod(method);
+
+        //5.调用方法
+        method1.invoke(p);
+
+  上个例子的简便写法:
+        InputStream resourceAsStream = Test.class.getClassLoader().getResourceAsStream("Config.properties");//链式编程,获取包含文件的                                                                                                              字节流对象
+        Properties properties=new Properties();
+        properties.load(resourceAsStream);
+        String classname=(String)properties.get("ClassName");
+        String method=(String)properties.get("Method");
+
+        Object o = Class.forName(classname).getConstructor().newInstance();             //获取相应类对象
+        Method method1 = Class.forName(classname).getMethod(method);                    //获取方法.
+        method1.invoke(o);
