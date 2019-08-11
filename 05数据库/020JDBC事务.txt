@@ -1,0 +1,60 @@
+有关事务的方法在Connection接口中.
+  1.void setAutoCommit(boolean autoCommit)    //默认是true.如果设置为false,则表示关闭自动提交,相当于开启事务.
+  2.void commit()                             //提交事务
+  3.void rollback()                           //回滚事务
+
+
+注意:rollback并不会关闭事务.
+     commit也不会.
+     再次setAutoCommit才会关闭事务.
+  
+
+例:
+   public static void main(String[] args) {
+        Connection connection=null;
+        PreparedStatement preparedStatement=null;
+        //1获取连接对象
+                connection= pre.getConnection();
+        try{                                              //如果后面需要关闭资源的话,不能抛出异常,只能捕获.然后将关闭的资源放在finally
+            //开启事务                                      语句块中.                
+            connection.setAutoCommit(false);
+            //3.获取语句对象
+            //a-500
+            String ur="update account set balance=balance-? where name=?";
+            preparedStatement=pre.getPre(connection, ur);
+            preparedStatement.setInt(1,500);
+            preparedStatement.setString(2,"a");
+            int i = preparedStatement.executeUpdate();
+            //b+500
+            String ur2="update account set balance=balance+? where name=?";
+            preparedStatement=pre.getPre(connection, ur2);
+            preparedStatement.setInt(1,500);
+            preparedStatement.setString(2,"b");
+            i+= preparedStatement.executeUpdate();
+            //提交事务
+            connection.commit();
+            System.out.println("执行成功");
+        }catch(Exception e){
+            e.printStackTrace();
+            try {
+                connection.rollback();                     //如果有异常,肯定执行失败,回滚事务.
+                System.out.println("执行失败");
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }finally {
+            pre.close(null,preparedStatement,connection);  //关闭资源
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+

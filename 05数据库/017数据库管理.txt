@@ -1,0 +1,33 @@
+一.创建用户
+   1.创建只能在本地服务器登陆的用户.
+     create user '用户名称' @'localhost' identified by '密码';
+   2.创建可以在任何电脑上登陆的用户.用户名称为'use2',密码为'123':
+     create user 'use2' @'%' idnetified by '123';
+
+二.授权
+   1.给use1用户分配对test这个数据库操作的权限:创建,修改,插入记录,更新记录,查询表.
+     grant create,alter,insert,update,select on test.* to 'use1' @ 'localhost';
+   2.给use2用户分配所有的操作权限,对所有的表.
+     grant all on *.* to 'use2' @'%';
+
+三.撤销权限
+    1.撤销use1用户对test数据库所有表的操作权限.
+      revoke all on test.* from 'use1'@localhost;
+    2.撤销use2用户对所有数据库的操作权限
+      revoke all on *.* from 'use2'@'%';
+
+
+四.查看权限和删除用户
+   1.查看权限:
+     show grant for '用户名'@'主机名';
+   2.删除用户:
+     drop user '用户名'@'主机名';
+
+五.修改密码:
+   1.修改管理员密码:
+     mysqladmin -u+root -p+旧密码 新密码;
+   2.修改普通用户密码
+     set password for '用户名'@'主机名'=password('新密码');
+   
+
+  

@@ -1,0 +1,114 @@
+
+查询不会对数据库中的数据进行修改,只是一种显示数据的方式.
+对数据的抽取和显示.
+  1.select命令可以读取一行或者多行记录.
+  2.可以使用星号(*)来代替其他字段,select语句会返回表中所有的字段数据.
+  3.可以使用WHERE语句包含任何条件.
+
+一.简单直接查询
+  例:1.select * from 表名;
+     2.select name,age form 表名;
+
+二.别名方式进行查询.
+   使用别名的好处:只是显示的时候用新的名字,并不修改表的结构.表原有的名字
+   格式:
+       1.select 字段名1 as 别名,字段名2 as 别名...from 表名.
+       2.select 字段名1 as 别名...from 表名 as 表别名.
+
+三.查询指定列表并且结果不出现重复项.
+    select distinct 字段名 from 表名;
+
+四.查询结果参与运算.
+   1.某列数据和固定值运算.
+     select 列名1+固定值 from 表名;
+   2.某列数据和其它列数据参与运算.
+     select 列名1+列名2 from 表名; 
+   这两个和as也能搭配,注意只是显示信息,并不会对表中的数据做出更改.
+   
+   3.可以显示自定义的列,多显示几列.
+     多显示的列要用''标起来.
+
+五.条件查询:
+   select 字段名 from 表 where 条件;
+   例:
+   SELECT NAME FROM teacher WHERE english>90;
+   会取出同一行满足条件,需要抽取的部分.其实where就是过滤条件.
+  
+六.条件查询,运算符
+
+   比较运算符                                         说明
+
+   >,<,<=,>=,=,<>                      在SQL中<>b表示不等于,在MySQL中也可以用!=
+
+   Between...and                       在一个范围之内,如between 100 and 200,x相当于在100嗯好200之间,包头又包尾
+                                       
+   IN(集合)                            集合表示多个值,使用逗号分隔.注意用法not in();
+ 
+   like'张%'                           模糊查询(该格式代表查找含有张的字符串)
+
+   is null                             查询,输出为null的值.不能写=null. 
+
+
+   例1:SELECT NAME  FROM teacher WHERE math BETWEEN 90 AND 100;
+
+ 1.in(集合)用法
+
+   SELECT NAME  FROM teacher WHERE math IN(99,95,70);
+   注意也可以加not的用法
+
+ 2.模糊匹配用法
+   %:代表任意匹配0个或多个字符
+   _:代表任意匹配一个字符
+
+   例1:SELECT NAME  FROM teacher WHERE name LIKE'%马%';           //查找姓名中含有马的同学.可以是好多个字,有马就行.
+      
+   例2:SELECT NAME  FROM teacher WHERE name LIKE'马_';           //查询姓名中含马的同学,只能是两个字.
+   注意:'%马%'和'马%'不一样.'马%'代表只能以马开头.
+
+
+
+
+
+  b.条件查询,逻辑运算符
+   
+   逻辑运算符                      说明
+   and或&&                         与,SQL中建议使用前者,后者并不通用.
+   or 或 ||                        或
+   not 或 !                        非
+
+
+七.限制条件
+   格式:
+     case when 条件
+     then 满足条件执行语句
+     else 不满足执行语句
+     end
+
+   例:要求算出所有学生的所有成绩的总和(有一个学生语文成绩是null,不能直接相加),原表中并没有'总和'这一列.
+      思路:将成绩是null的成绩变成0;
+      SELECT *,
+         (english+math+
+            (CASE WHEN chinese IS NULL
+            THEN 0
+            ELSE chinese
+            END))AS '总和' FROM teacher;
+      
+     以上也可以用该语句代替:
+       SELECT *,(english+math+IFNULL(chinese,0)) AS '总和' FROM teacher;
+
+  注意:SELECT *,
+     (english+math+
+            (CASE WHEN chinese IS NULL
+            THEN 0
+            ELSE chinese
+            END))AS '总和' FROM teacher where '总和'>250;
+       该语句是有错误的.原因和SQL的执行顺序有关系.  先执行where->过滤->进行展示,定义名称
+    所以where执行的语句必须是原表中有的内容.
+   
+   
+   
+
+
+
+
+    

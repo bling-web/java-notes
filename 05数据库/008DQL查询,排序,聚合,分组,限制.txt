@@ -1,0 +1,79 @@
+一.排序
+  通过order by语句,可以将查询的结果进行排序(只是显示方式,不会对原有数据库中的数据进行更改)
+  格式:
+    select 字段名 from 表名 where 字段=值 order by 字段名 [asc|desd]
+    asc:升序
+    desc:降序
+    
+  例:对表中所有的男生的总分降序排序,数学成绩升序排序.
+    SELECT * FROM teacher WHERE sex='男' ORDER BY SUM ASC,math DESC;
+
+二.高级语法:聚合
+  之前我们做的查询都是横向查询,他们都是根据条件一行一行进行判断,使用聚合函数时纵向查询,对一列的值进行计算,返回的是结果值.
+  聚合函数自动忽略null.
+  
+  聚合函数:              作用
+  max(列名)             求这一列的最大值
+  min(列名)             求这一列的最小值
+  avg(列名)             求这一列的平均值
+  count(列名)           统计这一列有多少条记录
+  sum(列名)             对这一列求和
+  
+  例1.:select max(sum) from student;
+  例2.select count(*) from student;         //查询总人数
+
+  注意:1.如果计算count,不想让其忽略null这个个数,可以这样写.
+         SELECT COUNT(IFNULL(chinese,0)) AS '语文成绩总个数' FROM teacher;          //IFNULL(chinese,0)如果考生语文成绩为null,则变为0.
+       2.使用聚合函数时,函数名称和括号之间一定不能加空格.
+         例如: sum ()这样
+         会报FUNCTION dbtest2.count does not exist错误.
+         
+
+三.高级语法:分组
+  .
+  1.select 字段名 from 表名 group by 分组字段 [having 条件];
+
+  2.注意:根据那个字段分的组,最好只查询哪个字段,当然该字段后面还可以跟上聚合函数.(因为如果不能计算的话它会默认返回每组中的第一条数据)
+       先会执行分组,然后在每个组中分别执行需要执行的函数.
+       having语句可加可不加,表示对符合条件的分组进行筛选.后跟聚合函数.
+
+  3.例:SELECT sex,AVG(english) FROM teacher GROUP BY sex having avg(english)>80;    
+      //分组之后的男生和女生英语成绩的平均值,并且只显示平均值大于80的组.,每一组都用这个avg函数.
+     select sex,count(*) from teacher group by sex;    //分别显示男生和女生的总人数.
+     SELECT sex,COUNT(*) FROM teacher WHERE math>90 AND english>90 GROUP BY sex;  //先执行where过滤,再分组,再计算人数.
+
+
+  4.where和having的区别:
+     where:1.分组前执行,对刚开始的数据进行筛选
+           2.后面不可跟聚合函数
+     having:1.分组后执行,对每个组都分别使用having后的聚合函数.
+            2.havingy也可以单独使用.后面跟聚合函数.
+            3.group by后只能跟having.
+   
+   5.例.SELECT sex,COUNT(*) FROM teacher WHERE SUM>260 GROUP BY sex HAVING COUNT(*)>1;
+        解析:1.先筛选sum>260的数据.执行where
+             2.按sex分组.分成两组
+             3.筛选count(*)>1的分组.执行having
+             4.按sex,count(*)格式显示.
+        即从where之后,从左往右执行.
+
+四.limit限制.
+   限制查询记录的条数
+   1.语法格式:limit offset,length;
+     offest:起始行数,从0开始,如果省略,默认就是0;
+     length:限制的长度.
+
+   例:SELECT NAME,COUNT(*),SUM('总成绩') FROM teacher WHERE SUM>260 GROUP BY NAME HAVING SUM('总成绩')>260 
+      ORDER BY SUM('总成绩') DESC LIMIT 0,2;    //sum为各科成绩总和
+      解析:从where开始从左往右执行.
+      1.筛选出sum>260的数据,         WHERE SUM>260,
+      2.根据姓名分组,                GROUP BY NAME.
+      3.筛选出总成绩之和大于260的组, HAVING SUM(SUM)>260.
+      4.按总成绩之和进行降序排序.    ORDER BY SUM('总成绩') DESC.
+      5.只显示排名前2的分组.         LIMIT 0,2
+     
+      
+   
+     
+ 
+  
