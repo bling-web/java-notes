@@ -1,0 +1,63 @@
+一.SpringBoot介绍。
+    SpringBoot是由pivotal团队提供的全新框架，其设计目的是用来简化新Spring应用的初始搭建及开发过程，该框架使用了特定的方式来进行配置，从而使开发人员不在需要定义样板化的配置。
+   也就是说，我们传统的框架与spring整合时所需要的大量的xml配置，以及原来整合框架时需要手工去注入的spring容器的组件，比如数据源，配置器，连接池等。在使用了springBoot之后，他都为我们
+提供了自动配置和注入的功能。
+   1.什么是微服务?
+      简单来说就是拆分应用，实现敏捷开发和部署，
+      比如订单管理模块，只需要处理订单的业务逻辑即可，其他的不必考虑，它设置有自己存储的数据库。
+
+
+二.springBoot入门。 
+    1.建立springBoot工程。
+      新建工程--选spring initializr-然后勾选自己要加载的模块--finish即可。
+    2.查看springBoot工程。
+      其实springBoot就是做了集成，它内部集成了tomcat,如果你导入了一个web,它会把所有web需要用到的包都自动下载。进行自动集成。
+      所以当你下载完之后，开启程序之后，便可以直接从web端进行访问。默认端口是8080.
+      a.新建一个访问类,加上RestController注解,该注解是Controller和ResponseBody的混合注解,      //ResponseBody就是将返回值以特定的格式封装到Response对象中.
+      b.在方法上加上RequestMapping注解.
+        @RestController
+         public class Test {
+         @RequestMapping("/hello")
+         private String test(){
+              return "-----hello welcome to springBoot------";
+        }
+     
+   3.基本注解说明。
+   4.如果想像spring中在一个xml文件中配置我们想要的，比如扫描哪个包啊，数据源啊，怎么配置?
+     a.可以在Application的同级目录新建一个类AppConfig,加上注解@Configuration（指定当前类是一个配置类，spring启动时就扫描该类）
+        这个配置是整个应用的主配置.
+     
+   5.最核心的配置appplication.properties(该文件spring会自动扫描)。后来该文件升级为application.yaml(天然的树桩结构)
+     该文件可以配置和tomcat相关的，还有字符集，和其他工具集成的配置,mysql,redis，等等
+     a.spring.application.name=/quickstart         //springboot微服务的应用的名字
+     b.server.servlet.context-path=/qs                //web应用的名字，也就是项目的上下文路径，我们要浏览器访问要输入的,好像1.版本的是server.context-path
+     c.server.port=8001                                     //tomcat端口
+      
+
+当然,除了默认有的配置，当然也可以自己定义新的配置，定义了这个配置也可以在AppConfig中读取,并且可以刚开始就执行.
+     例：
+      1.application.properties文件中，
+         custom.id=12345            
+     2.在AppConfig类中
+        @Value("${custom_id}")        
+        private String id;
+       @Autowired
+        Environment environment;        //全局的环境变量,可以获取几乎所有的属性.
+        public void getCustmer_id(){
+             System.out.println(this.id);
+             System.out.println("通过environment"+environment.getProperty("custom_id"));
+        }
+     3.Application主方法中.
+         @SpringBootApplication
+         public class DemoApplication {
+
+             public static void main(String[] args) {
+                  ConfigurableApplicationContext context = SpringApplication.run(DemoApplication.class, args);     //返回一个全局的上下文对象.
+                  AppConfig appConfig = context.getBean(AppConfig.class);
+                  appConfig.getCustmer_id();
+            }
+       }
+
+     
+
+  

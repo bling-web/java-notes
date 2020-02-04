@@ -1,0 +1,128 @@
+一.前言.
+    在springboot中整合mybatis,并且实现分页,高效的生成模板及一些基础的增删改查的方法.
+    推荐:
+       1.tk.mybatis 框架,  高效生成模板.
+         <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper-spring-boot-starter</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+       2.paginator 插件, 实现分页.
+           <dependency>
+            <groupId>com.github.miemiedev</groupId>
+            <artifactId>mybatis-paginator</artifactId>
+            <version>${github.miemiedev.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mybatis</groupId>
+                    <artifactId>mybatis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+二.新建一个springboot工程.
+    1.还是勾选web.
+    2.需要引入各种依赖,mybatis呀,JDBC呀,sql驱动呀.
+       a.将属性直接替换成以下.进程版本控制的.
+         <properties>
+             <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+             <java.version>1.8</java.version>
+             <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>   
+             <fastjson.version>1.1.26</fastjson.version>                                                //序列化和反序列化时候需要用到,java对象转json格式的数据.
+             <mybatis.version>3.4.1</mybatis.version> 
+             <mybatis-spring.version>1.3.0</mybatis-spring.version>
+              <druid.version>1.0.24</druid.version>
+             <servlet-api.version>3.1.0</servlet-api.version>  
+             <fasterxml.uuid.version>3.1.4</fasterxml.uuid.version>                             //生成uid的一个jar包.
+             <org.codehaus.jackson.version>1.9.13</org.codehaus.jackson.version>   //也是序列化的一个包
+             <github.miemiedev.version>1.2.17</github.miemiedev.version>              //数据分页的一个jar包.
+         </properties>
+       b.加上以下依赖.
+            <!-- fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
+        <!--对json格式的支持 -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${org.codehaus.jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+            <version>${fasterxml.uuid.version}</version>
+        </dependency>
+
+        <!-- 添加JDBC jar -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper-spring-boot-starter</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!-- mybatis分页插件 -->
+        <dependency>
+            <groupId>com.github.miemiedev</groupId>
+            <artifactId>mybatis-paginator</artifactId>
+            <version>${github.miemiedev.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mybatis</groupId>
+                    <artifactId>mybatis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+          <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    3.新建web,service,mapper,mapping,entity,config五个包.
+    4.在application.properties设置.
+       server.context-path=/mybatis-druid
+       server.port=8002
+       
+       spring.http.encoding.charset=UTF-8                                    //从前端传输数据到spring所使用的字符集
+       spring.jackson.date-format=yyyy-MM-dd HH:mm:ss          //从前端传入date类型的数据转换的格式,设置了即可自动转换
+       spring.jackson.time-zone=GMT+8                                       //设置时区.
+       spring.jackson.default-property-inclusion=NON_NULL        //如果从前端接收了一个大的对象,对象有的属性是空值,可以自动过滤.
+   
+       spring.datasource.type=com.alibaba.druid.pool.DruidDataSource   //指定使用的连接池.
+       spring.datasource.url=jdbc:mysql://localhost:3306/springboot?characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useUnicode=true&serverTimezone=UTC
+       spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+       spring.datasource.username=root
+       spring.datasource.password=root
+   
+     5.把那四个配置文件拷到config包下.
+     6.加上配置文件druid.properties.
+    
+     然后启动.访问http://localhost:8002/项目名/druid,  便可进入druid的可视化控制台.
+        
+       
+     
