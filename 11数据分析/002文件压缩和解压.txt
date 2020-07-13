@@ -1,0 +1,85 @@
+
+   用的时jdk自带的java.util.zip,看网上说用这个解压有中文路径可能会出错.
+
+
+一.压缩.
+    //ZipOutputStream就是最外面包裹的,zip的框架
+   stream = new ZipOutputStream(new FileOutputStream("test.zip"));            //传入的路径是将来压缩文件的名称
+   inputStream = new FileInputStream(filePath+reaurl.substring(22)+"\\info.html");
+
+   //ZipEntry就是里面的一个文件,可以理解为创建一个进入点.
+   stream.putNextEntry(new ZipEntry("info.html"));
+   int len=0;
+   byte[] temp=new byte[1024];
+   while((len=inputStream.read(temp))!=-1) {
+       stream.write(temp, 0, len);
+   }
+   stream.closeEntry();
+
+  每加一个zipEntry就是新加了一个文件.可以加多个.
+
+二.解压.
+    道理和压缩一样一样的.
+    stream2 = new ZipInputStream(new FileInputStream(zipName));
+    stream2.getNextEntry();
+    outputStream = new FileOutputStream(new File(fileName+"\\help.html"));
+    int len=0;
+    byte[] temp=new byte[1024];
+    while((len=stream2.read(temp))!=-1) {
+        outputStream.write(temp,0,len);
+    }
+    stream.closeEntry();
+
+
+三.按原有文件目录压缩.
+     public class ToZip {
+	private ZipOutputStream stream=null;
+	public static void main(String[] args) throws IOException {
+		ToZip zip = new ToZip();
+		zip.toZip("E:\\temp");
+	}
+	public void toZip(String path) throws IOException {
+		//判断输入
+		if(path==null||path.length()==0) {
+			throw new RuntimeException("输入路径为空");
+		}
+		File file = new File(path);
+		if(!file.exists()) {
+			throw new RuntimeException("该路径下没有对应的文件!");
+		}
+		//初始化
+		stream=new ZipOutputStream(new FileOutputStream(new File("E:\\test.zip")));
+		//递归调用处理
+		dirToZip(file,"");
+		//关闭zip流
+		stream.close();
+	}
+	
+	private void dirToZip(File file,String base) throws IOException  {
+		// TODO Auto-generated method stub
+		FileInputStream inputStream=null;
+		if(file.isFile()) {
+			inputStream = new FileInputStream(file);
+			stream.putNextEntry(new ZipEntry(base));
+			byte[] temp=new byte[1024];
+			int len=0;
+			while((len=inputStream.read(temp))!=-1) {
+				stream.write(temp,0,len);
+			}
+			stream.closeEntry();
+			inputStream.close();
+		}else {
+			File[] listFiles = file.listFiles();
+			for(int i=0;i<listFiles.length;i++) {
+				File help = new File(file.getAbsolutePath()+"/"+listFiles[i].getName());
+				//这个base就是压缩文件里面的层级目录,要一层一层递进,只要base按原有目录来,那么压缩后的文件就是原有的目录结构.
+				if(listFiles[i].isFile())
+					dirToZip(help,base+listFiles[i].getName());
+				else
+				    dirToZip(help,base+listFiles[i].getName()+"/");
+			}
+		}
+	}
+}
+    
+

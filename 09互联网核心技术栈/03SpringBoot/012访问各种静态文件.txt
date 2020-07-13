@@ -1,0 +1,64 @@
+一.前言.
+    其实springboot就是对SSM进行了整合而已.在spring-MVC中,我们需要访问某一个静态文件,需要配置视图解析器.在xml文件中配置.
+   <bean  id="viewResolver2" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"></property>       //对应上面success的前缀                                  
+        <property name="suffix" value=".jsp"></property>                 //对应上面success的后缀
+    </bean>
+  
+   那么在springboot中也是一样的.也需要配置,只不过在application.propreties中配置.直接配置属性即可.
+
+
+二.配置.
+   1.引入maven依赖.
+     spingboot中自带了两种模板引擎,freemarker和thymeleaf.使用其中一种就可以,目前推介使用freemarker.
+       <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+      <dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-thymeleaf</artifactId>
+      </dependency>
+     
+      先简单介绍一下区别.
+        这两种都支持html文件,jsp,xml
+        freemarker支持ftl文件,是jsp的升级版,更符合传统编程习惯.
+        thymeleaf更适合前后端并行开发.
+
+      目前自己只使用过freemarker.
+
+   2.配置.在application.propreties中
+      freemarker配置:
+          spring:
+            freemarker:
+              request-context-attribute: req  #req访问request
+              suffix: .html  #后缀名
+              content-type: text/html
+              enabled: true
+              cache: false #缓存配置
+              template-loader-path: classpath:/templates/ #模板加载路径 按需配置
+             charset: UTF-8 #编码格式
+         settings:
+             number_format: '0.##'   #数字格式化，无小数点
+
+      ========================= = 其实只配置suffix: 就可以成功访问了,其他默认就可以.===========
+
+      如果使用thymeleaf配置如下:
+          spring:
+           thymeleaf:
+            prefix: classpath:/templates/
+            suffix: .html
+           cache: false
+           encoding: utf-8
+           content-type: text/html
+           check-template-location: true
+
+    3.然后在方法中直接返回即可.
+       注意文件在static可以直接从外部访问,templates只能从内部访问.
+       比如有index.html文件在templates文件夹下.
+        在方法中直接 return "index";即可.
+    
+
+ 
+   
+      

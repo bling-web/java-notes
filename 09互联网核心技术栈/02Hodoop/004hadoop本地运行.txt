@@ -1,0 +1,115 @@
+一.hadoop下载.
+    1.官方网站.
+       http://hadoop.apache.org/
+    2.历史版本下载.
+      https://archive.apache.org/dist/hadoop/common/hadoop-2.7.6/
+    3.文档下载.
+      https://hadoop.apache.org/docs/r2.7.6/
+
+二.hadoop运行模式.
+    1.本地模式.  
+       不需要启用单独进程,直接可以运行,测试和开发使用.就相当于直接执行jar包中的某个方法一样.
+       直接运行在本地磁盘上.
+    2.伪分布模式
+       只有一个节点,其他和分布式完全一样.一个节点模拟多节点的情况.
+       运行在HDFS文件系统上.
+    3.完全分布模式.
+       多个节点一起运行.
+    文档说明:share目录下mapreduce中有官方提供的一些使用程序,可以直接拿来用.
+                  etc下面有各种xml的配置文件.
+
+
+
+三.本地grep案例,就是过滤输出的一个案例.
+     1.首先要做的一步就是在host文件中加上虚拟机的主机名,因为hadoop是通过host中的主机名去查找节点的 ,不然找不到.
+       vi /etc/hosts
+       也就是配置的主机名和要访问的ip,就是不用去访问DNS了,直接在本地就找到对应的ip.所以这里一定要注意不能直接配到127.0.0.1后面,不然从web端访问会出问题.
+       需要重新加一行,例:
+       192.168.5.115    tim115
+      
+     2.在hadoop根目录下创建文件夹input.
+        mkdir input
+     3.复制/etc/hadoop  *.xml配置文件到input.      //这里并不是真正要用到这些命令,只是充当一个文字的作用.有一些内容.
+     4.执行命令
+        hadoop        jar                   share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.6.jar          grep                 input                                   output                                     property*
+                      执行某个jar包                    具体jar包                                                                                     执行哪个命令     输入的文件                       输出的文件(运行时一定不存在)         过滤的内容
+                                                                                                                                                                                     也就是要从哪里过滤内容
+
+
+四.本地wordcount案例.
+      统计输入文件中每个单词出现的次数.
+      1.建立一个新的输入文件.
+      2.执行命令.
+         hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.6.jar wordcount input2 output
+
+五.伪分布式运行.
+      1.首先记得加上JAVA-HOME.
+         在hadoop-env.sh
+      2.配置core-site.xml(在etc/hadoop文件中),在configuration标签中配置.
+         <!--指定HDFS中的NameNode地址-->
+         <property>
+             <name>fs.defaultFS</name>
+             <value>hdfs://tim115:9000</value>
+         </property>
+         注意:1.这里value里面配置的是hostname,也就是在/etc/sysconfig/network中配置的hostname,且不能包含特殊字符 . / _  不然启动不起来.	        
+                 2.也一定在/etc/hosts 中加上你配置的hostname,不然也启动不起来,因为它找不到你的节点.
+ 
+         <!--指定hadoop运行时产生文件的存储目录-->
+         <property>
+              <name>hadoop.tmp.dir</name>
+              <value>/apps/Hadoop/hadoop/temp</value>
+         </property>
+       3.配置hdfs-site.xml
+         <--指定HDFS副本的数量,默认是三个,如果使用默认会报错,因为它会找三个节点去存储文件,而我们只有一个节点-->
+         <property>
+            <name>dfs.replication</name>
+            <value>1</value>
+         </property>
+     4.启动集群.(先启动老大,再启动小弟      先关闭小弟,再关闭老大.)
+         a.格式化namenode.
+            hdfs namenode -format
+            hdfs datanode -format
+         b.启动namenode
+            hadoop-daemon.sh start namenode      (daemon:后台进程)
+         c.启动datanode
+            hadoop-daemon.sh start datanode
+
+      在启动之后看是否启动成功可以用java进程的命令jps.如果没有启动成功可以看hadoop中的logs文件,看看报错原因.
+     
+      在启动成功之后可以从web端登录http://192.168.5.115:50070,默认端口 是50070,出来的是HDFS的可视化页面.
+      
+   
+      5.操作集群.(大体步骤和本地运行时一样的,只不过加了hdfs的命令)
+         a.在hdfs文件系统上创建一个文件夹.
+            hdfs dfs -mkdir -p /user/hadoop/input
+         b.把我们本地的测试文件传上去.
+            hdfs dfs -put input2/a.txt /user/hadoop/input
+         c.执行命令.
+             hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.6.jar wordcount /user/hadoop/input /user/hadoop/output
+       然后可以在网站上下载文件查看,也可以直接使用命令查看,前面加上hdfs dfs 即可.
+       hdfs dfs -ls /user/hadoop/output
+
+
+
+出现问题:
+    1.是datanode启动不成功,
+     查看日志发现是clusterID(集群ID)不一样,就是nameode和datanodeI的不一样,所有在temp文件下的version中修改datanode的ID和namenode一样即可.
+    2.在192.168.5.115:50070网站上的文件不能下载,显示拒绝请求.
+      其实是因为ip自动变成了localhost,指的是我们的宿主机,然后我们直接把其变成192.168.5.115即可.
+      还有一种方法是:
+            在本地C:\Windows\System32\drivers\etc文件中的hosts文件中加上
+            192.168.5.115  hadoop
+            然后在网站上把192.168.5.115改成hadoop即可.
+      原理是在访问某个网站时,会先来hosts文件看看有没有对应的ip地址,如果有直接访问该ip,没有的话就启动DNS服务.
+        
+
+
+
+    
+                                                                                                                                     
+        
+
+
+
+
+

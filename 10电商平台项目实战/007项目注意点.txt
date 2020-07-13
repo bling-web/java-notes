@@ -1,0 +1,25 @@
+1.如果是Ajax的请求.
+   使用ResposeBody注解,并加入到请求体中.
+   注意点:
+        a.所有的Ajax请求,都会返回一个对象,所以必须要加上ResponseBody注解,不然会出现请求服务器失败异常,
+        b.在返回后,在jsp页面读取该对象的属性,也就是会默认调用该对象的get,set方法,所以必须要在返回的对象类中加上get,set方法.不然会出现VM34 jquery-2.1.4.min.js:4 POST http://localhost:9996/admin/user/edit 404
+           异常.
+
+2.从方法中取参数时,如果有多个参数,需要加上@Param("")注解.否则会报There is no getter for property named ''异常.
+  
+    @Select("{select id,name,createtime,creator,description from role limit #{0},#{l}}")
+    @Results({
+            @Result(column="id",property = "id",jdbcType = JdbcType.INTEGER,id=true),
+            @Result(column="name", property="name", jdbcType= JdbcType.VARCHAR),
+            @Result(column="createtime", property="createtime", jdbcType= JdbcType.DATE),
+            @Result(column="creator", property="creator", jdbcType= JdbcType.INTEGER),
+            @Result(column="description", property="description", jdbcType= JdbcType.VARCHAR),
+    })
+    List<Role> selectByAll(@Param("start")Integer start, @Param("limit")Integer limit);
+
+
+3.使用本框架注意不能单独命名delete,insert的方法,会报错,本框架已经写了这个方法,注意
+   Mapped Statements collection already contains value for 
+
+
+4.在修改密码界面,在输入原密码错误的情况下,如果返回对象WebResult的code设置成2,那么可以正常的显示"旧密码错误",但是如果换一下,换成3或者4,就会显示服务器繁忙,暂时不知道什么原因,还没有解决.

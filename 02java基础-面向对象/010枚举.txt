@@ -1,0 +1,10 @@
+一.枚举的意思.
+    定义常量的一种方式.
+
+
+二.使用.
+   public enum Color{
+       red,
+       blue,
+       block
+   }

@@ -1,0 +1,44 @@
+值传递:
+     所有的基础类型都是值传递(如字节,字符,boolean,整数,浮点型),值传递相当于拷贝了一份值进行传递,不会改变原有值 (只是让其他方法知道该值是多大 ),即值传递不会改变数值
+     通过值传递,不同方法中的值的存储空间是不同的,所以针对各自存储空间内的值进行操作是互不影响的
+  
+    例:
+   
+        public static void main(String[] args){
+			int a =1;
+			int b =2;
+	    System.out.println(a);
+	    System.out.println(b);
+	    change(a,b);
+	    System.out.println(a);
+	    System.out.println(b);
+	
+        }
+	public static void change(int a,int b) {
+		a= a+b;
+		b=b+a;
+	}
+    结果输出1,2,1,2
+    分析:change方法里的a,b确实变成3,5,但是其作用域仅在该方法内,不在main,即当作用域不同时,值传递数据不会发生变化(基本数据都是值传递),所以main中的a,b还是1,2
+    变量和方法存储在不同的内存中,各自有各自的作用域
+
+
+
+引用传递:
+     大多数需要new关键字的,不属于基本数据类型(比如数组,对象,String),是引用传递,引用传递是地址的传递,直接对数据的根源进行操作,所以引用传递会改变数值
+     通过引用传递,是对同一块存储空间进行操作,所以会相互影响
+     例:
+    public static void main(String[] args){
+ 	int [] arr={1,2,3};
+        System.out.println(arr[0]);
+	arrey(arr);
+	System.out.println(arr[0]);
+
+    }
+    public static void arrey(int[] arr){
+	arr[0]=3;
+
+    }
+    结果是1,3
+说明:
+    方法的参数是普通数据类型,传递的是数据值,方法的参数是引用数据类型,传递的是地址值

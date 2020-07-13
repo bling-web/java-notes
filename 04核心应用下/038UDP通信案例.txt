@@ -1,0 +1,82 @@
+一.UDP协议.
+       用户数据报协议(UDP) 是网络信息传输的另- -种形式。基于UDP的通信和基于TCP的通信不
+    同，基于UDP的信息传递更快，但不提供可靠的保证。使用UDP传递数据时，用户无法知道数据能
+    否正确地到达主机，也不能确定到达目的地的顺序是否和发送的顺序相同。虽然UDP是--种不可靠的
+    协议，但如果需要较快地传输信息，并能容忍小的错误，可以考虑使用UDP.
+ 
+二.基于UDP通信的基本模式.
+     将数据打包(称为数据包)，然后将数据包发往目的地。
+    接收别人发来的数据包， 然后查看数据包。
+
+
+三.UDP程序的使用步骤。
+发送数据包:
+(1)使用DatagramSocket(创建一个数据包套接字).
+(2)使用DatagramPacket(byte[] buf, int offset, int length, InetAddress address, int port)创建要发送的
+数据包。
+(3)使用DatagramSocket类的send()方法发送数据包。
+接收数据包:
+(1)使用DatagramSocket(int port)创建数据包套接字，绑定到指定的端口。
+(2)使用DatagramPacket(byte[] buf, int length)创建字节数组来接收数据包。
+(3)使用DatagramSocket类的receive()方法接收UDP包。
+
+
+   注意:
+       DatagramSocket类的receive()方法接收数据时，如果还没有可以接收的数据，在正常情况下
+     receive()方法将阻塞，一直等到网络上有数据传来，receive()方 法接收该数据并返回。如果网络上没
+     有数据发送过来，receive(方法也没有阻塞，肯定是程序有问题，大多数是使用了一个被其他程序
+     占用的端口号。
+
+四.案例.
+    服务端:
+      public class UDPServer {
+	public static void receive(int port) {
+		try {
+			//1.创建套接字,绑定端口
+			DatagramSocket socket = new DatagramSocket(port);
+			//2.创建DatagramPacket对象用于接收数据
+			byte[] buf=new byte[1024];
+			DatagramPacket datagramPacket = new DatagramPacket(buf,buf.length);
+			//接收数据
+			System.out.println("服务端初始化成功...");
+			while(true) {
+				socket.receive(datagramPacket);
+				System.out.println(new String(buf));
+			}
+			
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] args) {
+			receive(10111);			
+		
+	}
+     }
+     客户端:
+        public class UDPClient {
+	public static void sendData(String ip,String data,int port) {
+		DatagramSocket datagramSocket;
+		try {
+			//1.创建套接字
+			datagramSocket = new DatagramSocket();
+			//2.创建要发送的数据包
+			InetAddress address = InetAddress.getByName(ip);
+			DatagramPacket datagramPacket = new DatagramPacket(data.getBytes(), data.length(), address, port);
+			//3.发送数据
+			datagramSocket.send(datagramPacket);
+			System.out.println("客户端发送数据成功...");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] args) {
+		sendData("192.168.77.15", "你是个大傻子",10111);
+	}
+       }
+

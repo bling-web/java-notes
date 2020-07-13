@@ -1,0 +1,80 @@
+
+一. RestTemplat是一个非常强大的HTTP客户端,就是用java代码就能访问一个网页,目前的java常用的HTTP客户端主要有
+      1、Java原生HttpURLConnection
+      2、Apache http client
+      3、OkHttp
+      4、Spring 家族 RestTemplate
+
+二. 知识补充.
+      1.http协议传输文本一般都是json格式,不论使用get方法,还是post方法,所以我们接收返回值都可以使用map类.
+      2.在springboot中,当我们在类上加上@RestController注解,这个类中所有方法的返回值都会在装在response对象中返回.
+      3.即使我们返回的是一个对象,在我们传输的时候也会是以json格式,所以接收的时候也可以用map类.
+      4.在我们使用get方法传入时,方法参数能直接接收到,也就是如果接收参数是对象,可以直接封装到对象中,而post请求必须加上@RequstBody注解.
+
+
+
+三.举例.
+     
+ 1.一个普通的类.
+
+ public class RestTemplateTest {
+    private static RestTemplate restTemplate=new RestTemplate();
+
+    public static void main(String[] args) {
+        //get演示 //传入map是因为要返回map类型的数据.
+        Map template = restTemplate.getForObject("http://localhost:8002/index/TestGet?name=\"王亮\"&age=18", Map.class);        中间的\是转义符
+        System.out.println(template.get("name"));
+
+        //post演示
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name","来静");
+        map.put("age","18");
+        Map mapPost = restTemplate.postForObject("http://localhost:8002/index/TestPost", map, Map.class);
+        System.out.println(mapPost);
+
+        //exchange演示
+        //可以直接传请求体,也可以一起设置请求头传过去,很强大.推介使用post方式
+        String body="{\"name\":\"小王\",\"age\":\"20\"}";  //请求体
+
+        HttpHeaders httpHandler = new HttpHeaders();       //请求头
+        httpHandler.set("token","user");
+        httpHandler.setContentType(MediaType.APPLICATION_JSON_UTF8);
+
+        HttpEntity<String> entity = new HttpEntity<String>(body,httpHandler);
+
+        ResponseEntity<Map> exchange = restTemplate.exchange("http://localhost:8002/index/TestExchange", HttpMethod.POST, entity, Map.class);
+        System.out.println("statusCode:"+exchange.getStatusCode());
+
+    }
+}
+
+2.Controller层的一个类.
+
+@RestController
+public class UserController {
+
+    private static Logger logger= LoggerFactory.getLogger(UserController.class);
+
+    @GetMapping("/TestGet")
+    public User testGet(User user){                                                                  //user是自己new的一个entity.
+        System.out.println("---------get-----------");
+        logger.info("name:"+user.getName()+"age"+user.getAge());
+        return user;
+    }
+
+
+    @PostMapping("/TestPost")
+    public User TestPost(@RequestBody User user){        //post请求必须加上@Request注解才可以接受到参数,并封装到user对象中.
+        System.out.println("---------post-----------");
+        logger.info("name:"+user.getName()+"age"+user.getAge());
+        return user;
+    }
+
+    @PostMapping("/TestExchange")
+    public User TestExchange(@RequestHeader("token") String header,@RequestBody User user){
+        System.out.println("-----------exchange------");
+        logger.info("header:"+header+"user"+user.getName());
+        return user;
+    }
+}
+  

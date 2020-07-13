@@ -1,0 +1,179 @@
+
+   定时任务,我们在工作中使用非常广泛,在springboot中,我们可以更简单的去使用注解进行配置.然后直接使用即可.
+   1.EnableScheduling 标识该类可以配置开启taskscheduler,启用注解功能.
+   2.scheduled 可以设置固定时间进行执行fixedDelay,或者使用cron表达式执行.
+   3.当然我们传统的这种方式只支持单点的定时任务,如果要使用分布式定时任务,可以使用业界比较主流的es-job.xxl-job等.
+
+
+一.步骤.
+    1.新建springboot项目,引入依赖.
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+    2.配置.
+      在引入注解之后,当然就是做一些配置,spring中一般是xml文件,而springboot更推介使用配置类.
+      
+     @Configuration
+     //该注解可以启动TaskScheduling,实现SchedulingConfigurer是为了对你的定时任务有一些个性化的设置
+     @EnableScheduling
+      public class TaskSchedulerConfig implements SchedulingConfigurer {
+
+          @Override
+           public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
+                //实现定时任务必须要有线程池,这里即传入一个线程池,是一个自定义方法,在下面实现
+                scheduledTaskRegistrar.setScheduler(schedulerThreadPool());
+           }
+          //里面标注方法的意思就是在这个bean destroy的时候,调用ScheduledThreadPoolExecutor类的shutdown方法优雅的关闭线程池
+          @Bean(destroyMethod = "shutdown")
+          public ScheduledThreadPoolExecutor schedulerThreadPool() {
+               /*ScheduledThreadPoolExecutor这个类是实现了定时任务的线程池
+               Runtime类解析,每一个java运行程序都有一个Runtime类实例,使当前运行程序能够与运行环境相关联,getRuntime方法返回当前
+                运行程序的Runtime对象,avaliableProcessors方法返回可用处理器的数目,用返回的处理器的数目充当corePoolSize
+                */
+               return new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
+                    new ThreadFactory() {
+                        @Override
+                        public Thread newThread(Runnable r) {
+                            return new Thread(r, "cron-thread");
+                       }
+                    },
+                    new RejectedExecutionHandler() {
+                        @Override
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                            System.out.println("当前任务执行失败"+r);
+                        }
+                     });
+
+           }
+      }
+      补充:这里面为什么不直接使用newCatchThreadPool?
+                   因为该线程池没有上限,如果有一些线程因为什么原因卡住了,就会影响整个项目.
+              为什么不直接使用newFixThreadPool?
+                   它虽然是固定大小的,但是使用的队列是LinkedBlockingQueue,无界队列,如果一直有任务,而又没有空闲线程,就会被放入等待队列中.一直消耗内存.
+             那为什么使用ScheduledThreadPoolExecutor?
+                    它虽然maximumPoolSize也是无限大,但是使用的队列DelayedWorkQueue限制了大小,如果超出了会有拒绝策略.可以看做无界队列中的有界队列.
+
+     3.然后就可以使用定时任务了.新建一个类.
+      @Component
+      public class Scheduler {
+
+           @Scheduled(initialDelay = 3000,fixedDelay = 3000)           //初始化延迟3秒后执行,   fixedDelay表示每隔固定的三秒执行一次.
+            public void execute(){
+               System.out.println("定时任务执行.....");
+  
+            }
+          
+          @Scheduled(cron="0 10 23 20 10 7")     //cron表达式,比较常用,最下面有详细用法.
+           public void execute2(){
+    
+              System.out.println("定时任务执行2...");
+          }
+       }
+
+
+
+
+二.线程池的有界队列和无界队列.
+    线程池的实现主要有三种方法.
+    1.public static ExecutorService newFixThreadPool(int nThread):
+      该方法会返回一个固定大小的线程池,如果有新的任务来,又没有空闲的线程的话,就会把任务交到等待队列中,也就是有界队列.
+    2.public static ExecutorService newCatchThreadPool();
+       该方法得到的线程数量不是固定的,会根据实际进行调整,如有新的任务,而没有空闲的线程,就会新new一个线程去执行任务.也就是无界队列.
+    3.public static ExecutorService newSingleThreadPool();
+       返回一个单个线程的线程池.
+   
+    原理:其实三种实现方法底层ThreadPoolExecutor类实现的,只不过传入参数不一样.
+           参数分别是int corePoolSize, 线程中的线程数(最大的储备线程)
+                           int maximumPoolSize,  线程池中的最大线程数
+                           long keepAliveTime, 线程数超过指定数值(corePoolSize)后,空闲线程的存活时间
+                           TimeUnit unit,线程池维护线程所允许的时间单位
+                          BlockingQueue<Runnable> workQueue 被提交但未被执行的任务  所使用的队列
+                 
+               public static ExecutorService newFixedThreadPool(int nThreads) {
+		return new ThreadPoolExecutor(nThreads, nThreads, OL, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+											
+	}
+	
+	public static ExecutorService newCachedThreadPool() {
+		return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+										
+	}
+	
+	public static ExecutorService newSingleThreadPool() {
+		return new FinalizableDelegatedExecutorService(new ThreadPoolExecutor(1, 1, OL, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>()));														
+	}
+     这里首先介绍一下不同的队列的区别:
+        1.直接提交队列：使用的是SynchronousQueue类实现的队列。提交到这个队列中的任务不会被真实的保存，而是立刻将新任务提交个线程执行，如果没有空闲的线程，就会创建新的线程，
+           如果线程数量达到线程池的最大线程数maximumPoolSize，那么就会执行拒绝策略，任务执行被拒绝。
+
+        2.有界的任务队列：使用的是ArrayBlockingQueue类实现的队列，按照“先进先出”算法处理任务，它的构造函数是：public ArrayBlockingQueue（int capacity）
+           使用它必须设置一个最大容量参数，使用有界的任务队列的线程池，当有任务提交后，如果当前线程池中的线程数小于corePoolSize，就会创建新的线程执行任务，如果任务 提交后，
+           当前线程池内线程数大于corePoolSize，就会把任务先放到有界任务队列中，若队列放满后，再创建新线程执行任务，但总的线程数不会超过最大值maximumPoolSize。
+
+        3.无界的任务队列：使用的是LinkedBlockingQueue类实现，不需要事先制定大小，也是按照“先进先出”算法处理任务。无界队列很好理解，就是和有界队列相反，使用无界队列的线程池，
+          当有新任务提交时，如果线程池里有空闲线程，就分配线程立刻执行任务，否则就把任务放到无界任务队列中等待，如果线程池中一直没有空闲线程，但是新的任务又一直不停的提交上来，
+          那么这些任务全部会被挂到等待队列中，一直到内存全部消耗完。
+
+        4.优先任务队列：使用的是PriorityBlockingQueue类实现，它根据任务的优先级顺序执行任务，不同于前面的有界队列和无界队列。
+    分别解释各个类的实现:
+        1.FixedThreadPool
+           corePoolSize和maximumPoolSize都是传入的最大线程数,所以是固定大小,第三个参数存活时间为0,意思是当队列中线程数超过corePoolSize时,线程的存活时间为0,以此来保证固定数量的线程数目,
+           第五个参数是无界队列,意思是当队列数达到maximumPoolSize后,又有新任务时,就把任务加到无线队列中等待.直至内存被用完.
+        2.CatchThreadPool
+           corePoolSize是0,Integer.MAX_VALUE表示无穷大,存活时间60秒,意思是只要有空闲线程,存活60秒之后就会被回收,使用队列是直接提交队列,就是提交到队列中的任务会被直接执行,如果有空闲线程,
+           使用空闲线程,如果没有,而,Integer.MAX_VALUE又是无穷大,就会直接新建一个线程去执行任务.
+        3.newThreadPool
+           corePoolSize和maximumPoolSize都是1来保证只有一个线程.
+
+     总结:
+        实现无界队列必然是workQueue 和maximumPoolSize都不做限制,而有界队列这两个任意一个大小做出限制即可实现.
+
+
+三.cron表达式.
+      段	                                       允许值	                    允许的特殊字符
+  秒（Seconds）	                  0~59的整数	                   , - * /    四个字符  
+  分（Minutes）                         0~59的整数	                    , - * /    四个字符
+  小时（Hours）	                  0~23的整数	                    , - * /    四个字符 
+  日期（DayofMonth）	1~31的整数	                    ,- * ? / L W C     八个字符
+  月份（Month）	      1~12的整数或者 JAN-DEC	                    , - * /    四个字符
+  星期（DayofWeek)    1~7的整数或者 SUN-SAT （1=SUN）      , - * ? / L C #     八个字符
+  年(可选，留空)（Year）	1970~2099	                    , - * /    四个字符
+        
+  注意:
+     每一个域都使用数字，但还可以出现如下特殊字符，它们的含义是
+         (1）*：表示匹配该域的任意值。假如在Minutes域使用*, 即表示每分钟都会触发事件。
+
+　　（2）?：只能用在DayofMonth和DayofWeek两个域。它也匹配域的任意值，但实际不会。因为DayofMonth和DayofWeek会相互影响。例如想在每月的20日触发调度，不管20日到底是星期几，则只能使用如下写法： 13 13 15 20 * ?, 其中最后一位只能用？，而不能使用*，如果使用*表示不管星期几都会触发，实际上并不是这样。
+
+　　（3）-：表示范围。例如在Minutes域使用5-20，表示从5分到20分钟每分钟触发一次 
+
+　　（4）/：表示起始时间开始触发，然后每隔固定时间触发一次。例如在Minutes域使用5/20,则意味着5分钟触发一次，而25，45等分别触发一次. 
+
+       （6）L：表示最后，只能出现在DayofWeek和DayofMonth域。如果在DayofWeek域使用5L,意味着在最后的一个星期四触发。 
+
+　　（7）W:表示有效工作日(周一到周五),只能出现在DayofMonth域，系统将在离指定日期的最近的有效工作日触发事件。例如：在 DayofMonth使用5W，如果5日是星期六，则将在最近的工作日：星期五，即4日触发。如果5日是星期天，则在6日(周一)触发；如果5日在星期一到星期五中的一天，则就在5日触发。另外一点，W的最近寻找不会跨过月份 。
+
+　　（8）LW:这两个字符可以连用，表示在某个月最后一个工作日，即最后一个星期五。 
+
+　　（9）#:用于确定每个月第几个星期几，只能出现在DayofMonth域。例如在4#2，表示某月的第二个星期三。
+           
+   常用表达式例子
+
+　　（1）0 0 2 1 * ? *   表示在每月的1日的凌晨2点调整任务
+
+　　（2）0 15 10 ? * MON-FRI   表示周一到周五每天上午10:15执行作业
+
+　　（3）0 15 10 ? 6L 2002-2006   表示2002-2006年的每个月的最后一个星期五上午10:15执行作
+
+　　（4）0 0 10,14,16 * * ?   每天上午10点，下午2点，4点 
+
+　　（5）0 0/30 9-17 * * ?   朝九晚五工作时间内每半小时 

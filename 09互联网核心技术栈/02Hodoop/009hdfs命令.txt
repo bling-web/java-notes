@@ -1,0 +1,54 @@
+
+
+一.总纲:
+    hadoop fs
+    他和前面使用的hdfs dfs有什么区别吗?hadoop fs 可以针对整个hadoop进行操作,而hdfs只能对hdfs进行操纵.
+
+二.常用命令.
+     1.显示目录信息.
+        hadoop fs -ls /
+     2.创建目录.
+        hadoop fs -mkdir /user/hadoop/input
+     3.从本地截切到hdfs.
+        hadoop fs -moveFromLocal  [剪切文件]  [目标路径]
+     4.追加文件.
+        hadoop fs -appendToFile [追加文件] [目标文件]
+     5.显示文件内容.
+        hadoop fs -cat [文件名]
+     6.显示一个文件的末尾.
+        hadoop fs -tail  [文件名]
+     7.修改文件所属权限.
+        hadoop fs -chmod  666 a.txt     r:4 w:2 x:1     分别是给user,group,others的权限.
+        hadoop fs -chown  tim a.txt    改变a.txt的所属者为tim.
+        hadoop fs -chgrp adm a.sh     改变a.sh的所属组为adm.
+     8.从本地文件系统复制文件到hdfs上去.
+        hadoop fs -copyFromLocal [本地文件] [存储路径]
+        hadoop fs -put
+     9.从hdfs复制文件到本地.
+        hadoop fs -copyTo Local [hdfs文件] [存储路径]
+        hadoop fs -get
+     10.将hdfs的一个文件复制到hdfs的另一个路径去.
+          hadoop fs -cp [原hdfs文件] [新路径]
+     11.移动hdfs中的文件.
+         hadoop fs -mv [移动文件] [新路径]
+     12.删除文件或文件夹.
+         hadoop fs -rm  [文件]
+     13.删除空目录.
+         hadoop fs -rmdir [目录]
+     14.统计文件系统的可用空间信息.
+          hadoop fs -df -h 
+     15.统计文件的大小信息.
+          hadoop fs -du -h [文件]
+     
+
+
+
+
+
+
+
+
+
+
+
+
