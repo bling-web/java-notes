@@ -1,4 +1,0 @@
-1.首先商品在admin和前台都需要用到,那么它的那个实体和service都可以放到service这个包下.
-2.那么我在service包下加上注解将其注入到spring容器中,但是我们启动的是admin这个子模块,它会默认扫描AdminApplication这个包下的service,controller等注解,并不会扫描service这个子模块.
-   所以我们需要制定它的扫描路径,在AdminApplition这个类上加上注解@ComponentScan("com.tim.mall")来指定全局的扫描.
-   那mapper也是,我们可以在@MapperScan({"com.tim.mall.admin.mapper","com.tim.mall.mapper"})多加一个扫描的包.
