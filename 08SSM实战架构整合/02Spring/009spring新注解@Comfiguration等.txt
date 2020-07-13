@@ -1,0 +1,75 @@
+一.Configuration
+     作用:指定当前类是一个配置类.
+     说明:如果配置类作为AnnotationConfigApplicationContext的构造参数传进去,那么配置类的Configuration注解可以省略.
+  
+二.ComponentScan.
+     作用:用于指定spring创建容器时指定的包.
+     属性:value和basePackage的作用一样,都是用于指定包.
+
+三.bean
+     作用:用于把方法中的返回值当做bean对象存入spring容器中.
+     属性:name用于指定该bean的id.默认是方法名.
+     说明:该方法中的参数会默认从spring容器中查找,和autowird的作用一样.如果该类型有对应多个值,可以用@Qualifier注解加以区分.                       例:
+             @Bean
+             public QueryRunner queryRunner(@Qualifier("ds1") ComboPooledDataSource dateSource){    
+                 return new QueryRunner(dateSource);
+             }
+             @Bean("ds1")
+             public ComboPooledDataSource dateSource1(){
+             }
+             @Bean("ds2")
+             public ComboPooledDataSource dateSource2(){      
+             }
+  
+     
+
+四.Import.
+     作用:导入一个配置类.(导入的配置类就不需要用Configrution注解了)
+     特点:这样导入的配置类会有层级关系.
+
+
+例:
+@Configuration
+@ComponentScan("com")
+public class SpringConfiguration {
+    @Bean
+    public QueryRunner queryRunner(ComboPooledDataSource dateSource){     //该方法中的参数会默认从spring 容器中找对应的bean
+        return new QueryRunner(dateSource);
+    }
+    @Bean
+    public ComboPooledDataSource dateSource(){
+        ComboPooledDataSource dataSource = new ComboPooledDataSource();
+        try {
+            dataSource.setDriverClass("com.mysql.jdbc.Driver");           //这里不应该写成常量,写在这里.下节会做出改成.
+            dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/sms");
+            dataSource.setUser("root");
+            dataSource.setPassword("root");
+        } catch (PropertyVetoException e) {
+            e.printStackTrace();
+        }
+        return dataSource;
+
+    }
+
+
+
+说明:以上三个注解的作用就是代替配置的作用.用一个类或几个类去取代配置文件.
+     使用类去代替配置文件,在测试加载资源时,要使用AnnotationConfigApplicationContext实现类,传入对应类的字节码对象.
+
+
+思考:1.当项目很大时,配置类有时会进行分类,那在AnnotationConfigApplicationContext中的方法参数中需要传哪一个字节码对象?需要都传吗?
+       传入字节码对象的主要作用其实是spring想知道它要扫描哪个包.所有只需要把包含@ComponentScan注解的类字节码对象传进去即可.                  (传入的类可以省略Configuration注解)
+     2.那其他类它怎么知道是配置类?
+       方式一:
+            其他类用Configuration注解标识,spring才会去这个类中找bean.
+       方式二:
+            用Import注解导入.(就是把其他没有标识的配置类 导入 要传入AnnotationConfigApplicationContext构造参数的配置类中)
+            例:
+               @ComponentScan("com")
+               @Import(jdbc.class)
+               public class SpringConfiguration {
+               }
+
+
+    
+            

@@ -1,0 +1,60 @@
+一.多表查询分类:
+  多表查询:内连接,外连接.
+    1.内连接:a.隐式内连接
+             b.显示内连接.
+    2.外连接:a.左外连接
+             b.右外连接
+  
+二.如果直接进行多表查询,即select * from 从表,主表;
+    会出现笛卡尔乘积效应.就是第一张表的每一行去全部合并第二张表的每一行.
+    比如:
+    表一:                                          表二:
+         王    1                                        张    3
+         李    2                                        赵    6
+    卡迪尔效应:
+         王    1       张    3
+         王    1       赵    6
+         李    2       张    3
+         李    2       赵    6
+   注意:卡迪尔效应有时有很大的用处,在有关匹配的题目时都可以用.
+
+三.正确的查询方式: 
+
+  1.内连接:用左边表的记录去匹配右边表的记录,如果符合条件则显示.
+    a.方式一:显示外连接(有join关键字)---------------该方式比较常用
+      理解:就是先把两张表正确的连成一张表.然后再查询.
+      例:
+      SELECT * FROM student st JOIN school sc ON(st.id_school=sc.id) WHERE st.myid=1;  //查询某个学生属于哪个学校,也可以不加括号
+      说明:1.student st:从表名称和起的别名.
+           2.school sc:主表名称和起的别名.
+           3.st.id_school=sc.id:两个表要连接的列. 
+           4.join关键字可以加上inner,也可以不加.
+ 
+    b.方式二: 隐式外连接(无join) 
+      理解:先把两张表胡乱连成一张,然后对数据进行过滤.
+      例:
+      SELECT * FROM student st,school sc WHERE st.id_school=sc.id AND id=1;
+      说明:WHERE st.id_school=sc.id 过滤出正确的连接.
+
+  2.外连接(主要根据部门查员工)
+    a.方式一:左外连接
+      理解:在内连接的基础上保证左表的数据全部显示
+          (比如有一个销售部,但是这个销售部并没有员工,用左外连接就会显示这个销售部,用内连接就不会显示)
+      格式:select 字段名 from 左表 left [outer] join 右表 on 条件;    //[]里面的可以省略
+   
+    b.方式二.右外连接
+      理解:在内连接的基础上保证右表的数据全部显示
+           (比如在员工表插入了一个没有所属部门的员工,用又外连接就会显示这个员工,员工表放在右边)
+      格式:select 字段名 from 左表 right join 右表 on 条件;
+         
+
+-- 内连接:用左表的数据去匹配右表的数据,符合规则则显示
+-- 显示内连接
+SELECT * FROM student st JOIN school sc ON(st.id_school=sc.id);
+-- 隐式内连接
+SELECT * FROM student st,school sc WHERE st.id_school=sc.id ;
+-- 外连接:在内连接的基础上保证左表或右表的内容全部显示.
+-- 左外连接:完全显示左表
+SELECT * FROM school sc LEFT JOIN student st ON(sc.id=st.id_school);
+-- 右外连接:完全显示右表
+SELECT * FROM school sc RIGHT JOIN student st ON(sc.id=st.id_school);

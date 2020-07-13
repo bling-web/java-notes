@@ -1,0 +1,51 @@
+一.java动态项目的目录结构:
+   WEB-INF目录(必须包含)
+     1.web.xml:web项目的核心配置文件.
+     2.lib:存放项目依赖的jar文件.
+     3.classes:存放自己编写的java代码字节码文件.
+
+二.idea和Tomcat关联:
+   1.run-->Edit Configtations-->Templates-->Tomcat(local)-->设置路径,JRE.
+     然后+一个tomcat.
+     注意:当昨晚上面两步时才可以建java Eeterprice项目,因为这时候才能引入tomcat的源码,也就是才能引入HttpServlet这个类.
+
+三.创建Tomcat项目.
+   java Enterprise-->勾选 Web Application
+   (一个项目应该只有一个Tomcat)
+  
+  说明:在index.jsp中编写一些代码,直接运行,网页中就会出现index中的内容,也就是项目会默认打开index.jsp.
+  注意:在项目中新建文件必须重新启动Tomcat才能使用这些文件.
+       解决方法-->run/Configrution中设置On 'Update' action:update resourse.
+                                        On frame deacvation:update resourse.
+
+  声明:在web包下新建一个html文件,当该项目部署成功部署到服务器上,是可以直接访问这个文件的------就是静态文件
+       而在src中新建一个java文件是不可以的,需要通过以下的方法.--------------------------------就是动态文件
+
+四.Servlet.
+   1.概念:Server Applet:运行在服务端的小程序.
+     理解: 不同的人访问同一个动态资源出现不同的效果,即执行不同的class,这些不同class需要Tomcat去执行,所以需要遵守一些规则,这些规则就是           Servlet.
+     简单来说,Servlet就是一个接口(在java EE中的API),定义了java类能被浏览器客户端所访问的规则.所以,我们开发的Servlet程序必须实现Servlet           接口,实现其中的方法.
+   
+五.快速入门.
+   1.创建javaEE项目.
+   2.定义一个类,实现Servlet接口.
+   3.重写其所有的方法.
+   4.配置Web.xml
+     例:
+        <servlet>
+            <servlet-name>demo</servlet-name>                    //给下面一行的类起一个别名
+            <servlet-class>com.cc.Servlet.test</servlet-class>   //真正的类
+        </servlet>                                               
+        <servlet-mapping>                                        //一个映射                                             
+            <servlet-name>demo</servlet-name>                    //刚刚的别名
+            <url-pattern>/wang</url-pattern>                     //从网络上访问时的映射.就是指这个test类.
+        </servlet-mapping>
+     上面配置的结果就是:通过访问wang这个映射,就可以访问com.cc.Servlet包下的test类.demo只是起的一个别名.
+
+   声明:http://localhost:8080/wang通过这个可以访问上面所设置的内容.
+        但一般要加虚拟路径:在run Configration/Deployment/Appliction Context中设置.假设设置虚拟路径是Servlet.那么访问方式是:
+        ttp://localhost:8080/Servlet/wang
+
+
+   
+       

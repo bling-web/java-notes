@@ -1,0 +1,133 @@
+数据库的约束,概述作用.
+  对表中的数据进行限制,保证数据的正确性,有效性和完整性.如果一个表添加了约束,不正确的数据将无法插入到表中.约束在创建表的时候添加比较合适.
+
+  1.约束的分类
+    约束名                约束关键字
+    主键                  primary key(通过主键找到个各种信息)
+    唯一                  unique(无重复的数据,比如身份证号)
+    非空                  not null(无空数据)
+    外键                  foreign key(多张表之间的联系)
+    检查约束              check(比如检查字段长度不少于11位,手机号),mysql不支持.
+                          (一般在java中检查,在数据库中见检查会降低性能)
+
+一.主键
+   用来唯一标识数据库中的每一条记录.
+   如何选择主键?
+      通常不用业务字段作为主键,单独给每张表设计一个id的字段,把id作为主键.主键是给数据库和程序用的,不是给最终的客户用的.所以主键有没有
+   含义没关系.只要不重复,非空就行.插入重复,空值会报错.
+   如:身份证,学号不建议作为主键(这两个是给客户看的,属于业务字段)
+
+  1.创建主键方式:
+    a.在创建表的时候给字段添加主键:字段名 字段类型 primary key;
+      例:
+      create table 表名(int id primary key);
+    b.在已有表中添加主键:alter table 表名 add 字段名 字段类型 primary key;
+    c.一个主键有多列的情况:
+      CONSTRAINT pk_course PRIMARY KEY (cno,tno);        //cno,tno是一个表里的两列.
+  
+  2.自动递增.
+    auto_increment:表示自动增长(字段类型必须是整数类型)
+    怎样设置?
+     1). create table 表名(
+         id int primary key auto_increment,
+  
+         )auto_increment=起始值;     //不加也可以,使用默认开始值1.  
+    
+     2).在已有表中添加.
+        alter table 表名 add 字段名 字段类型 primary key auto_increment;
+        修改起始值:  //该起始值的修改仅会对新加的数据起作用.不会更改已有数据的主键.
+        alter table 表名 auto_increment=0;
+     3)delect和truncate对自动增长的影响.
+        delect:对自动增长没有影响,不会改变原有主键序号的值.
+               例:删除id=1,id=2的数据,新增数据会从id=3开始.
+        truncate:有影响,使用truncate之后,主键值会从重新从起始值开始增长.
+
+二.唯一约束.
+     表中某一列中不能出现重复的值.
+     格式: 字段名 字段类型 unique;
+   1.实现
+     a.创建表时:
+       create table 表名(name varchar(20) unique);
+     b.在已有表某个属性进行重新设置.
+       ALTER TABLE teacher MODIFY NAME VARCHAR(20) UNIQUE;           //将name设置为unique.
+
+     注意:唯一约束对null值不做约束.
+
+三 非空
+    插入值时不能插入null 值
+   实现:
+     ALTER TABLE teacher MODIFY NAME VARCHAR(20) NOT  NULL;
+    
+     或者创建表时在字段后面加上not null即可.
+
+四.默认值
+    每一个字段都有一个默认值null,可以更改这个默认值.
+   1.实现:
+     a.创建表时:
+       create table 表名(address varchar(20) default '中国');
+     b.对已有表修改
+       alter table 表名 modify address varchar(20) default '中国';
+
+五.外键.
+  1.理论知识.
+   为什么要引入外键?  ->  减少数据冗余,更改麻烦的缺点.
+     例:一张表中有很多员工,这些表中有几个部门,还有部门的地址,如果该地址变动,不容易更改.解决办法-->分成两张表,  
+        表employee:id,name,age,dep_id(部门id).    表department:id,depart,address
+        即两个表中有一种对应的关系,通过这种对应关系可以找到属于哪个部门.
+
+     员工(多)-->部门(一):是一种多对一的关系.   注意:一般在多的一边添加外键.
+     
+       说明:a.主表:一.用来约束别人的表.
+              从表:多.被约束的表.
+            b.外键就是在从表中与主表主键对应的那一列.
+            c.核心思想:给大多数数据加一个固定不变的数,把该固定的数引出来量化为一个数据,该数据对应一个可变的数据.
+                       这样多对一的对应关系肯定不变,变的只是一对一的.
+   
+   这样又引入了一个问题.如果在employee表中添加的部门id是department中没有的呢?   所以需要作出限制.
+
+  2.外键约束的实现. 
+    a.创建表时:
+       CREATE TABLE 从表名(
+         id INT PRIMARY KEY AUTO_INCREMENT,
+         stu INT,
+         CONSTRAINT 外键名称 FOREIGN KEY(添加外键的字段) REFERENCES 主表(主键字段名)   //注意,要另起一行.括号也是严格规定
+       );
+    b.在已有表中添加.
+       ALTER TABLE student ADD CONSTRAINT stu_idschool_fk FOREIGN KEY (id_school) REFERENCES school(id);
+       说明: stu_idschool_fk:外键名称               
+             (id_school):从表中添加外键字段 
+             school(id):主表(主键字段名)
+    c.删除外键
+      ALTER TABLE student DROP FOREIGN KEY stu_idschool_fk;   //stu_idschool_fk是外键名称.
+
+  3.级联关系.(当有外键约束时,就会有级联关系)
+    什么是级联操作?
+       在修改和删除主表的主键时,同时更新或删除从表的外键值,称为级联操作.
+    说明:1.级联关系在创建外键约束的时候自动生成.
+         2.如果没有级联操作.是不能对主表中的数据进行删除和添加的,因为有级联关系存在.
+    
+    级联操作语法:
+      on update cascade:级联更新
+      on delete cascade:级联删除
+      用法:跟在添加外键的操作语句后.两个都跟在后面即可.
+  
+    注意:一般不会去添加级联操作,以免误删将数据删除.实在想要删除,可以先删除从表中数据,再删除主表中数据.
+
+      
+思考:
+   某个字段添加了非空和唯一设置,那它和主键有什么区别?
+      1.主键是给数据库和程序使用的.一张表只能有一个主键.主键可以是多列,也可以是单列.
+      2.自增长只能在主键上使用.
+            
+  
+   注意:在常规建表的时候一般用图形化工具建表.一般查询的时候用代码最多.
+        添加unique约束在管理索引里.
+
+
+
+
+  
+      
+
+
+

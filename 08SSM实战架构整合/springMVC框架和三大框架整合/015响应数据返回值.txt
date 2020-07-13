@@ -1,0 +1,48 @@
+一.servlet返回值: 
+      1.请求转发.
+         request.getRequestDispatcher("全地址").forword(request,response);
+      2.重定向.
+         response.sendRedirect(request.getContext+"jsp文件名称").
+      3.直接通过response响应结果.
+         response.getWrite().write("输出内容").
+   
+
+一.springMVC返回值:
+   1.字符串
+     说明:controller方法返回的字符串是逻辑视图,通过视图解析器解析为物理地址(真实地址)
+   2.void
+     a.通过MolelAddView对象
+       例:
+        public ModelAndView test2() {
+            ModelAndView modelAndView = new ModelAndView();              //也可以直接在方法上传递这个对象,让DistcherServlet创建,这个和直接返回字符串的区别是可以
+            //添加属性,传递数据                                            添加属性
+            modelAndView.addObject("symbol","王");
+            //调加视图完成转发
+            modelAndView.setViewName(Content.FILENAME);
+            //返回该对象,相当于返回这个视图(视图存储在对象中),不然是没有返回值无法获取这个视图的.
+            return modelAndView;
+         }
+     b.通过return:forword
+       例:
+       @GetMapping("rf")
+       public String test4(Model model) {
+           //添加属性
+           model.addAttribute("rf","收到rf");
+           //返回页面
+           return "forward:/WEB-INF/views/success.jsp";                 //这里其实也可以写成 return "forward:/success";  
+       }
+     c.通过return:redirect:
+       例:
+        @GetMapping("rr")
+        public String test5(Model model) {
+            //添加属性
+            model.addAttribute("rr","收到rr");
+            //返回页面
+            return "redirect:/index.jsp";                //这里是绝对路径,给浏览器使用,为什么可以不加虚拟路径?spring帮我们做了这些工作
+        }
+
+
+说明:
+  1.通过项目的别名找到该项目的目录是和源代码目录不一样的,所有的src中的java编译成classes之后加到了WEB-INF这个目录中,原有WEB-INF下的文件     目录不变.
+  2.也就是说所有的动态资源文件都放在WEB-INF中,只有静态文件单独放在WEB-INF目录下面.
+  

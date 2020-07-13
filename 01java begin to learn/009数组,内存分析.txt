@@ -1,0 +1,40 @@
+定义方式:
+    1.指出长度(标准写法)
+      int [] a = new int[5];
+    2.直接赋值
+      int [] a = new int[]{1,2,3};
+    3.直接赋值
+      int [] arr = {1,2,3};
+内存分析:
+    了解:
+        1.寄存器:和cpu打交道,不需要关注
+        2.本地方法栈:和操作系统底层打交道,不需要关注(c语言,汇编语言)
+    知道:
+        3.方法区:存储好我们编译好的class文件
+        4.方法栈:存储方法名称,变量名称
+        5.堆内存:就是操作系统的内存,new关键字开辟的任何对象都存储在这里
+ 
+     例:int[] arr = new int[3];
+        栈上存储变量:int [] arr ,定义变量名称,arr就是地址
+        堆上存储实际内容:new int[3]
+注意:数组不论作为参数传递或者作为返回值,用的都是数组地址
+     
+     例:结果为输出两遍数组a,
+     
+     public static void main(String[] args){
+	int a[]={1,2,3,4,5};
+	 int b[]=arrey(a);
+        for(int i=0;i<a.length;i++){
+            System.out.println(b[i]);
+	}
+
+     }
+     public static int[] arrey(int []arr){
+	for(int i=0;i<arr.length;i++){
+	    System.out.println(arr[i]);
+
+	}
+	return arr;
+
+     }
+     注:arrey方法的返回值类型是int[].而不是int

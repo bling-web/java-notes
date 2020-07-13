@@ -1,0 +1,3 @@
+
+  HashSet保证元素唯一,可是元素放进去是没有顺序的,我们要保证顺序,怎么办?在HashSet下面有一个子类,java.util.LinkedHashSet,它是链表和哈希表组合的数据存储结构.
+  LinjedHashSet既可以保证元素唯一,又可以保证元素有序.

@@ -1,0 +1,79 @@
+
+   String字符串是一个特殊的引用类型,调用其方法不会改变其自身,原因是:String类型在JAVA中存储在常量池中.
+
+
+1.定义不可变
+    String a="ab";
+      a +='d';
+    a改变指向,指向"abd"
+2.String s1="ab";
+  String s2="ab"
+  s1和s2指向同一个
+3.String底层靠字符实现
+  char[] arr={'a','b'};s
+  String s =new String(arr);
+4.String可以new String()赋值,也可以用最常见的String a="";
+
+重要功能:
+    1.判断功能
+        a.public boolean equal(object)
+          将此字符串与指定对象进行比较,一样返回true
+          例:
+             if(a.equals("yes")){}
+        b.public boolean equalsIgnoreCase(String)
+          将此字符串与指定对象进行比较,忽略大小写
+
+比较==和equals()区别和联系
+   联系:
+
+     都用来表示相等,用来判断等号两边是否相等
+
+   区别:
+
+    1.对于==,如果作用于基础类型的变量,则直接比较其存储的"值"是否相等
+
+                   如果是引用类型,则比较指向对象的地址
+
+    2对于equals(),不能作用于基础数据类型
+                   如果没有重写表示比较地址
+                   重写可以比较内容.
+
+
+构造方法:
+    1.String(byte[] bytes)
+     通过使用平台的默认字符集 解码 指定的byte数组,构造新的String.
+     例: 
+     byte[] array={'a','b'};
+     System.out.println(new String(array));
+     //输出结果为ab,
+                 
+
+
+
+
+
+常用方法:(使用格式为  自己定义的字符串(对象).方法)
+    1.length()方法
+      返回该字符串的长度
+    2.concat()方法
+      把一个字符串拼接到该字符串中,返回一个新字符串
+    3.charAt(index)方法
+      返回索引index处的char
+    4.indexof(char或String)
+      返回字符所在的索引值
+    5.substring(x)
+      截取.返回从第x位以后的截取的字符串
+      例:"happy".subString(1);    结果是appy.
+      
+    6.replace(oldobject,newobject)
+      用新的替换旧的,返回一个新字符串
+    7.split(标志符)
+      用某一种标志符分隔,返回一个字符串型数组
+    8.getBytes()
+      将字符串转换为数组,返回一个byte类型的数组,转换为byte类型的数组就会变为数字
+      (转换为数组使之可以遍历)
+    9.toCharArray()
+      将字符串转换为数组,返回一个char类型的数组.
+注意:1.不止String类型的能用equals方法比较,对象都可以,数组等   
+     2.s.concat(5);
+       s是String类型的,5是int类型的,不能直接连接,可以用+连接一个字符.如s.concat(5+"]");

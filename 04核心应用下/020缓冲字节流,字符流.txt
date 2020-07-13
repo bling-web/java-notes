@@ -1,0 +1,56 @@
+  
+  在基础流之上,有一些更强大的流,比如能够高效读写的缓冲流,能够转换编码的转换流,能够持久化存储对象的序列化流等等.这些功能更为强大的流,都在基本的流对象基础之上创建而来的,就像穿上铠甲的武士一样,相当于是对基本流对象的一种增强.
+ 
+一.缓冲流:
+  缓冲流是对4个基本的File流的增强,所以也是4个流,按照数据类型分类:
+  
+  字节缓冲流:  BufferedInputStream     BufferendOutputStream
+  字符缓冲流:  BufferedReader          BufferedWriter.
+
+二.字节缓冲流基本原理:是在创建流对象时,会创建一个内置的默认大小的缓冲区数组,通过缓冲区读写,减少系统IO次数,从而提高读写的效率.
+
+  1.构造方法;
+    (1)public BufferendInputStream(InputStream in):创建一个新的缓冲输入流.
+       传入InputStream对象.在里面直接new FileInputStream
+    (2)public BufferendInputStream(OutPutStream out):创建一个新的缓冲输出流.
+       传入OutPutStream对象.
+
+ 这个缓冲流其实是帮你把缓冲数组设置了.就是普通字节流用数组读写,数组就是一个缓冲区域.
+ 
+性能测试:
+  数组读写+BUFFER 性能最高.
+  数组字节要设置好(1024*16)
+  例:
+        BufferedInputStream fil1=new BufferedInputStream(new FileInputStream("F:\\test\\Wildlife.wmv"));
+        BufferedOutputStream fol1=new BufferedOutputStream(new FileOutputStream("F:\\$360RTLOG$\\copy.wmv"));
+        long time3 = System.currentTimeMillis();
+        int b1;
+        byte[] arr1=new byte[1024*16];
+        while ((b1=fil1.read(arr1))!=-1){
+            fol1.write(arr1,0,b1);
+        }
+        long time4 = System.currentTimeMillis();
+        System.out.println("缓冲流需要时间:"+(time4-time3));
+
+三.字符缓冲流
+  
+  1.构造方法
+    (1)public BufferedReader(Reader in)
+    (2)pulic BufferedWriter(Writer out)
+  
+  2.字符缓冲流有几个特有的方法:
+    (1) BufferedReader:  public String readLine(): 读一行文字.
+        例:循环读取
+            BufferedReader BR=new BufferedReader(new FileReader("F:\\$360RTLOG$\\test2.txt"));
+            String s;
+            while((s=BR.readLine())!=null){                //如果没有内容返回null
+                System.out.println(s);
+            }
+    (2) BufferedWriter:  public void newLine(): 写一行行分隔符,由系统属性定义符号.即换行
+            对象.newLine   就换行.
+  
+  注意:读取记事本文件内容时,第一行会默认有个特殊字符(保存编码格式的),读取内容时,可以单独读出第一个特殊字符.
+       br.read();
+       然后后面开始自己的操作.
+            
+

@@ -1,0 +1,121 @@
+Mybatis Quick Start
+一.新建Maven工程
+   1.添加Mybatis依赖
+     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.5</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.36</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/log4j/log4j -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+     </dependencies>
+
+ 2.创建实体
+     public class Student {
+        private Integer id;
+        private String name;
+        private int gender;
+        private Date birthDay;
+        private String snative;
+        private String deptno;
+        private String tel;
+        private String address;
+        private String description;
+        public Student() {
+     }
+    对应的dao.
+     public interface StudentDao {
+        List<Student> findAll();
+     }
+
+ 3.**mybatis.xml配置**
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <!DOCTYPE configuration
+     PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-config.dtd">
+     <configuration>
+        <!-- mybatis环境配置 -->
+        <environments default="dev">
+            <environment id="dev">
+                <!-- 事务管理 -->
+                <transactionManager type="JDBC" />
+                <dataSource type="POOLED">
+                     <property name="driver" value="com.mysql.jdbc.Driver"/>                  //这里直接写出不好,后面会修改.
+                     <property name="url" value="jdbc:mysql://192.168.13.60:3306/sms" />
+                     <property name="username" value="root"/>
+                     <property name="password" value="root"/>
+                </dataSource>
+            </environment>
+        </environments>
+        <!-- 指定映射配置文件的位置，每一个dao一个配置文件。 -->
+        <mappers>
+            <mapper resource="com/cc/mybatis/dao/StudentMapper.xml"></mapper>
+        </mappers>
+     </configuration>
+
+   **StudentMappper.xml配置**
+     <?xml version="1.0" encoding="UTF-8" ?>
+     <!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         <mapper namespace="com.cc.mybatis.dao.StudentDao">
+     <select id="findAll" resultType="com.cc.mybatis.entity.Student">
+         select * from student
+     </select>
+
+ 4.测试.
+    @Test
+    public void test() throws IOException {
+        // 1. 读取mybatis配置
+        InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+        // 2. 创建SqlSessionFactory
+        SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory sqlSessionFactory = builder.build(inputStream);
+        // 3. 使用工厂生产SqlSession对象
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        // 4. 使用SqlSession对象创建Dao接口的代理对象
+        StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
+        // 5. 使用代理对象执行方法
+        List<Student> studentList = studentDao.findAll();
+        for (Student stu : studentList) {
+            System.out.println(stu);
+        }
+        // 6. 释放资源
+        sqlSession.close();
+        inputStream.close();
+    }
+    这里其实也主要这几步:
+        sqlSessionFactoryBuder.
+        sqlSessionFactory.
+        sqlSession
+        对应mapper.
+        
+
+
+二.注意事项
+   1.创建Mapper.xml和Dao.java的包结构相同。
+     mapper.xml文档时放在resources文件中的,当在这里创建包结构时,要用/分割.不然默认是一个包.
+     例:
+        com/cc/mybatis/dao
+     在java文件中创建包结构时用.也会自动分包.
+   2.mapper.xml中namespace属性必须和dao的全限定类名一致。
+   3.mapper.xml文件中操作配置、id属性取值就是对应的哪个方法.

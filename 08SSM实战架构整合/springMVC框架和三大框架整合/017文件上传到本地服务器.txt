@@ -1,0 +1,133 @@
+一.文件上传前提:(jsp页面中)
+   1.form编表单enctype取值必须是multipart/form-data.默认值是application/x-www-form-unlencoded/
+     entctype是表单请求正文的类型.
+   2.method属性必须是post.
+   3.要提供一个文件选择域,(input type="file")(会有一个文件选择的按钮)
+     注意加上name.
+  
+
+二.使用com.io来帮助文件上传.
+   1.需要添加依赖.(解析时用的servletFileUpload是依赖里的)
+     commons-fileupload                    commons-io
+     commons-fileupload                    commons-io
+     1.3.3                                 2.5
+   2.在jsp页面.
+     a.指定action.method.enctype.(form标签中)
+     b.文件选择域,提交按钮.
+   3.在Controler控制层.
+     a.解析接收request中的内容.
+       用servletFileUpload中的parseRequest方法.(new ServletFileUpload()需要用到DiskFileItemFactory对象)
+     b.解析后得到一个列表,遍历.(假设文件是item)
+       判断是否是文件上传--(!item.isFormField)
+       是的话讲该文件写入--item.write() 里面需要含有路径和文件名的文件对象.
+     c.记得删除临时文件.
+ 
+  说明:1.这个路径一般会在该项目中创建一个uploads的文件夹().
+           怎么创建? 通过session,ServletContext.获取文件夹真实路径,然后通过文件对象创建.
+       2.文件名直接item.getName()获取.
+   例:
+    Controller层中.
+    @PostMapping("/file")
+    public String test5(HttpServletRequest request)  {
+        //创建文件进行下载,这个uploads文件夹的路径就是本项目的target文件下的路径
+        String uploads = request.getSession().getServletContext().getRealPath("uploads");  //创建一个文件夹,这是一种写法,这样第二次过来就不会再创建文件夹了.
+        File file = new File(uploads);
+        if(!file.exists()){
+            file.mkdir();
+        }
+        //new一个servletFileUpload对象,用来解析request中的文件
+        ServletFileUpload servletFileUpload = new ServletFileUpload(new DiskFileItemFactory());
+        List<FileItem> fileItems = null;
+        try {
+            //返回一个文件对象的list集合.
+            fileItems = servletFileUpload.parseRequest( request);
+            for (FileItem fileItem : fileItems) {
+                //判断是否是文件上传类型
+                if(!fileItem.isFormField()){
+                    String name = fileItem.getName();
+                    String s = UUID.randomUUID().toString().replace("-"," ");  //这的目的是生成一个id,使文件名字不一样,可以多次上传
+                    name=s+name;
+                    //将request中的文件写到本地磁盘中.
+                    fileItem.write(new File(uploads,name));
+                    //删除临时文件
+                    fileItem.delete();                                         //临时文件的存在会占用内存.
+                }
+            }
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Content.FILENAME;
+    }
+   //jsp页面中.
+     <form action="spring/file/" method="post" enctype="multipart/form-data">
+    <input type="file" name="Myfile">
+    <input type="submit">
+    </form>
+  //添加依赖.
+     <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.9.0</version>
+     </dependency>
+     <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.3</version>
+     </dependency>
+
+
+三.使用springMVC上传文件.
+   说明:使用Multipart可以直接获取请求头中的文件.在方法参数中传(MultipartFile name).这个name一定要和文件选择域中的name一致.
+   1.配置文件解析器.为什么要配这个?
+     视图有视图解析器才生效,(其实是一个把公共代码提出的一个过程,降低耦合性.)
+     文件解析器是解析request,生成文件对象,送到Controller方法参数中,这也是一个公共的麻烦的过程,所以放在配置文件中.
+    <!--配置文件解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">//这个id是唯一的否则会报错
+        <property name="maxUploadSize" value="102400000"/>             这个value单位是字节.一字节就是1B(Bytes)
+    </bean>
+   2.在Controller层.
+    @PostMapping("/file1")
+    public String test6(HttpServletRequest request, MultipartFile Myfile1) throws IOException {
+        //创建文件路径.
+        String uploads = request.getSession().getServletContext().getRealPath("uploads");
+        File file = new File(uploads);
+        if(!file.exists()){
+            file.mkdir();   //创建这个文件夹
+        }
+        //给文件名添加点内容,防止名称一样.
+        String originalFilename = Myfile1.getOriginalFilename();//相当于com.io中的getName()
+        String id = UUID.randomUUID().toString().replace("-", " ");
+        String name=id+originalFilename;
+        //这里的transferTo(转移)就相当于上面的write.把request中的文件转移到本地中来.
+        Myfile1.transferTo(new File(uploads,name));//这里不用删除临时文件,springMVC会帮我们做
+        return Content.FILENAME;
+    }
+
+
+其实也很简单.当前端页面设置好后(action,name,enctype),点击之后浏览器会创建一个临时文件夹,上传的东西会放到里面,
+
+文件上传原理:
+  其实最跟本的本质就是原先一个普通的请求变成了文件的请求,那么我们一定要修改类型,修改请求的类型,enctype=multipart/form-data.
+
+
+
+
+小技巧:如果不知道两次编译有什么错误,可以右键查看history,有会详细的区别.
+
+
+
+
+
+
+   
+
+        
+ 
+       
+
+ 
+
+  

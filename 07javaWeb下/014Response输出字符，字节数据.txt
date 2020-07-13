@@ -1,0 +1,36 @@
+### Response输出字符数据
+
+* 步骤
+
+  1. 获取字符输出流
+  2. 输出数据
+
+* 中文乱码：设置流的编码，告诉浏览器相应体使用的编码。
+
+* 代码
+
+  // 获取流对象之前，设置流的默认编码： ISO-8859-1, 设置UTF-8
+  //response.setCharacterEncoding("utf-8");
+  
+  // 告诉浏览器，服务器发送的响应体数据的编码。
+  //response.setHeader("content-type", "text/html;charset=utf-8");
+  
+  // 简化版的设置编码
+  response.setContentType("text/html;charset=utf-8");      //这一步相当于上面两步.
+  
+  // 1. 获得字符输出流
+  PrintWriter printWriter = response.getWriter();
+  // 2. 输出数据
+  // printWriter.write("responseDemo04");
+  printWriter.write("<font color='red' size='30'>法符合规范大理 responseDemo04</font>");
+
+
+
+### Response输出字节数据
+
+* 步骤
+  1. 获取字节输出流
+  2. 输出数据
+  
+  和上面一样,输出字符数据一样.
+

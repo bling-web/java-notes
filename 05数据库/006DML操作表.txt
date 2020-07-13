@@ -1,0 +1,50 @@
+DML是针对行数据操作的.
+
+一.给表中的数据赋值:
+
+   1.插入insert
+     1).给需要赋值的字段赋值.
+       insert into 表名 (字段名1,字段名2,字段名3……) values (值1,值2,值3……);
+       注:insert into 表名:表示给哪个表插入数据.
+
+     2).不写字段,直接写值(默认给所有的字段赋值)
+        insert into 表名 values (值1,值2,值3……);
+  
+        这个操作会新插入一行,不会对原来的数据进行更改.
+  
+        在下面的表信息中可以查看对用的值,varchar赋值,单,双引号都可以.(建议单引号)
+
+   2.刷新(update)
+     1).更改某个字段的值.
+        update 表名 set 字段名称=value where id=2;
+        三个关键字:
+           update:找到更新哪张表.
+           set:设置哪些字段的值
+           where:找到更改哪一行的值.或者哪一列(很灵活)
+                 不能设置多行.
+                 注意:如果不加where将对整个表中的数据进行更改.
+        
+        set后面可以跟各种函数关系式.如sum=sum+10;等等
+
+   3.删除
+     删除符合你给的条件数值
+       delect form 表名 where 条件;(一定要加where)
+     一下子删除整张表
+       truncate table 表名;(一般不建议用)
+
+在多级嵌套的时候可能会出现以下情况：
+you can't specify target table 't' for update in FROM;
+它的意思是说，不能先select出同一表中的某些值。再UPDATE这个表（在同一语句中），即不能依据某字段值做判断再来更新某字段的值。
+例:
+delect from t where id in (select id from t where id<5);
+改为下面就OK:
+delect from t where id in (select * from ((select if from t where id <5)tmp);
+     
+
+
+
+
+显示一张表中所有的数据
+  select * from 表名;   (就像java里的System.out一样经典)
+
+  

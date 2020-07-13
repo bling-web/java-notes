@@ -1,0 +1,27 @@
+一.使用
+   1.引入依赖.
+     a.spring-context
+     b.spring-jdbc
+     c.spring-tx(transction事务)
+    这三个依赖grounpId都是一样的.
+二.
+   1.在我们使用JDBCtempete时,可以不用注入,直接继承JdbcDaoSupport即可.
+   2.然后使用getJdbcTempelte.方法即可.例:getJdbcTemplete.query().
+   
+
+
+
+
+
+
+
+连接数据库总结:
+   1.jdbc
+     jdbcTemplete----------直接new一个dataSource对象,设置属性.----------------DriveManageDataSource
+                 ----------构造方法传一个dataSource对象-----------------------DruidDataSourceFactory类型
+                           说明:1.配置可以写在配置文件中.通过properties的中间方式传进来.
+   2.c3p0.
+     QueryRunner-----------构造方法中传一个dataSource对象---------------------ComboPooledDataSource类型
+                          说明:1.配置可以写在配置文件中,然后通过el表达式传进来.
+                               2.配上注解 @PropertySource("classpath:db.properties")
+            

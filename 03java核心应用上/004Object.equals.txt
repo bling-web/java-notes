@@ -1,0 +1,47 @@
+方法说明:判断两个对象是否相等,这里的相等有默认和自定义两种形式
+
+    默认:如果没有重写此方法,则进行"=="的内存地址比较,如果不是同一个对象(每new一个,则必然不是一个对象),则必反回false.
+         public boolean equals(Object obj) {
+             return (this == obj);
+         }
+        
+         注意:  String s="王亮";
+                String d="王亮";
+                System.out.println(s==d);//输出true
+                说明s和d的内存地址是一样的,指向是一样的.
+
+                System.out.println(s.equals(d));//输出true
+             这个方法是public boolean equals(Object anObject),和上面的不是一个方法.
+
+
+
+    自定义:自己重写equals方法,可以指定比较对象的内容,或者指定比较类的部分成员变量.
+
+           快捷键生成:Alt+Insert->e->ctrl+a->Enters
+           此时进行的是内容的比较.
+           例:
+           public boolean equals(Object o) {
+               if (this == o) return true;                               //地址相同则不需要比较
+               if (o == null || getClass() != o.getClass()) return false;//不是一个类也不需要比较
+               Test4 test4 = (Test4) o;                                  //进行向下转型,以便有多态情况.
+               return Objects.equals(name, test4.name) &&                //分别比较各个属性,这个方法其实比较的还是这个属性的地址
+                       Objects.equals(age, test4.age);
+           }
+
+
+
+补充:
+   Integer a=new Integer(2);
+   Integer b=new Integer(2);
+   System.out.println(a.equals(b));
+
+   String a="王";
+   System.out.println(a.equals("王"));
+
+   Character a1 = new Character('a');
+   System.out.println(a1.equals('a'));
+
+   这三个结果都是true,为什么呢?不是说equals是比较对象地址的吗?
+     因为这里用的equals都是被重写过的,并不是Object中的equals方法.分别用的是Integer和String中的equals方法.
+  
+   

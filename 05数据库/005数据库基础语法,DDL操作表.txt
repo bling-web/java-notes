@@ -1,0 +1,51 @@
+
+
+
+DDL操作表:
+  
+  一.增
+     1.创建表(table): 
+       格式: create table 表名(
+             字段名1 字段类型1,
+             字段名2 字段类型2
+             );
+       注意:1.是小括号    2.用逗号隔开.
+    2.快速创建一个结构相同的表:
+      create table 新表名 like 旧表名;
+    3.给某个表增加字段
+      alter table 表名 add 字段名 字段类型;
+  二.删
+     1.直接删除表
+       drop table 表名;
+     2.如果存在则删除表
+       drop table if exists 表名;
+     3.删除某个字段
+       alter table 表名 drop 列名;
+  三.查
+     1.查看所有表
+       show tables;
+     2.查看某个表的结构.
+       desc 表名;
+     3.查看某个创建表
+       show create table 表名;
+  四.改.
+     1.更改某个字段类型.
+       alter table 表名 modify 字段名 字段类型;
+     2.修改列名(字段名)
+       alter table 表名 change 旧名称 新名称 字段类型;
+     3.修改表名
+       rename table 旧表名 to 新表名;
+     4.修改字符集
+       alter table 表名 character set 新字符集;
+    
+       
+
+
+
+
+
+
+用鼠标查看表数据和表结构:
+     表数据:选中表,右键,打开表
+     表结构:选中表,右键,更改表
+  

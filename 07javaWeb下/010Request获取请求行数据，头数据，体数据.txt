@@ -1,0 +1,27 @@
+### Request功能
+
+1. 获取请求数据
+   1. 获取请求行数据：**GET /servlet/demo05?name=cc&age=1 HTTP/1.1**
+      1. 获取请求方式： String getMethod(); GET
+      2. 获取虚拟路径：String getContextPath();----------------------------(重点)
+      3. 获取servlet路径：**/servlet/demo05** /demo05
+      4. 获取请求URI： String getRequestURI(); /servlet/demo05**------------(重点)
+      5. 获取请求URL：String getRequestURL()**; http://localhost/servlet/demo05---------(重点)
+      6. 获取get方式请求参数：String getQueryString(); name=cc&age=1
+      7. 获取协议以及版本： String getProtocol(); HTTP/1.1
+      8. 获取客户机IP地址：String getRemoteAddr();**127.0.0.1---------------(重点)
+      9. URI和URL的区别
+         1. URI：统一资源标识符 /servlet/demo05 人
+         2. URL：统一资源定位符 http://localhost/servlet/demo05 中国人
+   2. 获取请求头数据
+      1. 通过请求头名称获取请求头值：`String getHeader(String name);
+      2. 获取所有的请求头：`Enumeration<String> getHeaderNames();`
+   3. 获取请求体数据
+      1. 请求体：只有POST请求方式才有请求体，在请求体封装了POST请求的参数。
+      2. 步骤：
+         1. 获取流对象：
+            1. BufferedReader getReader(): 获取字符输入流，只能操作字符数据。
+            2. ServletInputStream getInputStream(); 获取字节输入流，可以操作所有类型数据。**文件上传**
+         2. 再从流对象中获取数据。
+      3. 中文乱码：在获取参数前，设置request的编码即可解决；
+

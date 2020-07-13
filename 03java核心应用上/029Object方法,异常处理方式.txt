@@ -1,0 +1,38 @@
+Object非空对象判断
+    Object由一些静态的使用方法组成,这些方法是null-save(控制针安全的)或null-tolerant(容忍空指针的),在它的源码中,对对象为null的值进行了抛出异常操作.(这些是java底层代码完成的)
+    public static <T> T requireNonNull(T obj):查看指定引用对象是不是null
+
+异常处理方式(编译器异常必须处理):
+    1.声明抛出异常:通过关键字 throws 异常类名 (通过这种方式可使编译时不报错,运行时报不报错不一定)
+      Add Exception to methods signature(增加异常到方法说明)
+       
+      格式: 修饰符 返回值类型 方法名(参数) throws 异常类名{}
+
+      (1).把异常抛给上一级,相当于我这里不管了,扔给上一级去管(所以我这里不报错)
+      (2).普通方法扔给调用者(一般来说是main方法调用),main方法扔给虚拟机.
+  
+      作用:标识这个方法可能出现这个异常,调用者需要处理.
+
+      例:
+      public static void main(String []args) throws ParseException {
+          String s="2019年1月31日";
+          SimpleDateFormat si=new SimpleDateFormat(pattern:"yyyy年MM月dd日");
+          Date date=si.parse(s);             //该对象的日期格式一定要和要转换的日期格式一样,否则会报错.
+          System.out.println(date);
+      }
+      这里把异常抛给了虚拟机.main方法不管.
+
+    2.捕获异常,try/catch finally.
+      Surround with try/catch(用try/catch捕获)
+
+      java中对异常 有针对性的语句进行捕获.即可以对出现的异常进行指定方式的处理.
+      格式:
+         try{
+             //可能出现异常的代码
+         }  
+         catch(异常类 var){
+             //发生异常后的处理
+             //打印日期
+             //做错误补救
+         }
+      

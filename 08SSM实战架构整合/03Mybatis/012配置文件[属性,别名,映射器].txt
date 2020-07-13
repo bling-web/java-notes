@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <properties resource="db.properties">
+    </properties>
+    //这个就是配置属性,配置了这个,用${}就能直接取出配置文件中的内容.
+
+
+
+
+
+
+    <typeAliases>
+        <package name="com.cc.mybatis.domain" />
+        <package name="com.cc.mybatis.vo" />
+    </typeAliases>
+    //这个就是别名配置,别名默认就是类名.在需要的地方直接写类名就可以了.
+
+
+
+
+
+
+
+
+
+
+   
+    <!-- mybatis环境配置 -->
+    <environments default="dev">
+        <environment id="dev">
+            <!-- 事务管理 -->
+            <transactionManager type="JDBC" />
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}" />
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!-- 指定映射配置文件的位置，每一个dao一个配置文件。 -->
+    <mappers>
+        <!-- 要求mapper接口名称和mapper映射文件名称相同，且放在同一个目录中 -->
+        <!--<mapper class="com.cc.mybatis.dao.UserDao" />-->
+        <!-- 要求mapper接口名称和mapper映射文件名称相同，且放在同一个目录中 -->
+        <package name="com.cc.mybatis.mapper" />
+    </mappers>
+    //这个就是映射器配置,用package标签的,自动为这个包下的每一个接口指定一个mapper文件,mapper文件必须和接口名称一样.
+
+
+
+
+</configuration>

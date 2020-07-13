@@ -1,0 +1,156 @@
+TCP通信能实现两台计算机之间的数据交互,通信的两端要严格区分客户端和服务器端
+  1.服务端程序,需要事先启动,等待客户端的连接.
+  2.客户端程序应该主动连接服务器端,连接成功才能通信.服务端不可以主动连接客户端.
+在JAVA中,提供了两个类用于实现TCP通信程序.
+  1.客户端:java,net.Socket类表示.创建Socket(套接字)对象,向服务端发出连接请求,服务器端响应请求,两者建立连接开始通信.
+  2.服务端:java.net.ServerSocket类表示,创建ServerSocket对象,相等于开启了一个服务,并等待客户端的连接.
+
+
+一Socket类.
+  1.构造方法:
+    (1).public Socket(String host,int port):
+        创建套接字对象并将其连接到指定的主机上的指定端口号.(如果指定的host是null,则相当于指定地址为回送地址).
+        host:IP地址        port:端口号
+  2.方法.
+    (1).public InputStream getInputStream():获取套接字的输入流.
+        接收数据.返回InputStream对象
+    (2).public OutPutStream getOutPutStream();获取套接字的输出流.
+        发送数据.返回OutputStream对象
+    (3).public void close():关闭此套接字.
+    (4).public void shutdownOutPut():禁用此套接字的输出流.
+
+二.ServerSocket类:实现了服务器套接字,该对象等待网络请求.
+   1.构造方法:
+     (1).public ServerSocket(int port):
+         创建ServerSocket对象,并将其绑定到一个指定的端口号上.
+   2.方法:
+     (1).public Socket accept():
+         侦听并接受连接,返回一个新的Socketd对象.该方法会一直运行直到建立连接.
+
+
+例子:
+//服务器端
+public class Server {
+    public static void main(String[] args) {
+        //1.构建服务器对象
+        ServerSocket serverSocket=null;
+        BufferedReader br=null;
+        PrintWriter printWriter=null;
+        try {
+             serverSocket=new ServerSocket(6789);   //注意端口号不要比1024小
+
+             //2.设置准备阶段,一直等待接收信息
+            Socket socket = serverSocket.accept();         //这里返回客户端的对象,在客户端关闭,这里不进行关闭
+            //5.获得套接字之后(连接),客户端读取数据
+            //写法一:
+//            InputStream input = socket.getInputStream();
+//            InputStreamReader inputReal=new InputStreamReader(input);
+//            BufferedReader br=new BufferedReader(inputReal);                //BufferedRead有读取一行的方法,比较方便
+            //写法二.(升级版)
+            br= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String temp=null;
+
+            printWriter= new PrintWriter(socket.getOutputStream());
+            while((temp=br.readLine())!=null){
+                System.out.println(temp);
+                //6.客户端发送相应数据,一定得写在读数据的里面,不然不会执行这些语句
+                printWriter.println("服务器端相应数据");
+                printWriter.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if(printWriter!=null){
+                printWriter.close();
+            }
+            if(br!=null) {
+                    try {
+                        br.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+            }
+            if(serverSocket!=null){
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
+}
+//客户端
+public class Client {
+    public static void main(String[] args) {
+        //3建立Socket对象
+        Socket socket=null;
+//        OutputStreamWriter outreal=null;
+        PrintWriter pw=null;
+        BufferedReader bufferedReader=null;
+        try {
+            socket=new Socket("127.0.0.1",6789);
+            //4.建立输出流,客户端主动向服务端发出信息.
+            //方式一:
+//            OutputStream out = socket.getOutputStream();
+//            outreal=new OutputStreamWriter(out);
+//            outreal.write("我发出请求,请求连接");
+//            outreal.write("\r\n".toCharArray());
+//
+//            outreal.write("我发出请求,请求连接");
+//            outreal.write("\r\n".toCharArray());
+//            outreal.flush();                            //必须刷新
+            //方式二:(该方法更简便一点,使用PrintWriter)
+            OutputStream out = socket.getOutputStream();
+            pw=new PrintWriter(out);
+            pw.println("客户端发出请求,请求连接");
+            pw.flush();
+            pw.println("客户端发出请求,请求连接");
+            pw.flush();
+            //7.接受服务器端相应数据
+            bufferedReader= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String temp=null;
+            while((temp=bufferedReader.readLine())!=null){
+                System.out.println(temp);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if(bufferedReader!=null){                 //防止出现空指针异常
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(pw!=null){
+                pw.close();
+            }
+            if(socket!=null){                        
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
+}
+
+总共为7个步骤:
+  1.服务端设置对象
+  2.服务端开启等待
+  3.客户端设置对象
+  4.客户端主动发送数据
+  5.服务端接收数据
+  6.服务端发送相应数据
+  7.客户端接收相应数据
+
+关于文件,资源,流的对象都需要进行关闭
+
+    

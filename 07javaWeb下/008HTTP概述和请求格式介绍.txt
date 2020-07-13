@@ -1,0 +1,69 @@
+## HTTP
+
+### 概念：Hyper Text Transfer Protocol(超文本传输协议)
+
+
+
+* 传输协议： 定义了客户都与服务器端通信时，发送数据的格式。
+* 特点：
+  * 基于TCP/IP的高级协议
+  * 默认端口是80 http://www.baidu.com:80 
+  * 基于请求/响应模型：一次请求对应一次响应
+  * 无状态的：每次请求之间相互独立，互不影响，并且不能交互数据。
+* 版本：
+  * 1.0： 每一次请求响应都会建立新的连接
+  * 1.1 ：对连接进行了复用。对缓存有了更好的支持。
+
+
+
+### 请求消息数据格式
+
+* 请求行
+
+  请求方式 请求资源 请求协议/版本
+
+  GET /servlet/a.html HTTP/1.1
+
+  * http协议中一共有7中请求方式，常用2两种
+    * GET：
+      * 请求参数在请求行中，在url后。
+      * 请求url长度有限制
+      * 不太安全
+    * POST
+      * 请求参数在请求体中。
+      * 请求url长度没有限制。
+      * 相对安全
+
+* 请求头
+
+  请求头名称：请求头值
+
+  * 常见的请求头：
+    * User-Agent: 浏览器告诉服务器、访问时使用的浏览器版本信息
+    * Referer：http://localhost/servlet/a.html 告诉服务器，我是从哪里来的。
+      * 防盗链
+      * 统计工作
+
+* 请求空行
+
+  空行 用于分割POST请求的请求头和请求体。
+
+* 请求体
+
+  封装post请求消息的请求参数
+
+   ```html
+  GET /servlet/a.html HTTP/1.1
+  Host: localhost
+  Connection: keep-alive
+  Pragma: no-cache
+  Cache-Control: no-cache
+  Upgrade-Insecure-Requests: 1
+  User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+  Accept-Encoding: gzip, deflate, br
+  Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+  Referer: http://localhost/servlet/a.html
+  Cookie: JSESSIONID=77AE140E9C95B75AAB9491E270826ACF; Idea-37032b41=cf888ecb-b13e-49d7-95fb-57faf7d4a3f1
+  
+  username=dfsdf

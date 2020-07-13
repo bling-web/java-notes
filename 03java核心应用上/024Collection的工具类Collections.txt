@@ -1,0 +1,114 @@
+java .util.Collections是Collection集合的一个工具类,用来操作集合的.
+  常用方法:
+    1.public static <T> boolean addAll(Collection<T> C,T ...elements):(一个参数,一个可变参数)
+      往集合中添加一些参数(多个参数)
+      例:
+        List<String> colle=new ArrayList<>();
+        Collections.addAll(colle,"王亮","关羽","张飞");  //colle是List的对象,在这里会自动向上转型,转成Collection.
+        System.out.println(colle); 
+                    
+    2.public static void shuffe(List<?> List)            //<?>泛型通配符,表示传String,Integer等各种引用类型对象都可以.
+                                                           必须传List类的对象.
+      打乱集合顺序(洗牌)
+      例:
+      List<String> colle=new ArrayList<>();              //创建List的引用(对象)
+      Collections.addAll(colle,"王亮","关羽","张飞");
+      Collections.shuffle((colle);                       //可以直接传进去
+      如果集合声明成Collection:
+      Collection<String> colle=new ArrayList<>();        //创建Collection的引用(对象)
+      Collections.addAll(colle,"王亮","关羽","张飞");    
+      Collections.shuffle((List<?>) colle);              //这个时候必须把colle强制向下转型,转成List型   
+
+    3.public static <T> void sort(List<T> List)          //<T>泛型,定义时不确定传入哪种类型.泛型用在方法上.
+      将集合中的元素按默认规则排序(默认规则就是传入对象使用内部比较器Comparable,重写CompareTo方法)
+      注意:存储的元素,如果想要实现排序.
+           就必须实现一个叫Comparable的接口,并且重写CompareTo方法(用来定义排序规则).
+           String类重写了这个方法,在String类中,排序规则是按26个字母升序排序的.
+           Integer类也重写了这个方法.数字大小.
+       (2).比较引用类型(自定义类型)
+              other-this.降序.
+              this-other.升序
+      例子:
+       public class Student implements Comparable<Student> {               //自定义类必须实现Comparable接口,并指定泛型
+            @Override
+            public int compareTo(Student other) {                          //重写comparaTo方法,this指代当前对象
+                return this.age-other.age;                                //该类中有私有属性姓名和年龄,get,set方法,构造器,这里不再给出
+            }
+       }
+       public static void main(String[] args) {
+            List<Student> list=new ArrayList<>();
+            Collections.addAll(list,new Student("张三",23),new Student("李四",25),new Student("王五",24));
+            Collections.sort(list);                                        //调用默认规则排序函数,必须在该容器中存储的引用类型(类)中
+            System.out.println(list);                                         重写compareTo方法.
+
+       }
+
+       反例:
+        // 这个方法永远只执行第一个return,原因暂不清楚,可能与内部比较器有关
+        public int compareTo(Book other) {                 
+//        if (other.price != this.price) {
+//            return (int) (other.price - this.price);
+//        }
+//        else if (this.paginalNumber != other.paginalNumber) {
+//            return this.paginalNumber - other.paginalNumber;
+//        }
+//        else return 0;
+//    }
+
+    4.public static <T> void sort(List<T>  List,Comparator<? super T>)
+      将集合中的元素按指定规则排序.(使用外部比较器Comparator,重写compare方法,很灵活)
+           /**
+//         * 比较规则:compare(String o1,String o2)
+//         * (1).比较基础数据类型
+//         *    o2-o1,降序(后面的和前面的进行比较)
+//         *    o1-o2,升序(前面的和后面的进行比较)
+//        
+      (1)比较基础类型的例子(基本类型和已有的引用类型,比如String,Integer)       
+        public static void main(String[] args) {
+          List<String> list=new ArrayList<>();
+//        Collections.addAll(list,"asd","fbd","sdn","dfd","djv");
+//        
+//        Collections.sort(list, new Comparator<String>() {        //匿名内部类的使用. 
+//            @Override
+//            public int compare(String o1, String o2) {
+//                return o2.charAt(0)-o1.charAt(0);               //charAt函数,返回指定索引处的char值.
+//            }                                                     即按第每个元素的第一个字母进行降序排序.
+//       });
+//        System.out.println(list);
+       (2)比较自定义类的例子.
+          public class Person{                                     //Person中有私有属性姓名和年龄,get,set方法,构造器,重写了hashcode和
+          }                                                          equals,和toString方法. 这里不再给出.
+         
+          public static void main(String[] args) {
+              List<Person> list=new ArrayList<>();
+              Collections.addAll(list,new Person("张三",23),new Person("李四",25),new Person("王五",26));//添加三个对象
+              Collections.sort(list, new Comparator<Person>() {    //
+              @Override
+              public int compare(Person o1, Person o2) {    
+                 return o1.getAge()-o2.getAge();                   //按对象的年龄降序排列.
+              }
+          });
+          System.out.println(list);
+          }
+
+java给我们提供了两种比较器.
+   Comparable: 内比较器
+     比较自定义类引用,需要在自定义类中实现Comparable接口,并且重写ComparaTo方法.
+   Comparator: 外比较器
+     相对比较灵活,不需要在定义类时实现Comparable接口和重写Comparato方法.
+     只需要在比较的时候指定比较的规则.即使用Comparator接口,就是匿名内部类的使用,重写Compare方法即可.
+
+
+理解:
+     
+ 写法一:      public int compare(Person o1, Person o2) {    
+                 return o1.getAge()-o2.getAge();                   //按对象的年龄升序排列.
+              }
+ 写法二:      .if(s1.getAge() > s2.getAge()){
+                  return 1;                                        //当返回正数时,认为第二个参数应该排在前面
+               }else if(s1.getAge() == s2.getAge() ){
+                  return 0;                                        //0时认为相同,谁前谁后无所谓
+               }else{
+                  return -1;                                       //返回-1是,认为第一个参数应该排在前面
+               }
+    写法一和写法二效果一样,

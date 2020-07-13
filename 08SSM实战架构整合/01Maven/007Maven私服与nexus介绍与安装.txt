@@ -1,0 +1,116 @@
+一.Maven私服
+   私服概念:是远程仓库的一种,搭建在局域网环境下,为当前局域网范围内所有的Maven工程服务(就是公司中有一个人在互联网中             下载了资源,这个局域网内所有的可以直接在局域网下载即可)
+二.Maven私服中常用的软件--Nexus
+   Nexus是一个强大的maven仓库管理软件,简化了本地仓库的维护和尾部仓库访问,用来搭建私服.
+
+   1.使用.安装步骤:
+     a.下载(百度搜索nexus.oss    2.14版本)
+     b.解压到指定目录.
+     c.安装:在cmd中到bin目录执行 nexus.bat install
+     d.启动:在cmd中bin目录执行 nexus.bat start
+     e.访问localhost:8081/nexus/                          //访问成功即安装成功
+
+   2.配置.
+     a.登陆   admin/admin123.
+     b.Maven配置文件
+       第一部分:
+         作用:真正的私服的配置.使用某个地址(私服)来代替访问中央仓库.
+       <mirror>
+    
+
+      <id>nexus</id>                                                           //这个id是唯一的,代表某个本地仓库镜像              
+    
+
+      <mirrorOf>center</mirrorOf>                                              //repositoryId,要被代替某个中央仓库的id
+   
+
+       <name>Human Readable Name for this Mirror.</name>
+
+                                                                                                <url>http://localhost:8081/nexus/content/groups/public</url>             
+
+//使用哪个网址来代替中央仓库(私服地址)
+       </mirror>
+
+       第二部分:
+         作用:自己jar包上传私服的两种版本,releases(正式版),snapshots(快照版)
+        <server>      
+    
+
+      <id>releases</id>                      //这个id要和仓库中对应的Releases的Repository ID一样.
+    
+
+      <username>admin</username>
+    
+
+      <password>admin123</password>
+   
+
+     </server>
+
+ 
+        <server>
+    
+
+      <id>snapshots</id>                     //这个id要和仓库中对应的Snapshots的Repository ID一样.
+    
+
+      <username>admin</username>
+    
+
+      <password>admin123</password>
+    
+
+    </server>
+
+
+     c.parent-pom.xml文件
+       第一部分:
+          作用:用于发布自己jar包时的配置.
+        <distributionManagement>
+        <repository>
+            <id>releases</id>                    //和仓库中对应的Releases的Repository ID一样.
+            <url>http://localhost:8081/nexus/content/repositories/releases/</url>    //一般也对应私服地址
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>                   //和仓库中对应的Snapshots的Repository ID一样.
+            <url>http://localhost:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        </distributionManagement>
+       第二部分:
+          作用:在parent模块的pom.xml中加入私服的配置，让Maven从私服下载jar包，而不直接去远程仓库下载。
+默认情况下，Maven下载jar包将直接连接到外网http://repo1.maven.org/maven2/去下载；
+安装私服之后，让Maven下载jar包先从私服查找，如果没有，再从外网下载并保               存在私服上
+,在POM在加入下面的配置，其中url为NEXUS私服的Public Repository对外的地址
+以后，Maven下载构建（jar包或插件）都将                从这里开始下载
+        <repositories>
+          <repository>
+            <id>public</id>                                                //下面仓库地址对应的id
+            <url>http://localhost:8081/nexus/content/groups/public/</url>  //一般公司有和项目对应的相关的地址
+            <releases>
+                <enabled>true</enabled>                                              //允许到上面那个仓库中去
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+          </repository>
+        </repositories>
+
+       <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <url>http://localhost:8081/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+       </pluginRepositories>
+       
+     注意配置文件和仓库某些设置的对应关系.
+  
+   说明:1.Central--proxy是一个中央代理仓库.当私服中没有时,代理远程仓库去下载jar包.
+        2.hosted:用来存储自己的jar包.
+  
+   

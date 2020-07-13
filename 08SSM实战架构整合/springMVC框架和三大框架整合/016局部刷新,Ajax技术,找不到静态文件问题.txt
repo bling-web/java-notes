@@ -1,0 +1,101 @@
+一.JSON数据格式:(key-value形式)
+   {key:value,key2:value2}
+二.优势:
+   1.占据内存小.
+   2.能够方便的转成实体对象.
+ 
+
+三.请求转发和异步转发.
+   同步:客户端发送请求,在服务端响应之前,客户端不能做任何事.
+   异步:客户端发送请求,在服务端处理过程中,客户端可再次发送请求.
+     好处:不影响全局页面的刷新,可以只刷新局部.
+
+四.jquery和Ajax.
+    jQuery说明:
+       jQuery是一个快速的简介的javaScript框架,是一个优秀的javaScript代码库.
+       它封装了javaScript常用的功能代码,提供一种简便的javaScript设计模式,优化HTML文档操作,事件处理,动画设计和Ajax交互.
+    Ajax说明:
+       异步JavaScript和XML,是一种用于创建快速动态网页的技术.
+       它能够在无需重新加载整个网页的情况下,能够更新部分网页的技术.(异步转发)
+    那么怎么实现局部刷新呢?
+       个人理解因为可以异步,在一个大的请求里面又重新发送了一个小的请求,而大请求不变.
+
+五.使用Ajax.
+   1.导入jar包.(jQuery.min.js)
+   2.步骤: 
+     a.给一个按钮或者超链接注册一个事件.
+     b.事件里面调用ajax方法,参数有url,type,data,contenType,dataType(注意url需要特殊配置)
+     d.在事件里面写成功之后的方法.
+     e.定义一个实体类,在Controller中接收.并返回
+     f:导入jackson.core,jackson.databind,jackson.annotation三个依赖.
+     g:在成功的方法中接收.
+     例:
+   ***jsp页面中***:
+   <script>
+    $(function(){                                                      //$(function(){})相当于window.onlocd
+        $("#testAjax").click(function () {                             //$("#id")相当于document.getElementById("id");
+           $.ajax({
+               url:"Ajax/ajax",                                        //去哪,这个请求需要告诉DispactherRequest不要通过Controller
+               type:"post",                                            //怎么去
+               data:'{"username":"wang","password":"123","age":"23"}', //带什么
+               contentType:"application/json;charset=UTF-8",           //怎么带,后面就是服务器返回的
+
+
+               dataType:"json",                                        //服务器返回的数据类型
+               success:function(data) {                                //这里返回的data是一个对象.
+                   $("#username").val(data.username);                  //jQuery中不用value,直接val方法就好了
+                   $("#password").val(data.password);
+                   $("#age").val(data.age);
+               }
+            });
+        });
+     });
+    </script>
+    <button id="testAjax"> ajax</button><br/>
+    同户名:<input type="text" id="username"><br/> 
+    密码:<input type="text" id="password"><br/>
+    年龄:<input type="text" id="age"><br/>
+
+   说明:在服务器接收到数据后,其本质是一个字符串,这里需要封装一个实体类进行使用,怎么让json数据封装到我们的实体类中呢?这里需要添加三个           依赖.(spring默认的封装是可以将表格里的数据封装到实体类里)
+         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.9.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+    ***在Controller类的方法中***:
+    @PostMapping("/ajax")
+    public @ResponseBody                                              //这个注解的作用是将返回的user对象转成json数据并发送出去
+    User test(@RequestBody User user){                                //User是一个自己封装的实体类
+        System.out.println(11111);
+        User user1 = new User();
+        user1.setUsername(user.getUsername());
+        user1.setPassword(user.getPassword());
+        user1.setAge(user.getAge());
+        return user1;
+    }
+
+
+
+   小问题1:在使用js代码,跳到static/js/jQuery.min.js时发出现问题,找不到这个文件,是因为这个请求被通过DispatcherRequest去找,它去动态资源(            被标注被Controller的类)去找了,所以才找不到,我们需要配置,告诉SpringMVC遇到该请求时,直接去某个路径找,不要通过                            DispatcherRequetst.
+       这样设置:
+          <!--设置static文件开头的请求不经过DispactherRequest.直接通过路径static开始查找.-->
+          <mvc:resources mapping="/static/**" location="/static/"/>
+   小问题2:那为什么很多静态文件,它没有通过DispatcherRequetst,而这个通过了呢?
+          目前自己认为当它接收到请求时会根据文件后缀名判断是否是静态文件,如html,jsp等等,没有这些后缀名则都通过DispatcherRequetst.
+   
+
+
+
+  
+  

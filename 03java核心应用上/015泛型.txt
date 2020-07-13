@@ -1,0 +1,102 @@
+泛型
+    可以在类或方法中预知地使用未知(比如源代码中泛型的表现是<E>,是未知的)的类型,一般在创建对象时,将未知的类型确定具体的类型.当没有指定泛型时,默认类型为Object类型.
+    定义的时候 不知道类型,使用时才知道.(泛型只能传引用类型)
+
+没有使用泛型容易出现的问题.
+   1.类型不一样编译时不会报错
+   2.当使用特定类型的函数时,需要进行强制转型.
+     例:
+      //1.创建一个没有使用泛型的集合
+        Collection collection=new ArrayList<>();
+        collection.add("王fhdbf");
+        collection.add("亮");
+        collection.add("亮");
+        collection.add("来");
+        collection.add("静");
+        //使用迭代器遍历集合.
+        Iterator iterator = collection.iterator();
+        while (iterator.hasNext()){
+            Object next = iterator.next();
+            String s=(String)next;                         //将Object强制转换为String类型.因为要使用String类的函数.
+            System.out.println("其长度是"+s.length());
+
+        }.
+使用泛型的优点.
+    1.编译时可以检查你的类型是否一致.
+    2.提前确定类型,后期不需要强转. 
+      例:
+        Collection<String> collection1=new ArrayList<>();
+        collection1.add("王fhdbf");
+        collection1.add("亮");
+        collection1.add("亮");
+        collection1.add("来");
+        collection1.add("静");
+        //使用迭代器循环
+        Iterator<String> iterator1 = collection1.iterator();
+        while(iterator1.hasNext()){
+            String next1 = iterator1.next();               //直接返回就是String类型.
+            System.out.println("使用泛型的长度是"+next1.length());
+        }
+
+泛型的使用.(经常使用在容器中,因为预先不知道存储什么类型,灵活性很好)
+    泛型可以用在类,方法,接口上
+    1.用在类上.        修饰符+class+类名(泛型){}
+      (1).在类上使用泛型.类中的方法要使用泛型时不需要声明.
+      (2).类上的泛型和类中方法的泛型要一致.
+      例:
+       public class UseClass<E>{
+
+           public void s(E e){                    //否则要在返回值类型前声明.
+               System.out.println(e);
+           }
+       }
+
+      最好的例子,ArrayList类.在类中用泛型,其方法也一定会用泛型.
+
+    2.用在方法上.      修饰符+(泛型)+返回值类型+方法名(参数/泛型){}
+                       public <T> T print(T t){}
+                       public <T> void print(T t){}
+      例.
+      public <T> void print(T t){                 //T就代表泛型
+        System.out.println(t.getClass());         //getClass是Objet类中的.
+
+      }
+      public static void main(String[] args) {
+        UseMothod use = new UseMothod();
+        use.print("王");
+        use.print(123);                           //这里的123会自动装箱,变为Integer型,
+      }
+      
+    3.用在接口上       修饰符+interface+接口名(泛型){}
+      第一种:实现类确定类型(可以起约束类型作用,只能约束定义时传泛型的方法)
+      例:
+      public interface UseInteface<E>{
+          public abstract  void print(E t);                     //什么时候确定接口的类型就什么时候确定该方法的类型
+      }
+      public class Interface1 implements UseInteface<String> {
+          @Override
+          public void print(String t) {
+          }
+      }
+      public static void main(String[] args) {
+         Interface1 interface1 = new Interface1();
+         interface1.print("shdd");
+   
+     第二种:实现类不确定类型,实例化时确定类型.
+     例:
+     //泛型接口.
+     public interface UseInteface<E>{       
+         public abstract  void print(E t);                
+     }
+     //实现类,注意如果不确定类型,类名称后也要有<E>
+     public class Interface2 <E>implements UseInteface<E> {
+         @Override
+         public void print(E e) {
+             System.out.println(e);
+         }
+     }
+     //实例化确定类型.
+     public static void main(String[] args) {
+        Interface2<String> objectInterface2 = new Interface2<>();  //这里的String只能约束该类中定义时要传入泛型的方法.
+        objectInterface2.print("sdad");                            //其他方法可以自由定义传入类型.
+     }

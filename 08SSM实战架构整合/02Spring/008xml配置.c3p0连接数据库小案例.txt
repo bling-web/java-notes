@@ -1,0 +1,62 @@
+步骤:
+  1.导入依赖.
+         <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.47</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+  2.使用QueryRunner对象的query和update方法即可.
+    例:
+     public List<User> findAll() {
+        try {
+            return queryRunner.query("select * from user",new BeanListHandler<User>(User.class));          //返回一个list
+        } catch (SQLException e) {
+           throw new RuntimeException(e);
+        }
+    }
+    public User findById(Integer id) {
+        try {
+            return queryRunner.query("select * from user where id=?",new BeanHandler<User>(User.class),id); //返回User的对象
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+     public void saveUser(User user) {
+        try {
+            queryRunner.update("insert into user (id,username,name,password,type) values (?,?,?,?,?)",user.getId(),
+                    user.getUsername(),user.getName(),user.getPassword(),user.getType());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+  3.配置文件.
+    配置QueryRunner的bean.它的构造方法中需要一个datebase.
+    所以再配一个datebase的bean.
+    例:
+    <bean id="userService" class="com.cc.spring.service.Impl.UserServiceImpl">       //userService里用到userDao
+        <property name="userDao" ref="userDao"/>
+    </bean>
+       <bean id="userDao" class="com.cc.spring.dao.impl.UserDaoImpl">                 //userDao里用到queryRunner
+           <property name="queryRunner" ref="queryRunner"/>
+       </bean>
+    <bean id="queryRunner" class="org.apache.commons.dbutils.QueryRunner">            //queryRunner里面用到dateSource
+       <constructor-arg name="ds" ref="dateSource"/>
+    </bean>
+    <bean id="dateSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">          //dateSource里面需要传属性
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/sms"/>
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+    </bean>

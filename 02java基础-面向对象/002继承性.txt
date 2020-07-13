@@ -1,0 +1,118 @@
+定义:
+    子类继承父类的属性(变量)和行为(方法),使得子类具有父类相同的属性,相同的行为
+    子类可以直接访问父类中非私有的变量和方法.
+    常识:
+         父类也叫超类(super)
+好处:
+    1.提高了代码的复用性
+    2.类于类产生关系,是多态的前提
+
+注意点(继承之成员变量和成员方法):
+    1.可以多层继承(好几代继承),但不可多继承(同时继承多个)
+    2.this和super(父类)的区别.
+     例:
+       public class Employer {
+	 String name="来静";
+       }
+       public class Student extends Employer {
+	String name="王亮";
+	public void printName1() {
+		System.out.println(this.name);//打印结果为王亮
+		
+	}
+	public void printName2() {
+		System.out.println(super.name);//打印结果为来静
+		
+	}
+        分析:this关键字代表当前对象,当前对象调用属性会根据就近原则.
+                 (如果函数形参和成员变量同名,这是需要this指明当前成员变量)
+             super关键字以父类为主,不论子类和父类有无相同的属性,super都将表示父类中的属性
+          
+        注意:这个super表示的并不是父类中某个对象的属性,而是刚开始定义中赋值的属性,就是String name=""这个
+
+     3.当子类父类中有相同属性时,按就近原则设置和调用(比如子类中有name,那么我们在子类中设置的时候就是设置子类),总之一句话,在哪个类中就优先那个类.
+     4.调用方法也是,调用时会检查子类中有没有该方法,有就使用本类方法,没有使用父类中方法.即如果有重名方法,会
+       使用子类中方法.
+     5.所有的类都默认继承object类,作为父类.object是顶层父类.
+
+
+方法重写(继承之成员方法): 
+     定义:子类,父类中出现完全一致的方法,(方法名,参数,返回值类型完全一致)叫做方法重写(override);
+          方法重写会出现覆盖效果,子类会覆盖父类,这种情况只出现在子类和父类中.
+     作用:子类可以根据需要,定义特定于自己的行为,既沿袭了父类的功能名称,又可以重新实现方法,在方法中增加自己的功能.
+     例:public class phone{
+	    public void print(){
+		System.out.print("我可以打电话");
+            } 
+        }
+        @Override
+        public class newPhone extends phone{
+	    public void print(){
+		super.print();//先执行一般父类的功能
+		System.out.print("我还可以接收显示来电人头像");
+            } 
+        }
+      注意:方法重写时子类方法修饰符权限一定要大于等于父类修饰符权限.
+           public>protected>default>private
+
+继承之构造方法:
+    1.构造方法名称必须和类名一样,子类不能继承父类构造方法,
+
+    2.比如A extends B,在给Anew对象时,系统会自动给其父类构造对象,执行父类构造方法.(给哪个类构造对象就会执行其默认构造方法)
+      解释:在A构造方法里,会在第一行默认执行super(),表示构造其父类对象,B构造方法里,也会默认有super(),因为要为顶层父类object构造对象
+
+    3.super()和super(参数)
+      super()表示构造父类对象,调用父类默认构造函数,应为方法中第一句执行
+      super(参数)表示调用父类中含有相同参数的构造函数,也应为方法中第一句执行
+      所以这两个不能在一个方法中.
+      所以如果想在子类中调用父类中的有参构造方法时,应专门用一个方法表示.
+          例:
+            public 子类名称(父类参数){
+		super(父类参数)            
+            }
+
+
+关于继承中私有属性private
+    被private修饰的变量,不能被子类继承,但是父类和子类有这种关系,通过这种关系,用super(参数)调用父类含有相同参数的构造函数,就可以将父类private修饰的变量赋给子类所new出的对象,再通过this.get属性调用.
+    例:
+    public class Test1 {
+        private String name;                     //定义父类私有属性name
+	String getName() {
+		return name;
+	}
+	void setName(String name) {
+		this.name = name;
+	}
+	public Test1() {
+		super();
+	}
+	public Test1(String name) {            //父类有参构造函数
+		super();
+		this.name = name;
+	}
+    }
+    public class Test2 extends Test1 {
+
+	public Test2() {
+		super();
+	}
+	public Test2(String name) {
+		super(name);                   //调用父类有参构造函数,相当于执行super(),this.name=name;
+	}
+	public void print() {
+		System.out.println(this.getName());       //this代表当前对象,谁调用就是谁
+	}
+    }
+    public class Test3 {
+	public static void main(String[] args) {
+		
+		Test2 t2=new Test2("王亮");     //new一个对象t2,同时调用test2类构造函数.相当于执行super(),this.name="王亮"
+                                                //也就是t2.name="王亮";
+		t2.print();                     //通过t2,这个对象调用属性.
+		                               
+	}
+    }
+    这个例子很好的体现了this就代表当前对象的思想.
+
+java编程思想中的解释:
+  当继承了现有类型时,也就创造了新的类型,这个新的类型不仅包括现有类型的所有成员(尽管private成员被隐藏了起来,并且不可访问),但是更重要的是他复制了基类的接口,也就是说,所有可以发送给基类对象的消息同时也可以发送给导出类对象(所有基类对象能调用的变量参数,导出类对象也可以调用),由于发送给类的消息的类型是可知类的类型,所以这也就意味着导出类和基类具有相同的类型,通过继承所产生的类型等价性是理解面向对象程序设计方法内涵的重要门槛.

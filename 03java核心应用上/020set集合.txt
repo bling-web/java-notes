@@ -1,0 +1,10 @@
+Treeset.
+    数据结构: 使用树桩数据结构保证数据唯一.
+
+    java.util.Set接口和java.util.List接口一样,同样继承自Collection接口,它与Collection接口中的方法基本一致,并没有对Collevtion接口进行功能上的扩充,只是比Collection接口更为严格了.与List接口不同的是,Set接口中的元素无序,并且都会以某种规则保证存入的元素不出现重复.
+
+HasSet:
+    数据结构:使用哈希表保证数据唯一性
+ 
+LinkedHasSet:
+    数据结构:使用链表和哈希表保证数据唯一.

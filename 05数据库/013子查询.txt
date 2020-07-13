@@ -1,0 +1,53 @@
+子查询:
+  一个查询的结果作为另一个查询的条件,就是有查询的嵌套,内部的,带括号的查询叫做子查询.
+  注意:子查询比较费时,如果数据量大的时候不建议使用子查询,当数据量只有几千条的时候可以使用.
+  
+  例:SELECT NAME FROM student WHERE id_school=(SELECT id FROM school WHERE NAME='哈尔滨工业大学');
+     查询哈尔滨大学有哪些学生.
+
+子查询结果的三种情况:
+  1.返回单行单列.
+  2.返回单列多行
+  3.返回多行多列.
+
+一.单行单列情况:
+   这种情况肯定是返回的结果作为where后面的条件.
+   格式:
+   select * from 表名 where 字段名 (子查询);
+   查询最高工资的人的信息:
+   select * from emp where salary=(select max(salary) from emp);
+   查询低于平均工资的人的信息.
+   select * from emp where salary<(select avg(salary) from emp);
+
+
+二.单列多行情况:
+   父类一般要使用in(),然后跟在where后面作为条件.可以看做返回一个数组.
+   格式:
+   select * from 表 where 字段 in(子查询);
+   查询开发部和销售部的员工的信息:(两张表)
+   select * from 员工表 where dept_id in(select id from 部门表 where name in('开发部','销售部'));
+
+
+三.多列多行情况:
+   子查询返回的结果作为一张表跟在from之后.
+   注意:一定要给表起别名,否则这张表没有名称无法访问表内的字段.
+   格式:
+   select * from (子查询) 别名 where 条件.
+   例:
+   查询2011年以后入职的员工工资高于5000员工的信息.
+   select *  from (select * from 员工表 where date>2011) e  where e.salary >5000;
+
+   查询哈工大年龄最大的学生:
+   SELECT * FROM (SELECT * FROM student st JOIN school sc ON(st.id_school=sc.id) WHERE sc.school_name='哈尔滨工业大学') e ORDER BY        e.age DESC LIMIT 1;
+   说明:1.()的子查询表示筛选出哈工大的全部学生.
+        2.不能使用聚合函数.通过按年龄排序.然后限制行数为1即可.
+       
+
+
+   即对原表进行一定程度的过滤,生成一个符合条件的新表.再对新表进行操作.
+  
+  
+
+ 
+
+  

@@ -1,0 +1,55 @@
+# Cookie
+
+### 概念
+
+**客户端会话技术，数据是保存在客户端浏览器中的**
+
+### 快速入门
+
+1. 创建Cookie对象,绑定数据。
+
+   `Cookie cookie = new Cookie("pid", "123232");
+
+2. 发送Cookie。
+
+   `response.addCookie(cookie);`
+
+3. 获取Cookie。
+
+   `request.getCookies();`
+
+### 原理
+
+**基于响应头set-cookie和请求头cookie来实现的。**
+
+
+
+### 方法
+
+* Cookie存活时间
+  1. 默认情况下，浏览器关闭之后，Cookie数据被销毁。默认存活时间是当前会话。
+  2. 持久化存储： setMaxAge(int seconds);
+     1. 正数：将Cookie持久化到磁盘中，并指定Cookie的存活时间。到期后Cookie自动销毁。
+     2. 负数：默认值。
+     3. 0： 删除Cookie。
+* **在Tomcat8之前,Cookie是不能直接存储中文的，之后是支持的。建议所有存储中文的地方都是用URL编码一下。**
+* Cookie的访问域
+  * **同域名**： setDomain(String path):在同一个tomcat中部署多个项目，可以设 置cookie的path为根目录，即可完成不同项目之间的cookie共享。
+  * **不同域名**： setDomain(String path): 如果设置一级域名，那么多个二级域名之间可以共享服务器。
+   域名说明:   
+       www.lisp.com这种形式的域名并不是一级域名，它只是一个二级域名，也就是说www只是一个主机名
+       真正的一级域名是由一个合法的字符串+域名后缀组成，所以，lisp.com这种形式的域名才是一级域名，lisp是域名主体，.com是域名后缀，可以是.net也是域名后缀
+
+
+
+### 特点
+
+* Cookie存储数据在客户端浏览器。
+* 浏览器对于单个Cookie的大小有限制(4kb)，以及对同一域名下的cookie数量有限制(20)
+
+
+
+### 作用
+
+* 在不登录的情况下，完成服务器对访客用户的标识。
+* cookie一般用于存储少量不太敏感的数据。

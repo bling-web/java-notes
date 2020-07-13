@@ -1,0 +1,103 @@
+一.一对多.
+   一对多和一对一的区别主要在两个地方.
+   1.方法的返回值.
+     一对多是一个列表,一对一是一个对象.
+   2.resultMap中.
+     一对多:使用collection集合.
+     一对一:使用association关联
+     
+   例:以一个用户对应多个账户为例.
+      a.接口中.
+        public interface UserMapper {
+            /**
+            * 查询所有用户信息以及所有的帐户列表
+            * @return
+            */
+            List<User> findUser();                                  //第一个区别:返回列表.
+        }
+      b.实体类中.
+        public class User {
+
+            private int id;
+
+            private String username;
+
+            private String name;
+  
+            private String password;
+
+            private String type;
+
+            // 一对多的映射，主表中要包含从表实体的集合
+            private List<Account> accounts;
+        }
+      c.mapper中.
+        <resultMap id="userMap" type="User">
+            <id column="id" property="id" />
+            <result column="username" property="username" />
+            <result column="name" property="name" />
+            <result column="password" property="password" />
+            <result column="type" property="type" />
+            <collection property="accounts" ofType="account">        //第二个区别collection集合.
+                <id column="aid" property="id" />
+                <result column="uid" property="uid" />
+                <result column="aname" property="name" />
+                <result column="money" property="money" />
+            </collection>
+        </resultMap>
+
+
+        <select id="findUser" resultMap="userMap">
+            select u.*,a.id as aid, a.uid,a.name as aname,a.money from user u left join account a on u.id=a.uid
+        </select>
+
+二.多对多.
+   其实多对多是特殊的一对多.两个一对多.
+   例:以用户和角色为例.一个用户有多个角色,一个角色有多个用户.
+   a.接口中.
+    public interface RoleMapper {
+
+        List<Role> findAll();
+
+        List<Role> findRoleAndUsers();
+    }
+   b.实体类中.
+     public class Role {
+         private int roleId;
+
+         private String roleName;
+
+         private String roleDesc;
+
+         //  多对多映射关系：一个角色可以赋予多个用户
+         private List<User> users;  
+     }
+   c.mapper中.
+     <resultMap id="roleMap" type="role">
+        <id column="roleId" property="roleId" />
+        <result column="roleName" property="roleName"/>
+        <result column="roleDesc" property="roleDesc"/>
+        <collection property="users" ofType="user">
+            <id column="id" property="id" />
+            <id column="username" property="username" />
+            <id column="name" property="name" />
+            <id column="password" property="password" />
+            <id column="type" property="type" />
+        </collection>
+    </resultMap>
+
+    <select id="findAll" resultType="role">
+        <include refid="query"/>
+    </select>
+
+    <select id="findRoleAndUsers" resultMap="roleMap">                     //这里的区别就是sql语句的不同.
+      select u.*,r.id as roleId, r.role_name as roleName, r.role_desc as roleDesc from role r
+        LEFT OUTER JOIN user_role ur on r.id = ur.rid
+        LEFT OUTER JOIN user u on u.id = ur.uid
+    </select>
+      
+      
+   
+
+        
+        

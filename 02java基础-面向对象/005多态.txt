@@ -1,0 +1,51 @@
+定义:指同一行为,具有不同表现形式
+    1.意义体现
+      继承或实现都可以实现多态.
+      
+    2.格式体现
+      父类引用指向子类对象(这个父类引用也可以是一个接口)
+      解释:Cat c=new Cat();  new一个对象然后赋给c,这个是子类引用指向子类对象
+            Animal a=new Cat(); Animal是Cat的父类,这个就是父类引用指向子类对象
+            假设Animal有很多子类,这种写法可以很好的知道谁是谁的子类,Animal中有一个基础run(),它的子类中有不同的run()方法,就是多态的体现.而这种格式可以很好的看出父类的行为在子类中的不同表现形式.
+
+好处:扩展性,可维护性, 
+    例子:
+    普通实现:
+    public class Teat{
+        public static void main(String []args){
+	    Cat c=new Cat();
+            Dog d=new Dog();
+            showCatEat(c);
+            showDogEat(d);
+        }
+    }
+    public static void showCatEat(Cat c){c.eat();}
+    public static void showDogEat(Dog d){d.eat();}
+    多态实现:
+     public class Teat{
+        public static void main(String []args){
+	    Animal c=new Cat();
+            Animal d=new Dog();                //注意:Dog d=new Dog();
+            showAnimalEat(d);                         showAnimalEat(d);  也可以,因为d在此时也会自动进行向上转型
+            showAnimalEat(c);
+        }
+    }
+    public static void showAnimalEat(Animal c){c.eat();}
+
+向上转型和向下转型
+    向上转型:多态本身是向上转型的过程.这个过程是默认的,比如父类引用指向子类对象
+             Animal a=new Cat();
+             这个过程执行的方法必须是在父类和子类中都有的方法,也就是继承和实现的体现.
+    向下转型:父类类型向子类类型转换的过程,这个过程是强制的,表示一个已经向上转型的父类引用再次转换为子类引用.
+             子类类型 变量名 =(子类类型)父类类型
+              Cat c=(Cat)a;
+    向下转型注意点:
+                一个Animal可能有很多子类,当父类引用转换为子类引用时,不能乱转,原来是哪个子类,就必须转换为哪个子类,否则会报ClassCastException,不确定时可以用instanceof关键字进行判断.
+             if(a instanceof Cat){
+                  Cat c =(Cat)a;
+                  c.run();//对于方法的调用必须写在这,否则会报错
+             }
+为什么要转型?
+    当父类引用指向子类对象,然后调用子类方法时,编译器会先检查父类中有无该方法,如果没有会编译报错,就是说该方式执行的必须是父类和子类都有的方法,如果要执行只有子类中有的方法时,就需要将父类引用再次转换为子类引用
+    
+   

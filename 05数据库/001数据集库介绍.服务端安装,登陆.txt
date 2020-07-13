@@ -1,0 +1,84 @@
+
+存储位置比较:
+                   优点                                    缺点
+内存             速度快                              不能永久保存,数据是临时状态
+文件             数据可以永久保存                     操作数据不方便,查询某个数据
+数据库           1)数据可以永久保存                   占用资源,需要购买 
+                 2)查询速度快
+                 3)对数据的管理方便   
+
+数据库:
+   本质上是一个文件系统,还是以文件的形式存储到服务器电脑上的.
+   所有的关系型数据库都可以使用通用的SQL语言进行管理.
+
+   概念:DBMS:DateBase Management System
+   
+   目前主流的关系型数据库:
+        1.Oracle(大规模,常用于电信,银行系统)
+        2.MySQL(小规模)(1和2都是Oracle公司的)
+        3.还有微软的Microsoft SQL Server(不常用)(中型的)
+        4.DB2(常用于银行系统,大规模)
+   非关系型数据库:Redis,MongDB
+数据库安装:
+   1.下载软件
+   2.选择第二种安装方式
+   3.复制MySQL\MySQL Server 5.5\,选择自定义路径,选好之后,把刚刚复制的粘贴到后面
+   4.安装
+   5.一直下一步,finish
+   6.一直下一步,然后有个选项选detailed Configuration(精细配置)
+   7.然后三个选项,选开发者电脑,下一步.
+     Developer Marchine(开发者电脑),个人用这个
+     ServerMarchine(服务器电脑,内存使用大),公司用这个.
+     MySQL服务器电脑,内存全部给服务器用.更加专业.
+   8.然后三个选项,选多用途数据库.下一步
+     Multifunctional Datebase(多用途数据库)
+     Transactional Datebase Only(事务数据库)
+     Non-Transactional Datebase Only(非事务数据库)
+   9.默认下一步,又出来三个选项卡,选择第三个.
+     1)Decision Support(DSS)/OLAP:并发连接数上限20.
+     2)Online Transaction Processing(OLTP):并发连接数上限500.
+     3)Manual Setting:自己选择连接数上限,然后设置数量为20.
+   10.勾选两个选项卡,下一步
+     Enable TCP/IP Networking:连接到TCP,端口为3306
+     Enable Strict Mode:启动严格语法格式.
+     下面这个千万别勾选
+     Add firewall exception for this port:给这个端口号,添加防火墙.
+   11.又出来三个选项,选择字符集.选择第三个选项,设置为utf8,下一步
+     Standerd Character Set:选择英文编码
+     Best Support For Multillinggualism:选择日本语编码
+     Manual Selected Default Character/Collation:自定义编码集.
+   12.然后出现的选项卡分为三步要设置,设置完后下一步.
+     1).勾选:Install As Windows Service(把MySQL设置为Windows服务)
+     2)勾选:Launch the MuSQL Server automatically(自动启动MySQl服务)
+     3)勾选:Include Bin Directory Windows PATH(把MySQL设置到环境变量里面PATH中)
+   13.该页面只勾选第一个选项
+      Modify Security Setting:更改安全设置.
+      然后在右边设置密码:root
+      这里设置的是root
+      下一步即可.
+   14.直接下一步.
+   15.有四个对号,说明配置成功.finish.
+
+卸载MySQL服务.
+  1.先暂停该服务.我的电脑->管理
+  2.应用程序卸载.
+  3.删除安装目录下的所有文件.
+  4.删除C盘下的programDate中素所有关于MySQL的文件.
+
+MySQL启动
+  1.我的电脑->管理->找到MySQL->启动 
+  2.DOS命令(cmd)启动(以管理员权限)
+    net start mysql:启动
+    net stop mysql:关闭
+ 
+登陆数据库:
+  它提供了一个默认的root账号,使用安装时设置的密码即可登陆(用户名和密码都是root)
+   在控制台cmd输入:
+      mysql -u用户名 -p密码
+退出:
+  quit或者exit 
+
+      
+  
+      
+     

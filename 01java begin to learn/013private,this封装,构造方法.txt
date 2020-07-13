@@ -1,0 +1,63 @@
+private关键字的含义:
+    1.private是一个权限修饰符,代表最小权限
+    2.可以修饰成员变量和成员方法
+    3被private修饰的成员变量和成员方法,只在本类中才能访问(其他用get,set方法)
+
+
+
+this关键字作用
+   例:
+    public void lovePerson(String name) {
+	System.out.println("大傻子爱的人是"+name);//name表示这个成员方法传过来的参数
+	System.out.println("我是"+this.name);//this.name表示这个成员方法所在类中的name属性
+    }                                        //这个this本身代表当前的对象
+    
+
+1.表示类中的属性和调用方法（如果有多个类，表示本类中的属性或方法。。。也可以区分一个类中的属性和其它东西，例如参数）
+2.调用本类中的构造方法（尤其当构造方法重载时，可以调用这个类中其它方法）
+3.表示当前对象（暂且理解为用于一个类中有一个对象，可以表示这个对象）
+总之：this用来区分
+this+属性                   表示该类的属性
+this（）                    表示区分构造方法，注意参数
+this后什么也不加            表示这个类中的对象
+这个this本身代表当前的对象
+
+
+封装:
+    例:
+    public class Person{                       public static void main(String[] args){
+                                                      Person p1=new Person();              
+                                                                                                                                                                 p1.setAge(20);   
+	private int age;                           System.out.println(p1.getAge)
+    }                                          }
+    public void setAge(int age){
+	this.age=age;
+
+    }
+    public int getAge(){
+	return this.age;
+    }
+构造方法:
+    1.修饰符 构造方法名(类名称){
+
+    }
+    2.注意：
+       a：构造方法名称必须与类名称相同
+       b:构造方法没有返回值
+    3.构造方法主要是为类中的属性初始化
+    4.每个类在实例化后都会调用构造方法，如果没有构造方法，程序在编译的时候回创建一个什么也不做的构造方法
+    5.构造方法也可以进行重载（参数不一样）
+    6.构造方法可以直接对属性进行赋值,不需要通过set方法
+标准的javaBean
+public class 类{
+    //成员变量
+    //构造方法
+    //无参构造方法(必须)
+    //有参构造方法(建议)
+    //成员方法
+    //set方法
+    //get方法
+
+
+
+}

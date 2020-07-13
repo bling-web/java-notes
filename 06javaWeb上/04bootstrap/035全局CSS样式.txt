@@ -1,0 +1,43 @@
+全局样式CSS.
+  原理:
+     就是已经写好class样式,只需把对应的class名称加上去,就会运用相应的格式.
+  1.按钮:(常用的class属性)
+      直接button标签即可.
+      btn btn-default/btn-primary/btn-info/btn-danger/btn-waring
+  2.图片:(常用的class属性)
+      img-responsive:响应式布局,图片始终为100%.
+      形状:img-rounded(方形)
+           img-circle(圆形)
+           img-thumbnail(相框)
+  3.表格:(常用的class属性)
+      table-hover:鼠标悬停有特殊样式.
+      table-borderde:给表格加边框
+      加颜色: active:浅灰色
+              success:浅绿色
+              info:浅蓝色
+              warning:浅粉黄色
+              danger:浅粉红色
+  4.组件:
+      小图标:在官网看到哪个小图标想用的话,直接class="下边的标识"即可. 
+      导航条:
+      分页条:
+      面板:
+         class="alert alert-success" role="alert" 使面板中的元素隔开,有自己的颜色
+      徽章:全部都是绿色,可以很醒目的提醒未读的消息.
+      进度条:
+
+  5.无序列表:
+      list-group:作用于ul.
+      list-group-item:作用于li.
+      给列表加颜色:list-group-item-success 浅绿
+                   list-group-item-info 浅蓝
+                   list-group-item-warning 浅黄
+                   list-group-item-danger 浅红
+                   list-group-item active 蓝色
+
+
+补充:水平线:带特殊样式 divider
+     注意标题标签 h开头.
+           
+            
+    

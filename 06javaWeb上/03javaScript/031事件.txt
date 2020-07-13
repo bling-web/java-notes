@@ -1,0 +1,167 @@
+事件:
+  一.概念
+     页面元素中某一些组件被执行了某些操作之后,触发了一些特定的代码.
+     事件源:组件,比如按钮,文本,div等.
+     事件:某一些操作.比如:单击.双击.鼠标移动.按键按下.
+     监听器:代码.
+     注册监听:将事件,事件源,监听结合在一起,当某一个事件源上发生了事件之后,触发了某一个监听.
+  二.常用事件:
+     1.点击事件:
+       a.onclick:单击事件
+       b.ondblclick:双击事件.
+         例:
+            btn_obj.ondblclick=function (ev) {
+                alert("当然还是你最棒了");
+            }
+
+     2.焦点事件:
+       a.onfocus:获得焦点.(鼠标的光标移上去就是获取焦点)
+           div标签是不能使用这个功能的.
+         例:
+           var text_obj=document.getElementById("text");
+               text_obj.onfocus=function () {
+                alert("你是这条街上最亮的仔");
+           }
+       b.onblur:失去焦点(光标移开就是失去焦点)
+         常用于表单校验.(比如注册时有时候移开就会提示用户名已经注册,或其他提示)
+         例:
+             text_obj.onblur=function () {
+                 alert("小样");
+             }
+
+     3.加载事件:
+       a.onload:当一个页面或图片加载完的事件.
+           当对象是这个窗口的时候,可以理解为加载完其他全部的代码才去执行里面的事件.而javaScript的默认加载顺序是从上至下的.比如script中       的代码用了还没有加载的属性或变量(放在script语句块的后面).就会报Cannot set property 'onclick' of null错误.用加载事件既可以避免.
+         例:
+           <script>
+           var btn_obj=document.getElementById("btn");
+           window.onload=function(){
+               btn_obj.onclick=function (ev) {
+                   alert("你最棒");
+               }
+           }
+           </script>
+         btn这个属性是放在script代码块后面的.
+         
+     4.鼠标事件.
+       a.onmousedown:鼠标被按下.
+         例:
+            var content_obj=document.getElementById("content");
+            content_obj.onmousedown=function (ev) {
+                alert("你按下了"+ev.button);               //这个ev.button返回的是你按下的鼠标的那个键.0代表左键,1代表中间键,2代表右键
+            }
+       d.onmouseup:鼠标被松开.
+         这个也一样.可以返回你松开那个键.
+       c.onmousemove:鼠标被移动
+       d.onmouseover:鼠标移动到某个元素之上.
+       e.onmouseout:鼠标从某个元素上离开
+
+     5.键盘事件.
+       a.onkeydown:某一个键盘按键被按下.
+         例:
+           <input id="text" type="text">
+           var text_obj=document.getElementById("text");
+           text_obj.onkeydown=function (ev) {
+               console.log("你按下了"+ev.keyCode);         //ev.keyCode返回键盘上按下的哪个键.(对应ASCLL码值)
+           }
+         注意:这个键盘事件的一定要配合输入框来使用.
+
+       b.onkeyup:某一个键盘按键被松开.
+       c.onkeypress:某一个键盘按键被按下并松开.
+         这个其实最常用了.用法和第一个一样.
+
+     6.选择改变事件.
+       a.onchange:域的内容被改变.(就是某一块的内容被更新了),通常用于输入框和选择框.
+         也属性表单事件.
+         例:
+            text_obj.onchange=function (ev) {
+                console.log(ev);                           //返回改变内容的对象.
+            }
+       b.onselect:文本被选中.通常用于输入框,普通文字不能使用这个功能.
+         例:
+            text_obj.onselect=function (ev) {
+                console.log(ev)
+            }
+
+     7.表单事件.
+       a.onsubmit:表单确认按钮被点击.(注意是针对表单来说的,而不是针对提交按钮来说的)
+             可以对表单内容进行确认.无误后提交,有问题可以阻止提交.
+        写法一:在表单外面注册事件
+        例:
+           <form id="form">
+              <input type="submit" value="提交">
+              <input id="text" name="text" type="text">
+           </form>
+
+           var form_obj=document.getElementById("form");
+           form_obj.onsubmit=function (ev) {
+           //其他执行代码
+           if(document.getElementById("text").value=="1"){   //这里暂时不能判断是否为空,相当于没有判断,暂时不知道什么原因
+               alert("提交成功")
+                return true;                                 //返回true就代表提交
+           }
+           else{
+               alert("提交失败")
+               return false;                                 //返回false就代表不提交.
+           }
+          }
+        写法二:在表单标签里面注册事件.
+        例:
+          <form id="form" onsubmit="return checkform()">     //再次说明,在表单标签里面注册,而不是在提交按钮中.这里需要多加一个return.
+          <input type="submit"   value="提交">                 checkform只是一个见名知意的方法名字而已.
+          <input id="text" name="text" type="text">
+          </form>
+          function checkform(){
+             return false;
+          }
+
+       b.onreset:表单重置按钮被点击. 
+         和onsubmit用法基本相同.也是针对表单来操作的.
+         例:
+            <form id="form" onsubmit="return checkform()">
+            <input id="text" name="text" type="text">
+            <input type="reset" value="重置">
+            </form>
+            var form_obj=document.getElementById("form");
+            form_obj.onreset=function (ev) {
+                var result=confirm("你确定清空表单内容吗?");   弹出一个提示框
+                if(result){
+                    return true;                               返回true执行清空操作
+                }
+                else{
+                    return false;
+                }
+            }
+             
+
+
+
+
+
+
+   
+  
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

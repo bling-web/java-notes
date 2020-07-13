@@ -1,0 +1,12 @@
+ 
+
+    FileOutputStream fileOutputStream=new FileOutputStream("F:\\2运院东子31\\Objects\\00000.jpg");
+        FileInputStream fileInputStream=new FileInputStream("F:\\2运院东子31\\2运院东子31\\0047861.jpg");
+        byte[] array=new byte[1024];
+        int len;
+        while((len=fileInputStream.read(array))!=-1){
+            fileOutputStream.write(array,0,len);          //后面可能不够1024个字节,读取多少个,写入多少个.0-len
+        }
+        fileInputStream.close();
+        fileOutputStream.close();
+    }

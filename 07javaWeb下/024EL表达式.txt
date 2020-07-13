@@ -1,0 +1,57 @@
+## EL表达式
+
+### 概念
+
+**（Expression Language） 表达式语言**
+
+### 作用
+
+**用来替换和简化jsp页面中java代码的编写**
+
+### 语法
+
+**${表达式}**
+
+jsp默认支持el表达式，如果想要忽略el表达式可以在page指令中配置isELIgnored="true"忽略当前页面所有的el表达式或者使用`\转义`单个表达式可以忽略当前el表达式。
+
+### 使用
+
+* 运算
+
+  * 算数运算符：+ - * /(div) %(mod)
+  * 比较运算符：> < >= <= !=
+  * 逻辑运算符：&&(and) ||(or) !(not)
+  * 空运算符：empty
+    * 用于判断字符串、集合、数组对象是否为null并且长度是否为0. ${empty list}
+
+* 取值/显示值
+
+  **el表达式只能从域对象中获取值**
+
+  * 语法：
+    * ${域对象名称.键名}: 从指定的域对象中获取指定键的值。
+      * 域对象：
+        1. pageScope			pageContext
+        2. requestScope                request
+        3. sessionScope                 session
+        4. applicationScope           application（ServletContext）
+    * ${键名}: 表示依次从最小的域中查找是否存在该键，直到找到为止。
+  * 获取对象中的属性值
+    * ${域名称.键.属性名}直接通过`.`操作符加上对象的属性即可访问。等同于调用该对象的getter方法。
+  * 获取List和Map
+    * List集合：${域名称.键[索引]}
+      举例:
+          request.setParameter("list",arraylist);
+          ${request.list[获取哪个元素就填几个索引]}
+    * map集合：
+      * ${域名称.键.key名称}
+      * ${域名称.键[“key名称”]}
+        二者选一即可.
+
+
+### 隐式对象
+
+* el表达式中有11个隐式对象。
+* pageContext:
+  * 获取其他8个jsp的内置对象。
+  * ${pageContext.request.contextPath}： 动态获取项目的虚拟路径。

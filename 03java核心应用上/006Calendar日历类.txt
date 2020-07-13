@@ -1,0 +1,21 @@
+java.util.Calendar日历类.
+    该类将所有可能用到的时间信息封装为静态成员变量,方便获取.日历类就是方便获取各个时间属性.
+    1.该类是一个抽象类,不能new方法,这个类提供了一个获取实例的方法.public static Calendar getInstance();
+      new其实就是实例化对象.
+      例:
+      Calendar calendar=Calendar.getInstance();//"相当"于new一个对象
+
+1.get(int field)方法: 返回日历字段中某一段的值,如年,月,日等,返回int类型
+   例:
+     Calendar calendar=Calendar.getInstance();
+     calendar.get(1);                          //获取年,每一字段和数字都有对应关系.
+     或者
+     calendar.get(calendar.YEAR);      
+  
+     注意:西方日历方式不一样,第一个月是第零个月.所以月份要加1.
+
+2.set(f,field)方法,将日历字段 f 更改为 value.  
+
+3.add(f,delta)方法,在日历字段f上加上delta值.,加上某一个数字值.
+
+4.getTime()方法,返回此对象时间值对应的date对象.(将Calender对象转换为date对象,就可以输出默认的时间格式).

@@ -1,0 +1,49 @@
+
+  我们一般把资源放到web-inf中,然后读取的时候通过servlet,这样有什么好处?
+     1.可以控制权限.
+     2.可以读取外边访问不到的资源.
+
+
+例子:
+ 
+@WebServlet("/file")
+public class FileServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //读取文件名称
+        String filename=req.getParameter("filename");
+        //获取文件类型
+        ServletContext servletContext = getServletContext();
+        String type = servletContext.getMimeType(filename);
+        //获取输入流
+        InputStream inputStream = servletContext.getResourceAsStream("/WEB-INF/security/" + filename);
+        //设置响应头,内容类型和内容配置(disposition)
+        resp.setHeader("content-type",type);
+        resp.setHeader("content-disposition","attachment;file="+filename);       //attachment:附件
+        //获取输入流
+        ServletOutputStream outputStream = resp.getOutputStream();
+        //读取内容并发送
+        byte[] temp=new byte[1024*6];
+        int len;
+        while((len=inputStream.read(temp))!=-1){
+            outputStream.write(temp,0,len);
+        }
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req,resp);
+    }
+}
+
+对应html文件中.
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>     //记得设置字符集
+<html>
+  <head>
+    <title>文件下载</title>
+  </head>
+  <body>
+  <a href="/file?filename=java内存模型.png">java内存模型</a>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+
+  以前我们实现事务控制,事务控制代码和原始代码是在一起的,在实际项目中,很多操作都需要实现事务控制,我们需要把事务控制的代码和原始代码进行分离,增强代码的可维护性.
+
+例:
+  一.新加一个工厂类. (这个工厂中的方法会产生代理类) 
+    @Component
+  public  class MyBeanFactory {
+    @Resource(name="accountServiceImpl")
+    private  AccountService accountService;
+    @Resource(name="transactionManage")
+    private  TransactionManage tm;
+    /**
+     *
+     * @return 代理类
+     */
+    public  AccountService getAccountService() {
+        AccountService proxyAccountService = (AccountService) Proxy.newProxyInstance(accountService.getClass().getClassLoader(),         accountService.getClass().getInterfaces(), new InvocationHandler() {
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                //开启事务
+                tm.beginTransaction();
+                Object obj = null;
+                try {
+                    obj = method.invoke(accountService, args);
+                    //提交事务
+                    tm.commitTransaction();
+                } catch (Exception e) {
+                    //回滚事务
+                    tm.rollbackTransaction();
+                    e.printStackTrace();
+                } finally {
+                    //释放资源
+                    tm.release();
+                }
+                return obj;
+            }
+        });
+        return proxyAccountService;
+
+    }
+  }
+  二.配置在springBean,专门把对象注入spring容器的类.
+    @Resource
+    private MyBeanFactory mybeanFactory;
+    @Bean("accountServiceProxy")
+    public AccountService accountServiceProxy(){
+        AccountService accountService = mybeanFactory.getAccountService();
+        return accountService;
+    }
+  三.在测试中直接使用即可.注意使用的是代理类中的方法.
+
+
+ 注意事项:在配置springbean时,不能在注入dateSource的文件中使用resource注解注入,否则获取不到dataSource中的数据,暂时不知道为什么.
+  

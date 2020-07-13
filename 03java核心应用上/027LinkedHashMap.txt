@@ -1,0 +1,6 @@
+
+    HashMap可以保证成对元素唯一,并且查询速度很快,但不能保证顺序,而LinkedHashMap即可以保证元素唯一,又能保证顺序.它是哈希表和链表的数据存储结构.
+    
+    LinkedHashMap是HashMap的子类.
+   
+    使用方法和HashMap一样.

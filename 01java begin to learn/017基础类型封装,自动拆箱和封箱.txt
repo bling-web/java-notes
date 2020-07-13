@@ -1,0 +1,19 @@
+一.ArrayList<>里面不能存放基础数据类型,但将基础类型包装后,就可转换为引用数据类型
+   转换如下:(只有int和char需要特殊记忆)
+   byte                     Byte
+   char                     Character
+   boolean                  Boolean
+   short                    Short
+   int                      Integer 
+   long                     Long
+   float                    Float
+   double                   Double
+二自动封箱机制
+  ArrayList<Integer> list =new ArrayList<>();
+  list.add(1);
+  此处int型会自动转换为integer型
+三自动拆箱机制
+  integer [] arr=new integer[3];
+  int temp=arr[0];
+  此处integer型会转换为int型
+  char,short等类型都有这个机制

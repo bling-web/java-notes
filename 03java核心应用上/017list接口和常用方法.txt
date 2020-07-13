@@ -1,0 +1,9 @@
+list接口.
+    习惯性的将实现list接口的对象称为list集合,list集合中元素有序(存取顺序一致),允许有重复的元素.所有的元素是以线性的方式存储的,可以通过索引来查找元素.
+    1.具有Collection中所有的方法.
+    2.还具备根据索引操作集合内容的方法.(增删查改)
+       (1).public void add(int idex,E element);将指定的元素添加到指定的位置上.
+           不能隔着添加(中间不许空着)
+       (2).public E get(int index);返回指定位置上的元素
+       (3).public E remove(int index);删除指定位置上的元素.并返回该元素.
+       (4).public E set(int index,E element);在指定的位置上,用指定的元素将原有元素替换.返回更新元素.

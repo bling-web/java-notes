@@ -1,0 +1,29 @@
+
+一.字符输出流Writer
+   java.io.Writer用于写出字符流的所有类的超类,将指定的字符信息写出到目的地.
+ 
+  1.常用方法
+    (1)public abstract void close();关闭此输出流并释放与此相关的资源.
+       如果未调用close方法,数据只是保存到了缓冲区,并未写出到文件中.
+    (2)public abstract void flush();刷新此输出流并强制任何缓冲的输出字符被写出,
+    (3)public void write(int c);写一个字符.
+    (4)public void write(char[] cbuf):将该数组中的内容写入到此输出流.
+    (5)public abstract void write(char[] b,int off ,int len):
+       将数组中的部分内容写入到此输出流.(off,起始位置,len,字符长度)
+    (6)public void write(String str):
+       将字符串写入到输出流.
+
+二.子类FileWriter类
+    java.io.FileWriter类是写出字符到文件的便利类.构造时使用系统默认的字符编码和默认字节缓冲区.
+    
+1.FileWriter类关闭和刷新:(字节流是不需要刷新的,可以直接写入到文件的)
+     因为内置缓冲区的原因,如果不关闭输出流,无法写出字符到文件中.但是关闭的流对象,是无法继续写出数据的.如果我们既想写出数据,有想继续使用flush方法.
+     flush:刷新缓冲区,流对象可以继续使用.
+     close:关闭流,释放系统资源,关闭前会刷新缓冲区.
+  
+ 
+2.构造函数.
+   (1).FileWriter(File file):创建输出流对象,写入数据到该file对象
+   (2).FileWriter(String fileName):创建输出流对象,写入数据到该名称对象.
+   (1)和(2)都有对应的后面有参数的构造方法,为true表示为追加,false表示清空当前文件.
+   

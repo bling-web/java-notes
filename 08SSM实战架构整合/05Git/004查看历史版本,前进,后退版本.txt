@@ -1,0 +1,120 @@
+
+ 
+一.git常用命令:
+   1.vim XXX:编辑某个文件
+   2.git log:查看历史版本,记录.
+   3.git log --pretty=oneline 将每个历史版本在一行显示(唯一索引全部显示) 
+     例:
+       9e56aa3778cd14e4706830e3dcacc3bb25d650fc (HEAD -> master) update
+       403ddf89c538156e57c806e6c45aea2be0635c99 update
+       6f84ce11605ed4e9d2bed07ae7afa3185cfd2b6d update fill,add sentence 向阳而生,尽得春晖
+       0168d28dc3716d93487baf4bc6d5414eedfd4a7a this is a auto create file
+       f9d6c2ef311f958ebda201b8d4942f86740a2684 create new file text.txt
+   4.git log --oneline 将每个历史版本在一行显示(缩短唯一索引,更精简),并且只能看到head指向版本的以后版本.
+     例:
+       9e56aa3 (HEAD -> master) update
+       403ddf8 update
+       6f84ce1 update fill,add sentence 向阳而生,尽得春晖
+       0168d28 this is a auto create file
+       f9d6c2e create new file text.txt
+   5.git reflog:显示历史版本,加上HEAD指针,能看到所有的添加历史记录.不论head指到哪.
+     例:
+       9e56aa3 (HEAD -> master) HEAD@{0}: commit: update                               //HEAD是一个指针,指向这个分支的当前版本,{0}代表回到这一个版本,需要回退几步.
+       403ddf8 HEAD@{1}: commit: update
+       6f84ce1 HEAD@{2}: commit: update fill,add sentence 向阳而生,尽得春晖
+       0168d28 HEAD@{3}: commit: this is a auto create file
+       f9d6c2e HEAD@{4}: commit (initial): create new file text.txt
+
+
+二.历史记录的查看.
+
+  1.当我们对某一个已经提交的版本修改时,需要做一个选择,把工作区修改的文件再次提交或回退这些修改. 
+    (use "git add <file>..." to update what will be committed)   
+    (use "git checkout -- <file>..." to discard changes in working directory)        discard:取消 
+    其实时三个选择:
+      1.先把改动提交到暂存区------------------git add <file>
+      2.这时也可以直接将改动提交到本地库------git commit -m '改动信息' <file>
+      3.取消改动------------------------------git checkout -- <file>
+
+
+  2.当我们使用git log查看历史记录时,如果记录很多,在当前窗口放不下.
+    例:
+      commit 6f84ce11605ed4e9d2bed07ae7afa3185cfd2b6d
+      Author: bling <1290468479@qq.com>
+      Date:   Thu Aug 1 11:37:03 2019 +0800
+
+      update fill,add sentence 向阳而生,尽得春晖
+
+      commit 0168d28dc3716d93487baf4bc6d5414eedfd4a7a
+      Author: bling <1290468479@qq.com>
+      Date:   Thu Aug 1 10:31:18 2019 +0800
+
+      :                                               //左下角有一个冒号.
+
+     空格:向下翻页
+     b:向上翻页
+     q:退出
+
+三.前进和回退历史版本.
+  1.通过索引.(推介,往前往后都可以)
+    git reset --hard 索引值.
+    例:
+      $ git reset --hard 6f84ce1                                         //回到这个索引值
+      HEAD is now at 6f84ce1 update fill,add sentence 向阳而生,尽得春晖
+
+      
+      $ git log --oneline                                                //使用git log --oneline查看版本
+      6f84ce1 (HEAD -> master) update fill,add sentence 向阳而生,尽得春晖
+      0168d28 this is a auto create file
+      f9d6c2e create new file text.txt
+
+      
+      $ git reflog                                                       //使用 git reflo查看版本.
+      6f84ce1 (HEAD -> master) HEAD@{0}: reset: moving to 6f84ce1
+      9e56aa3 HEAD@{1}: commit: update
+      403ddf8 HEAD@{2}: commit: update
+      6f84ce1 (HEAD -> master) HEAD@{3}: commit: update fill,add sentence 向阳而生,尽得春晖          //head指向的版本.
+      0168d28 HEAD@{4}: commit: this is a auto create file
+      f9d6c2e HEAD@{5}: commit (initial): create new file text.txt
+   2.通过^(只能往后)
+     git reset --hard head^(一个^代表回退一次,回退几次就写几个^)  
+   3.通过~(也是只能往后)
+     git reset --hard head~2(2代表回退两次,回退几次就写几)
+
+四.reset命令参数区别.
+   1.--hard:
+     在本地库移动head指针,
+     重置缓存区
+     重置工作区
+   2.--mixed:
+     在本地库移动head指针.
+     重置缓存区
+     不重置工作区
+   3.--soft:
+     仅在本地库移动head指针.
+     不重置缓存区
+     不重置工作区
+
+   这几个的区别可以用给git status命令来看到.
+     使用--hard :暂存区,工作区都没有更新的文件
+     使用--mixed:工作区有可以add的文件
+     使用--soft:暂存区有可以commit的文件.
+   就是一个相对而言的情况, 本地库往后退了,相当于缓存区和工作区往前走了.
+ 
+   如果不用参数的情况下,默认使用mixed
+   
+     
+
+
+
+
+
+
+小提示:
+  index file:缓存区
+  working tree:工作区  
+ 
+
+   
+   
+   

@@ -1,0 +1,76 @@
+一.初始化本地仓库.
+   1.新建一个文件夹GitRepo.
+   2.在该文件夹中右键打开Git Bash hear
+   3.在操作窗口中.
+     a.mkdir demo01(创建demo01文件夹)
+     b.cd demo01(到该文件夹下)
+     c.git init(初始化Git repository)
+
+   例: Administrator@-20190720TZHGHN MINGW32 /d/javaPrograming/GitRepo/demo01 (master)
+       这是一个刚刚初始化好的本地库.(master是当前分支的名称)
+
+
+二.常规操作命令.
+   1.cd 名称:到某一个文件夹名称下. 
+   2.mkdir xxx:创建某文件夹
+   3.touch xxx:创建text.txt文件, 
+   4.ls:列出目录中的文件和子目录.
+   5.ls -l:长格式列出.
+   6.ls -a:显示所有文件,包括隐藏文件和目录.
+   7.ls -la:长格式列出所有文件,包括隐藏文件和目录.
+   8.clear:清屏.
+   9.cd ../:返回上个文件夹.
+   10.git status 查看当前版本库的状态 
+   11.cat 名称: 查看某个文件中的信息 
+      如果知道某个文件名称叫啥,不知道具体目录,也可以直接打开这个文件.
+      cat ~/文件名
+   12.vim xxx:编辑某文件
+   13.rm xxx:删除某文件.
+    
+   这些命令和linux下的命令一样.
+
+三.添加文件到版本库中.
+   1.可以先查看一下状态,然后把响应的文件git add 到缓存区中.
+     添加到缓存区中的文件状态是绿色的.
+     如果想要从暂存区中删除:git rm --cached XXX即可
+
+   2.再git commit到本地库中.
+     a.第一次需要输入自己的邮箱和名字,run相应的命令即可.
+       也就是设置签名再第四点补充.
+        
+     b.然后出来这个页面:
+        第一行
+        # Please enter the commit message for your changes. Lines starting
+        # with '#' will be ignored, and an empty message aborts the commit.
+        #
+        # On branch master
+        #
+        # Initial commit
+        #
+        # Changes to be committed:
+        #       new file:   text.txt
+        
+        
+        .git/COMMIT_EDITMSG[+] [unix] (23:49 31/07/2019)                          1,1 顶端
+        -- 插入 --
+
+     c.在第一行输入相应改变的信息,然后到插入这一行,输入:wq保存即可.
+
+
+四.设置签名:
+   1.作用:用于在团队开发中表识开发人员身份.
+   2.仓库级别:仅对当前版本库中有效(存储在当前版本库中的.get文件夹中的config文件中)
+      git config user.name "名字"
+      git config user.email "名字"
+   3.系统用户级别:当前操作系统的所有用户范围.当前系统的所有仓库都可以.
+      git config --global user.name "名字"
+      git config --global user.email "邮箱"
+
+   说明:一个用户可以创建很多个版本库,也就是很多的本地仓库.
+     
+      
+
+
+
+     
+     

@@ -1,0 +1,48 @@
+一.数据库表之间的关系
+   1.一对一
+     一个人只有一个身份证
+   2.一对多
+     一个人可以有多个订单，一个订单有多个订单项
+   3.多对多
+     一个学生有多个老师，一个老师同时教多个学生
+
+
+二.一对一查询有两种方式. 
+   以下查询以账户和user为例,一个账户只能从属与一个人
+   1.直接查询.
+     就是直接sql语句查出两个表的内容,然后对应即可.
+     例:
+       <resultMap id="accountMap" type="account">
+        <id column="aid" property="id" />
+        <result column="uid" property="uid" />
+        <result column="aname" property="name" />
+        <result column="money" property="money"/>
+        <association property="user" javaType="user">
+            <id column="id" property="id" />
+            <result column="username" property="username" />
+            <result column="name" property="name" />
+            <result column="password" property="password" />
+            <result column="type" property="type" />
+        </association>
+      </resultMap>
+      <select id="findAU" resultMap="accountMap">
+        select u.*,a.id as aid, a.uid, a.name as aname,a.money from account a, user u where a.uid=u.id
+      </select>
+    
+  
+   2.关联查询.
+     利用一个查询返回的结果,部分或者全部作为另一个查询的参数.
+
+        <resultMap id="accountMap1" type="account"> 
+            <id column="id" property="id" /> 
+            <result column="uid" property="uid" /> 
+            <result column="name" property="name" /> 
+            <result column="money" property="money"/> 
+            <association property="user" javaType="user" column="uid" select="findUser" />   //这个column是传入下一个查询的参数.
+       </resultMap>
+       <select id="findUser" parameterType="int" resultType="user"> 
+           select id,name,username,password,type from user where id = #{uid}                 //取出传入的参数.
+       </select>
+       <select id="findUA" resultMap="accountMap1"> 
+           select id,uid,name,money from account 
+       </select>

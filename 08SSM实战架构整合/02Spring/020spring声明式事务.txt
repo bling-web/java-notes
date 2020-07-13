@@ -1,0 +1,83 @@
+一.事务的隔离级别.
+   事务隔离级别反应提交时事务并发访问的处理态度.
+   1.ISOLATION_DEFAULT   默认级别,归属于下列四种的某一个.
+   2.ISOLATION_READ_NNCOMMOND 读未提交,可能发生脏读,不可重复读.幻读.
+   3.ISOLATION_READ_COMMOND   读已提交 不可能发生脏读,可能发生不可重复读和幻读.Oracle默认隔离级别.
+   4.ISOLATION_REPEATABLE_READ 可重复读,不可能发生脏读,不可重复读,可能发生幻读.Mysql默认隔离级别.
+   5.ISOLATION_SREILZABLE      串行话   不可能发生脏读,不可重复读,幻读
+
+二.声明式事务.
+   在我们以前要搞一个事务,
+       我们需要自己用ThreadLocal和connection对象绑定;
+       需要自己写事务提交,回滚等方法;
+       需要我们自己生成动态代理类. 比较麻烦.
+   而spring可以帮我们做这些事,也就是声明式事务.
+
+三.实现声明式事务的步骤.
+   1.导入依赖.
+     spring-context;
+     spring-jdbc;(springJDBC)
+     spring-tx;(spring事务)
+     mysql-connector-java;(数据库的驱动)
+     aspectjweaver---------org.aspectj(aop相关类) 
+     spring-test(测试) 
+     junit(测试)
+   2.改造类(dao层)继承JdbcDaoSupport(继承该类就不用注入JdbcTemplete了,直接调用getJdbcTemplete方法即可).
+   3.配置xml文件.
+     <bean id="AcoountService" class="com.cc.spring.tx.service.Impl.AccountServiceImpl">
+        <property name="accountDao" ref="accountDao"/>
+    </bean>
+    <bean id="accountDao" class="com.cc.spring.tx.dao.impl.AccountDaoImpl">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    //这个类是读取配置文件的PropertyPlaceholderConfiguer
+    <bean id="placeholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="db.properties"/>
+    </bean>
+    //配置dataSource的时候就可以用el表达式直接取了.
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <property name="url" value="${jdbcurl}"/>
+        <property name="driverClassName" value="${driverClass}"/>
+    </bean>
+    <!--配置声明式事务管理
+        1.配置aop(aop config)
+           a.配置管理者advisor
+           b.配置切入点pointcut-ref
+        2.配置事务通知.tx:advice.
+            a.配置transctionManager
+            b.配置内部attribute
+           属性说明:
+             a.isolation:隔离级别,默认是数据库的隔离级别.
+             b.propagation:事务的传播行为,默认REQUIRED(一定会有事务),增删改-REQUIRED,查-SUPPORT
+             c.read-only:是否只读.查询要设置成true.
+             d.timeout:事务的超时行为.默认为-1.永不超时,数值以秒为单位.
+             e.rollback-for:指定一个异常,当发生这个异常时,事务回滚,发生其他异常,事务不回滚,默认是任何异常都回滚.
+             f.no-rollback-for:指定一个异常,当发生这个异常时,事务不回滚,发生其他异常事务回滚.
+           理解说明:
+             a.这里面配置的就相当于invoke方法中一样,attribute-method 暂时自己理解为切点执行失败时回滚的方法.
+        3.把DataSourceTransctionManager加到spring容器中.
+           注意里面要加上DataSource.
+      -->
+     <aop:config proxy-target-class="true">
+         <aop:pointcut id="pt" expression="execution(* com.cc.spring.tx.service.Impl.*.*(..))"/>
+         <aop:advisor advice-ref="txAdvice" pointcut-ref="pt"/>
+    </aop:config>
+    <tx:advice id="txAdvice" transaction-manager="transctionManager">
+        <tx:attributes>
+            <tx:method name="transfer" propagation="REQUIRED" read-only="false"/>     //注意,这个method必须是切入点中的方法,否则事务是不起作用的.
+        </tx:attributes>
+    </tx:advice>
+    <bean id="transctionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    注意:
+        1.想要对某个方法进行声明式事务控制.
+          a.切入点中包含该方法.
+          b.method中包含该方法.
+          c.单独运行该方法.
+          也就是说我们想对a方法进行事务控制,当运行a方法时,a方法必须在切入点中,切入后,就会去<tx:attributes>找该方法,找到方法和对应的事务属性时才会进行事务控制.
+        
+

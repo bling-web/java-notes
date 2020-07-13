@@ -1,0 +1,55 @@
+
+  在JDK1.5之后,如果我们定义一个方法,需要接受多个参数,并且多个参数类型一致,可以简化成如下格式.
+  
+  修饰符 返回值类型 方法名(参数类型...形参名)
+
+  其实就是等价于传了一个数组进去.
+  注意:如果参数列表中有多个类型,可变参数要放在最后.
+
+例:
+  public class VariableParament {
+    public static void main(String[] args) {
+        getSum(2,3);
+        getSum(2,3,4,6,3);
+    }
+    private static void getSum(int ... ints) {
+        int sum=0;
+        for (int a:ints){
+            sum += a;
+        }
+        System.out.println(sum);
+    }
+  }
+  等价于:
+   public static void main(String[] args) {
+        int [] arr={1,2,4,5,5};
+        getSum(arr);
+    }
+    public static void getSum(int[] ints){
+        int sum=0;
+        for(int a:ints){
+            sum += a;
+        }
+        System.out.println(sum);
+    }
+作用域问题:
+  1.在main方法中定义的变量是局部变量.其他自定义方法不能调用.
+  2.在类中定义的变量是全局变量.方法都可以调用.
+  3.如果其他静态方法要调用类中的全局变量,该变量要定义成static.
+
+注意注意:在main方法外定义的变量和函数,必须声明为static,使其和类一起加载,否则这些语句不会执行.(程序执行从main方法开始)
+         可以放在一个静态代码块里.
+
+例:
+  static ArrayList<String> objects =new ArrayList<>(); //定义全局变量objects
+    public static void main(String[] args) {
+        addArray("王","亮","亮");
+    }
+
+    public static  void addArray(String ... str) {
+        for (String i:str){
+            objects.add(i);                            //调用变量objects
+            System.out.println(i);
+        }
+
+    }

@@ -1,0 +1,76 @@
+
+  在Java 8中,得益于lambda表达式所带来的函数式编程,引入了一个全新的Stream概念,用于解决已有的集合类库既有的弊端.
+  Stream流.
+ 应用一:map+reduce
+        例:
+        List<Integer> list=new ArrayList<>();
+        Collections.addAll(list,1,2,3,4,5);
+        Integer integer = list.stream().map((s) -> s).reduce((sum, s) -> sum + s).get();
+        System.out.println(integer);                        //对集合中的元素进行求和,采用map()+reduce()方法.
+   说明:
+        集合.stream : 返回一个流对象
+        map():把集合中每一个元素遍历出来,进行操作.里面是lambda表达式.
+              如果不对集合中的元素进行任何操作,map可以省略.
+        reduce():对元素进行聚合.里面也是lambda表达式.
+              第一个参数是最后返回的值,第二个参数是集合每一个元素.
+        get():返回当前结果.
+ 
+ 
+ 应用二:filter+collect
+
+    例一:
+        List<Integer> list=new ArrayList<>();
+        Collections.addAll(list,1,2,3,4,5);
+        List<Integer> list1 = list.stream().filter(s -> s > 2).collect(Collectors.toList());
+        System.out.println(list1);
+   说明:
+        filter():对集合中的元素进行过滤.
+        collect():对过滤后的元素进行收集.
+                 如果直接进行收集可以用Collections的toList方法或者toSet方法.
+       
+   例二:(过滤之后进行求和,求平均值,等等都一样)
+        List<Integer> list=new ArrayList<>();
+        Collections.addAll(list,1,2,3,4,5);
+        Integer integer2 = list.stream().filter(s -> s > 3).collect(Collectors.summingInt(i -> 2 * i));
+        System.out.println(integer2);
+   说明:
+        collect()中的summingInt是对过滤后的元素进行求和(这里还是原来的两倍)
+           里面如果是averagingInt就可以对过滤后的元素求平均值.
+        
+   例三:(过滤之后进行分组)
+        List<Integer> list=new ArrayList<>();
+        Collections.addAll(list,1,2,3,4,5);
+         Map<Boolean, List<Integer>> map = list.stream().filter(s -> s > 2).collect(Collectors.groupingBy(i -> i > 3));
+        map.forEach((k,v)-> {
+            System.out.println(k);
+            System.out.println(v);
+        }); 
+        输出结果:
+        false
+        [3]
+        true
+        [4, 5]
+   说明:
+        groupingBy将过滤后大于3的分为一组,小于3的分为另一组.
+        groupingBy和groupingByConcurrent暂时看来一样.
+        注意分组后返回的是map集合.
+
+应用三:(mapToInt()+summaryStatistics()
+   
+   例一:
+        List<Integer> integers = Arrays.asList(332, 4, 3, 5, 24, 24);
+        IntSummaryStatistics intSummaryStatistics = integers.stream().mapToInt(s -> s).summaryStatistics();
+        System.out.println("最大值"+intSummaryStatistics.getMax());
+        System.out.println("最小值"+intSummaryStatistics.getMin());
+        System.out.println("平均值"+intSummaryStatistics.getAverage());
+        System.out.println("总和"+intSummaryStatistics.getSum());
+   说明:
+        mapToInt():将集合中的每个元素转为int类型.
+        summaryStatistics():将集合中的元素组织到特殊集合中.
+        在这个集合中就可以很方便的得到最值,平均值,和.
+        
+        
+,
+
+       
+

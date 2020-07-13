@@ -1,0 +1,78 @@
+
+  java.io.File是文件和目录路径名的抽象表示,主要用于文件和目录的创建,查找和删除等操作.
+
+构造方法:
+  1.File(String name).
+    将路径或者某个路径下的文件夹抽象为代码中的file对象.
+  2,File(File parent,String child)
+    通过父级文件对象和子类文件名构建File对象.
+    注:父级文件对象是一个路径
+  3.File(String parent.String child)
+    通过父级文件路径文件名称和子类文件名称构建File对象.
+
+
+默认规定:
+  1.文件名称一定包含后缀.
+  2.文件可以没有后缀.
+  3.文件夹名称可以有点.
+  4.同一目录下文件名称和文件夹名称不能相同.
+    注意:文件名称是包含后缀的.
+  5.绝对路径:从盘符开始一直到文件整个名称
+  6.相对路径:从某一个参照路径开始的文件路径(开始不一样)
+  7.封装路径:用什么路径构造这个File对象,封装路径就是什么.
+    比如:
+    /封装路径test.txt
+    File file=new File("test.txt");
+    //输出绝对路径
+    System.out.println(file.getAbsolutePath());
+
+    D:\java程序\Package4\test.txt                 //这个文件路径不是该文件真正的路径,而是这个程序所在包的路径
+
+    //输出封装路径
+    System.out.println(file);
+   
+    test.txt
+
+方法:(增删查判,数组)
+  一.增(文件,路径)
+     1.public boolean createNewFile():当且仅当具有该名称的文件尚不存在时,创建一个新的空文件
+       如果不添加路径,默认路径是该程序所在的路径.
+       想要自定义路径创建文件,前面加上路径即可   
+     2.public boolean mkdir():创建由此File表示的目录(单级目录).
+       创建单级目录
+     3.public boolean mkdirs():创建由此file表示的目录,包括任何必须但不存在的父目录
+       创建多级目录(不创建文件)
+  二.删
+     1.public boolean delete():删除由此File表示的文件或目录
+       删除给定的最后一级文件或目录.  
+       注意:通过该方法删除是永久删除(不通过回收站)
+  三.查
+     1.名字.
+       getName().返回该对象的文件或目录的名称
+        如果有文件返回文件名称,没有文件返回最后一个文件夹名称
+     2.路径.
+       (1)getAbsolutePath().返回该file对象的绝对路径.
+       (2)getPath().返回该file对象的封装路径.
+     3.大小
+       getLengh().返回由此File表示的文件的长度.
+        返回字节大小
+  四.判 
+     1.存在.
+       exists():判断当前对象的文件路径是否存在.
+     2.文件.
+       isFile():判断当前file对象是否为文件.
+     3.路径
+       isDirectory():判断当前file对象是否为路径.
+  五.数组.
+     1.public String[] list():返回该file对象中所有的文件夹和子文件,以字符串形式存储
+       仅包括该文件的下一级目录.(下一级的文件夹或文件)
+       
+     2.public File[] listFiles():返回该file对象中所有的文件夹和子文件,以file对象形式存储.
+        仅包括该文件的下一级目录.(下一级的文件夹或文件)
+        成员都是File对象.只有是File对象,才能用isFile()判断是否为文件.
+
+     3.public File[] listFiles(Filefilter):获取该File对象所有的文件夹和子文件,只将符合规则的元素进行存储.
+  
+ 添加:
+  判断某文件是不是以txt结尾.
+  file.getName.endsWith(".txt")

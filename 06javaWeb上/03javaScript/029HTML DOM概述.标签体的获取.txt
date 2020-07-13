@@ -1,0 +1,78 @@
+HTML DOM
+  主要分为三块
+  1.标签体的设置和获取;innerHTML(可以指元素里面的所有HTML属性)
+    
+例:动态表格小案例
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册小案例</title>
+    <style>
+        #top{
+            margin-left:10.5cm;
+            margin-top: 50px;
+        }
+        table tr td{
+            width:3cm;
+            text-align: center;
+        }
+        table{
+            margin:auto;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+<div id="top">
+    <input id="number" type="text" placeholder="请输入编号">
+    <input id="name" type="text" placeholder="请输入姓名">
+    <input id="gender" type="text" placeholder="请输入性别">
+    <input id="register" type="button" value="添加">
+</div>
+
+<table  border="1" cellspacing="0">
+    <caption>学生信息表</caption>
+    <tr >
+        <td>
+            编号
+        </td>
+        <td>
+            姓名
+        </td>
+        <td>
+            性别
+        </td>
+        <td>
+            操作
+        </td>
+    </tr>
+</table>
+<script>
+    //假设已经获取到用户输入的信息,直接开始创建结点
+    // 1.先给添加注册一个事件
+    var reg=document.getElementById("register");
+    reg.onclick=function () {
+        //获取文本框中输入的内容
+        var number_text=document.getElementById("number").value;
+        var name_text=document.getElementById("name").value;
+        var gender_text=document.getElementById("gender").value;
+        //用innerHTML直接进行拼接
+        var table_obj=document.getElementsByTagName("table")[0];
+        table_obj.innerHTML +="<tr>\n" +                           //直接用innerHTML进行拼接.
+            "<td>"+number_text+"</td>\n" +
+            "<td>"+name_text+"</td>\n" +
+            "<td>"+gender_text+"</td>\n" +
+            "<td><a href='javaScript' onclick='deldate(this)'>删除</a></td>\n" +
+            "</tr>"
+    }
+    function deldate(obj){
+        var table_obj=obj.parentNode.parentNode.parentNode;
+        var tr_obj=obj.parentNode.parentNode;
+        table_obj.removeChild(tr_obj);
+    }
+</script>
+</body>
+</html>
+
+    

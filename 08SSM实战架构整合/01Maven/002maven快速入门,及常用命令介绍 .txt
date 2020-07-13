@@ -1,0 +1,41 @@
+一.快速入门.
+   1.创建第一个Maven项目.(在命令行输入)
+       mvn -B archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DgroupId=com.mycompany.app -DartifactId=hello-maven       
+   
+    说明:在cmd中不能用快捷键粘贴,鼠标右键粘贴即可.且一个命令不能换行.
+    解释:
+       mvn -B archetype:generate \                            //创建项目插件                 
+      -DarchetypeGroupId=org.apache.maven.archetypes \        //项目使用的模板
+      -DgroupId=com.cc.maven \                                //你组织的名称
+      -DartifactId=hello-maven                                //项目名称
+  
+      1.在cmd中首先跳到d盘: cd d:-->d:  
+      2.在哪个文件执行,就会生成项目文件到哪里.
+
+二.常用maven命令.
+   
+   1.编译.mvn compile(编译主程序)
+          mvn test-compile(编译测试程序)
+   2.打包 mvn package
+   3.清理:mvn clean(清理上次的产出文件)
+   4.测试:mvn test
+   5.安装jar包到本地仓库:mvn install
+  
+  
+  
+三.常用cmd命令:
+   1.清除某个文件rm -rf 文件名
+   2.停止上一个cmd命令ctrl+c
+
+Maven目录说明:
+  src:              //源代码目录
+   main:            //主程序目录
+     java:          //java程序
+     resource:      //配置文件,资源
+   test:            //测试程序目录
+     java:          //java程序
+     resource:      //配置文件,资源
+  pom.xml:          //maven的核心配置文件
+
+
+   

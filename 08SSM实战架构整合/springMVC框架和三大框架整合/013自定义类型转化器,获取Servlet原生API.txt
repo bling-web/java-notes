@@ -1,0 +1,38 @@
+一.自定义类型转化器:
+   如果一个类中有一个日期的类型,输入yyyy-MM-dd是不能识别的,输入yyyy/MM/dd可以识别.这时候就需要自定义类型转化器了.
+
+二.步骤:
+  1.自定义类实现Converter接口.
+  public class StringToDateConverter implements Converter<String,Date> {   //注意:这里要实现Converter接口.
+    /***
+     * @param date:传入的字符串日期
+     * @return date类型
+     */
+    @Override
+    public Date convert(String date) {
+        if(StringUtils.isEmpty(date)){
+            throw new RuntimeException("the String is empty");
+        }
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return simpleDateFormat.parse(date);
+        } catch (ParseException e) {
+            throw new RuntimeException("转换异常");
+        }
+    }
+  }
+
+  2.在springMVC中配置(其本身已经集成了一些转换器),我们要做的就是把自己写的加进去.
+     <bean id="conversionService1" class="org.springframework.context.support.ConversionServiceFactoryBean">  //这个类是固定的
+        <property name="converters">                                                                          //这个属性也是固定的
+            <set>
+                <bean class="com.cc.springMVC.util.StringToDateConverter"></bean>                        //这个是要添加的自己的转化器
+            </set>
+        </property>
+    </bean>
+      <!-- 配置spring开启注解mvc的支持-->
+    <mvc:annotation-driven conversion-service="conversionService1"></mvc:annotation-driven>
+
+三.获取Servlet原生API:
+  方法:直接在方法参数中写HttpServletRequest,HttpServletRsponse,然后在方法中就可以直接使用.
+  其实SpringMVC的框架获取参数的本质也是通过request的,只不过做了封装.

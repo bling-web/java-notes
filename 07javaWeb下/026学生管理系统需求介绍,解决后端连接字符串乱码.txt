@@ -1,0 +1,71 @@
+## 学生信息管理系统
+
+* 需求设计
+
+  * 新生注册（选择专业、分配指导老师）
+  * 学生可以查看个人信息、所选修课程以及考试信息。
+  * 老师查询任教的课程以及录入考试成绩。
+  * 学校管理员可以进行所有操作。
+
+* 设计
+
+  * UI/UE
+
+  * 数据库
+
+    ``` sql
+    -- 创建数据
+    create database sms default character set utf8mb4 collate utf8mb4_unicode_ci;
+    -- 切换数据库
+    use sms;
+    
+    -- 建表
+    --- 系统用户表
+    create table user(
+    	id int primary key auto_increment comment '自增主键标识',
+        username varchar(32) not null comment '登录用户名',
+        name varchar(32) not null comment '姓名',
+        password varchar(32) not null comment '登录密码',
+        type smallint not null default 0 comment '用户类型，0：学生，1：老师，2：管理员'
+    )
+    
+    --- 学生信息表
+    CREATE TABLE `student` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键标识',
+      `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '学生姓名',
+      `gender` smallint(6) NOT NULL DEFAULT '0' COMMENT '学生性别；0：不明，1：男，2：女',
+      `birthday` datetime DEFAULT NULL COMMENT '学生出生日期',
+      `snative` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '汉族' COMMENT '学生名族',
+      `deptno` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '100001' COMMENT '学生所在专业编号',
+      `tel` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '电话号码',
+      `address` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '家庭住址',
+      `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '信息备注',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ```
+
+    
+
+  * 软件架构
+
+    * Servlet+JSP+MYSQL+JDBCTemplate+C3P0/DRUID+tomcat
+
+* 开发
+
+  * 环境搭建
+  * 编码
+
+* 测试
+
+* 部署
+
+* 运维
+
+后端连接mysql,字符串乱码:从数据库查询不会出现乱码,但是存入数据会有.
+   此时一般是连接数据库时没有指定编码集.url=jdbc:mysql://localhost:3306/stocksystem?characterEncoding=utf-8
+
+一般来说就从三方面考虑:
+    1.idea,页面接受,发送给数据库时是否乱码.
+    2.mysql库,表的编码集,
+    3.第三个就是连接的时候是否指定编码集了.
+  

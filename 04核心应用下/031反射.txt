@@ -1,0 +1,86 @@
+
+  框架:半成品软件.可以在框架的基础上进行软件开发,简化编码.
+  反射:将类的各个组成成分封装为其他对象,这就是反射机制.
+       优点:1.可以在程序运行过程中操作这些对象.
+            2.可以解耦,提高程序的可扩展性.
+              解耦解释:比如一各程序有五个部分,要五个部分要尽量分开,彼此独立,整个系统由一个个模块通过接口组合而成.这就是解耦.
+                       这样以后改就容易改了,不必牵一发而动全身.提高了程序的可扩展性
+
+
+  总之:通过反射,只要知道某个类的全路径,就可以创建该类对象,使用属性,使用方法.
+
+
+
+获取字节码对象的三种方式:
+  Person p=new Person();
+
+  1.通过类名获取:
+    Person.class属性:  class对象  Person字节码对象
+    用途:多用于参数的传递.
+
+  2.通过对象引用获取.
+    p.getClass():      class对象  Person字节码对象
+    用途:多用于对象的获取字节码的方式.
+
+  3.通过反射方式获取.(通过前两种方式获得的就是class+类的全路径)
+    Class.forName("类的全路径"):  class对象, Person字节码对象.
+    注:类的全路径就是包名.类名.
+    用途:多用于配置文件,将类名定义在配置文件中.读取文件,加载类.
+
+结论
+  同一个字节码文件(*.class)在一次运行过程中,只会被加载一次,不论通过哪种方式获取的class对象都是同一个.
+
+
+字节码的用处:
+  1.获取该类属性(返回field类型数组或单个变量)
+    (1)getFields().                    获取该类中所有public所修饰的成员变量.返回field类型的数组.
+       说明:获取属性,即获取了属性名称,也获取了属性类型.getName()获得名称,getType()获取类型.
+    (2)getField("属性名称"):           获取某个public 所修饰的变量.
+    (3)getDeclareFields():             获取该类中所有的属性(不论什么修饰).(最常用)
+    (4)getDeclareField("属性名称"):    获取该类中某一个属性.
+
+  2.获取该类构造方法:(返回Constructo类型数组或变量)
+    (1).getConstructors():               获取该类所有的public修饰的构造方法;
+    (2).getConstructor(参数类型.class)   获取某一个public 修饰的构造方法
+    (3).getDeclareConstructors()         获取所有的构造方法(不论什么修饰)
+    (4).getDeclareConstructor(参数类型.class)    获取某一个构造方法.
+  使用重点:获取到构造方法后,可以通过newInstance方法创建对象.
+  例:
+       //获取所有构造方法,
+        Constructor[] constructors = cls3.getConstructors();
+        for (Constructor constructor : constructors) {
+            System.out.println(constructor);
+        }
+        //获取有参构造方法
+        Constructor cons = cls3.getConstructor(String.class, String.class, int.class, String.class);
+        //创建对象,进行强转
+        Person p = (Person)cons.newInstance("王亮", "男", 23, "北京");//如果不知道参数具体属性,可以获取所有的属性,和那个属性顺序一致.
+        //输出对象属性
+        System.out.println("姓名:"+p.getName()+" ,性别:"+p.getSex()+" ,年龄:"+p.getAge()+" ,地址:"+p.address);
+   
+  特殊说明:一般private修饰的构造方法是不能创建对象的,但是通过反射有一种特殊的方式可以(但一般不提倡)
+     例:
+     cl.setAccessible(true);//cl是一个通过private构造器创建的对象,这里设置权限为true,默认是false.
+     System.out.println(cl);//此时可以正常输出,不会报错,可以创建成功.
+ 
+  3.获取方法:
+    (1).getmethods():                          获取所有的public 修饰的方法.
+    (2).getmethod(String name,parameterType):  获取某个方法(public 修饰的)
+        methodName: 表示被调用方法的名字
+        parameterTypes:表示被调用方法的参数的Class类型如String.class 
+  
+    (3).getDeclareMethods()                    获取该类中所有的方法(不论什么修饰的)
+    (4).getDeclareMethod(String name.parameType)获取某个方法.
+  使用重点:获取到该方法后,可以通过invoke调用该方法.
+  例:
+   Method method = c.getMethod("getName");  //c是一个字节码对象.
+   System.out.println(method.invoke(p2));   //invoke方法的参数(对象,调用方法的参数)
+  特殊说明:private修饰的方法外部也不可调用,通过反射也可以特殊的方式调用.
+    例; 
+     Method print = c.getDeclaredMethod("print");  //通过字节码对象得到私有方法print
+     print.setAccessible(true);                    //把该方法的对象的权限设置为true.(该方法每次只设置对应对象的权限)
+     print.invoke(p);                              //调用该方法.
+
+ 
+
+  

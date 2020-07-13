@@ -1,0 +1,43 @@
+在测试时,以下的代码每次都需要写,比较繁琐,spring给我们提供了一种使用注解的方式去代替.
+    private  ApplicationContext ac=null;
+    private UserService userService=null;
+    @Before
+    public void init(){
+      ac =new AnnotationConfigApplicationContext(SpringConfiguration.class);
+       userService = ac.getBean("userService",UserService.class);
+    }
+
+思考:其实使用注解就是对原先代码的代替,原理是一样的.
+
+
+一.步骤:
+   1.引入依赖.
+     <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-test</artifactId>
+          <version>5.0.7.RELEASE</version>
+     </dependency>
+  2.使用
+    a.注解配置案例:
+      @RunWith(SpringJUnit4ClassRunner.class)                      //使用该注解获取测试程序入口.
+      @ContextConfiguration(classes = SpringConfiguration.class)   //spring整合junit,获取spring核心容器,使可以直接获取bean然后注入.
+      public class test {                     
+         @Resource                                                 //注入bean.                   
+         private UserService userService;
+         @Test
+         public void findAllTest(){
+             List<User> all = userService.findAll();
+             System.out.println(all);
+         }
+      
+    b.xml文件配置案例.
+      @RunWith(SpringJUnit4ClassRunner.class)                      //使用该注解获取测试程序入口.
+      @ContextConfiguration(locations="classpath:beans.xml")       //这里是唯一有区别的地方,注意加上classpath,不然找不到.
+      public class test {                     
+         @Resource                                                 //注入bean.                   
+         private UserService userService;
+         @Test
+         public void findAllTest(){
+             List<User> all = userService.findAll();
+             System.out.println(all);
+         }

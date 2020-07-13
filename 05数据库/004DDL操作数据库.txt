@@ -1,0 +1,33 @@
+DDL操作数据库:
+
+  一.增
+     1.创建数据库CREATE DATEBASE 数据库名;
+     2.判断数据库是否存在,不存在则创建数据库CREATE DATEBASE IF NOT EXIST 数据库名;
+     3.创建数据库并指定字符集CREATE DATEBASE 数据库名 CHARACTER SET 字符集;
+
+     注意
+       1.数据库的设置最好为 字符集utf8. 字符集校对规则utf8_genaral_ci.
+       2.执行完的SQL语句最后注释,以防以后再执行一遍,很危险.
+  二.删.
+      drop datebase dbTest1;
+  三.查
+     1.查看所有的数据库
+       show databases;
+     2.查看某个数据库.
+       show create datebase 数据库名称;
+     3.查看正在使用的数据库
+       selete database();是一个全局的函数
+  四.改
+     1.改变字符集
+       alter datebase dbTest1 character set utf8;
+     2.改变正在使用的数据库
+       use 数据库名称;
+
+
+DDL操作表:
+  
+  一.创建表(table): 
+     格式: create table 表名{
+             字段名1 字段类型1;
+             字段名2 字段类型2;
+           }

@@ -1,0 +1,30 @@
+为了出错时,能给用户一个友好的提示页面,springMVC有一套异常处理机制.
+ 
+  说明:在调用链中(Controller层调用service层,service层调用DAO层).无论那一层出错,都会往上抛,最终给浏览器显示出来.
+       我们要做的就是在Controller传给浏览器时,把异常拦截下来,从而给用户一个自定义的提示页面.
+
+
+步骤:
+  1.新建一个异常包Exception.然后新建一个类ExceptionResolver
+    这个类要实现HandlerExceptionResolver接口,重写其中的方法.
+ 
+    public class ExceptionResolver implements HandlerExceptionResolver {
+    @Override
+    public ModelAndView resolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o,         Exception e) {
+        //打印堆栈报错信息
+        e.printStackTrace();
+        //返回一个友好提示的错误页面
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("error");
+        return modelAndView;
+    }
+
+  }
+
+  2.在spring-mvc.xml声明异常类.
+     <bean class="com.cc.springMVC.Exception.ExceptionResolver" id="exceptionResolver"></bean>
+
+    说明:这个class是自己项目中的路径.
+    为什么要声明异常类?
+      因为springMVC要用到这个异常类(要把异常信息返回到该类中),所以就得知道哪个是异常类,而没有对应注解去标识.就是去配置说明(自己理解) 
+     

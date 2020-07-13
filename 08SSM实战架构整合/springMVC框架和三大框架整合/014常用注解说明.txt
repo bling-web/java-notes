@@ -1,0 +1,156 @@
+一.RequestParam
+   作用:
+       把请求中指定名称的参数给控制器中的方法赋值.
+       通俗点说:就是即使请求中的参数名称和方法中接收参数名称不一样,使用该注解后也能正常使用.
+   属性:
+     1.name和value(只用该属性的话,name和value可省略不写)
+     2.defaultValue.设定默认值(当接收的属性为空时,默认值生效).
+     3.requered:默认为true,必须该传参数.
+   例:
+     public String hello6(@RequestParam("name") String username){       //使用该注解,标识为name后,只能传name.不能穿username
+        System.out.println(username);
+        return FILENAME;
+    }
+
+
+二.RequestBody
+   作用:用于获取请求体内容,直接使用得到的是key=value结构的数据,只适用于post方式.
+   属性:requried:默认为true.
+   例:
+    @PostMapping("/rb")
+    public String test2(@RequestBody String body) {
+        System.out.println("body:"+body);
+        return FILENAME;
+    }
+
+三.PathVariable
+   作用:用于绑定url中的占位符,例如请求url中的/pvb{id},这个id就是占位符,url支持占位符是spring3.0后加入的,是springMVC支持rest风格的一个        重要标志. 
+   例:
+    @GetMapping("/{id}/pv")                                     //这个{id}放前放后都可以.
+    public String test3(@PathVariable("id") String id) {
+        System.out.println("id:"+id);
+        return FILENAME;
+    }
+
+   rest风格简介:
+        
+     普通:                                            rest风格:
+
+       url                对应的方法                  rest请求:                   不同操作
+     /addUser               增加User                  POST:/User                  增加User
+     /delUser               删除User                  DELETE:/User                删除User
+     /getUser               查询User                  GET:/User                   查询User
+     /upaUser               更新User                  PUT:/User                   更新User
+
+四.RequestHeader
+   作用:获取请求头信息.
+   属性:value:请求头名称
+        required:默认为true.
+   例:
+    @GetMapping("/rh")
+    public String test4(@RequestHeader("Accept") String accept) {
+        System.out.println("accept:"+accept);
+        return FILENAME;
+    }
+
+
+五.cookieValue
+   作用:把指定的cookie名称的值传入方法参数.
+   属性:value:指定的cookie的名称
+   说明:目前所知,使用springMVC添加cookie也是通过response对象
+   例:
+    @ModelAttribute                                                           //该注解标记的方法在任何控制器方法执行前都会执行.
+    public String addCookie(HttpServletResponse response) {
+        System.out.println("ModelAttribute执行了");
+        Cookie cookie = new Cookie("value","123");
+        response.addCookie(cookie);
+        return FILENAME;
+    }
+    @GetMapping("/cv")
+    public String test5(@CookieValue("value") String value) {
+        System.out.println("value:"+value);
+        return FILENAME;
+    }
+
+六.ModelAttribute.(springMVC4.3以后支持)
+   作用:
+      1.出现在方法上,表示当前方法会在控制器方法(所有的方法)之前执行.它可以修饰没有返回值的方法,也可以修饰有返回值的方法.
+      2.出现在参数上,获取指定的数据,给参数赋值.
+   属性:
+      1.value:用于表示数据的key,key可以是POJO的属性名称,也可以是map结构中的key.
+   使用场景:
+      当表单提交数据不是完整的实体类数据(自己定义的和表单数据对应的类)时,保证没有提交数据的字段使用数据库对象原有的数据.
+      例如更新某一部分数据时.
+   问题:那么怎么使用原来的字段的数据?
+        方式一:将ModelRequest注解放在有返回值的方法上,在该方法中查询原有数据(可以根据id),然后返回该实体类.
+            例:
+               @ModelAttribute                                               //该方法会先执行
+               public User2 getAll_User_Attribute(User2 user ,String username,String password) {
+                  user.setUsername(username);
+                  user.setPassword(password);
+                  user.setDate(new Date());                                  //这里暂且当做是获取的以前的数据
+                  return user;
+               }
+               @PostMapping("/mr")
+               public String test6(User2 user) {
+                  System.out.println(user);
+                  return FILENAME;
+               }
+        方式二:将ModelAttribute注解放在没有返回值的方法上,注意该方法参数加上Map<>,然后再次使用ModelAttribute作用在将要执行方法的参数上                 以获取MAP<>中指定的数据.
+            例:
+               @ModelAttribute                                                //该方法会先执行
+               public void getAll_User_Attribute(Map<String,User2> map, User2 user,String username, String password) {
+                  user.setUsername(username);
+                  user.setPassword(password);
+                  user.setDate(new Date());                                   //这里暂且当做是获取的以前的数据
+                  map.put("user",user);
+               }
+              @PostMapping("/mr")
+              public String test6(@ModelAttribute("user") User2 user) {       //绑定map中的user.
+                 System.out.println(user);
+                 return FILENAME;
+              }
+
+
+七.SessionAttribute.
+   作用:用于在session中添加属性,多次执行控制器方法直接的参数共享.
+   属性:
+       1.value:用于指定存入的属性名称.
+       2.type:用于指定存入的数据类型
+   设置session:
+       1.原来在servlet中,可以使用request传递数据,在springMVC中当然也可以,但是有点low,在springMVC中有model对象,使用model对象添加属性相当于把属性加到request域中.
+       2.然后在该类上使用@SessionAttribute(value={"对应属性的键"}),就会把该属性同时添加到session域中.
+       例:
+          @GetMapping("/sa")
+          public String test8(Model model) {
+             model.addAttribute("s","王");
+             return FILENAME;
+          }
+          然后在类上使用:@SessionAttributes(value={"s"})
+
+   获取session属性:
+       1.利用Model的实现类ModelMap中的get方法即可.
+       例:
+          @GetMapping("/sa2")
+          public String test9(ModelMap model) {
+              System.out.println(model.get("s"));
+              return FILENAME;
+          }
+   清除session属性:
+       1.利用SessionStates中的setComplete()
+        例:
+          @GetMapping("/sa3")
+          public String test10(SessionStatus status) {
+              status.setComplete();
+              return FILENAME;
+          }
+    
+
+
+
+    
+               
+   
+       
+    
+  

@@ -1,0 +1,15 @@
+Jsoup:是一款java编写的解析器(可以解析各种标记语言),可以直接解析一个URL地址.(主要讲解)
+
+
+1.下载.导入(add as libarry)
+   只需要导入jsoup.jar即可.
+2.快速入门的步骤:(用的是DOM的思想)
+        //1.获取文件的path路径.获取文件的方法和获取配置文件的方法差不多一样(配置文件用的是getResourceAsStream)
+            getResourse返回的是一个URL.
+        String path=JsoupTest.class.getClassLoader().getResource("jsoup/Teacher.xml").getPath();
+        //2.解析xml文件,加载到内存中,互获取DOM树.
+        Document document=Jsoup.parse(new File(path),"UTF-8");
+        //3.获取具体属性
+        Elements elements1=document.getAllElements();
+        //4.输出
+        elements1.forEach(System.out::println);

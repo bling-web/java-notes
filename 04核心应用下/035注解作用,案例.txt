@@ -1,0 +1,95 @@
+
+注解的作用:
+  1.自定义注解可以代替配置文件的作用,起到简化代码的作用.
+  2.起一个flag的作用,被标记的方法可以被选择的执行.
+  
+
+
+
+
+例子一:(起配置文件作用)
+    //使用注解                                                               使用注解,相当于实例化注解接口 
+ 
+    @LoadClass(ClassName = "Reflect.Person",Method = "print")              //放在类上,放在方法上会有空指针异常,原因应该是在类上可以
+    public class Test {                                                      和类一起加载,在方法上不会
+    public static void main(String[] args) {
+
+        //1获取字节码对象,然后获取注解对象
+        LoadClass loadClass =  Test.class.getAnnotation(LoadClass.class);  //该注解对象是注解接口实例化类的对象,注意传入是.class
+
+        //获取内容
+        String className=loadClass.ClassName();
+        String method=loadClass.Method();
+
+        //输出内容
+        System.out.println(className);
+        System.out.println(method);
+
+    //自定义注解
+    @Target({ElementType.TYPE,ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface LoadClass {
+        String ClassName();
+        String Method();
+    }
+
+例子二:(起标记作用)
+   
+  一.测试部分
+        //获取目标类对象(使用注解的那个类),不是字节码对象
+        Count count = Count.class.newInstance();
+
+        //获取全部方法,注意得先获取字节码对象
+        Method[] methods = Count.class.getMethods();
+
+        //循环,查看是否符合条件
+        for (Method method : methods) {
+            int a=10,b=2,c=3;
+
+            //查看是否是注解方法
+            if(method.isAnnotationPresent(Select.class)){
+
+                //查看参数
+                if(method.getParameterCount()==2){
+                    System.out.println("我执行了"+method+"方法");
+                    Object o2 = method.invoke(count, a, b);
+                    System.out.println(o2);
+                }
+                else if(method.getParameterCount()==3){
+                    System.out.println("我执行了"+method+"方法");
+                    Object o3 = method.invoke(count, a, b, c);
+                    System.out.println(o3);
+
+               }
+            }
+        }
+  二.标记类
+       public class Count {
+       //方法一
+       @Select
+       public int  add(int a,int b,int c){
+           return a+b+c;
+       }
+       //方法二
+       public int sub(int a,int b,int c){
+          return a-b-c;
+       }
+       //方法三
+       @Select
+       public int mul(int a,int b){
+          return a*b;
+       }
+       //方法四
+       public int div(int a,int b){
+          return a/b;
+
+       }
+       }
+  三.注解部分
+       @Target(ElementType.METHOD)
+       @Retention(RetentionPolicy.RUNTIME)
+       public @interface Select {
+
+       }
+
+    

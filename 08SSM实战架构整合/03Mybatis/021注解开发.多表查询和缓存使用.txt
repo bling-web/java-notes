@@ -1,0 +1,41 @@
+一.关联查询.
+  1.一对一关联查询.
+    @Select("select * from account")
+    @Results(id = "accountMap" ,value = {
+            @Result(id = true, column = "id", property = "aid"),
+            @Result(column = "uid", property = "userId"),
+            @Result(column = "name", property = "aname"),
+            @Result(column = "money", property = "amoney"),
+            @Result(property = "user",column = "uid", one =                                //column是传入下一个查询的参数.
+            @One(select = "com.cc.mybatis.annotation.mapper.UserMapper.findById", fetchType = FetchType.DEFAULT))   //这个类型就是默认不延迟加载.
+    })
+    List<Account> findAll();
+
+    @Select("select * from user where id = #{id}")
+    User findById(Integer id);
+
+  2.一对多关联查询.
+    @Select("select * from user")
+    @Results(value = {
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "username", property = "username"),
+            @Result(column = "name", property = "name"),
+            @Result(column = "password", property = "password"),
+            @Result(column = "type", property = "type"),
+            @Result(column = "id", property = "accounts", many =                                                    //many关键字
+            @Many(select = "com.cc.mybatis.annotation.mapper.AccountMapper.findByUid", fetchType = FetchType.LAZY)) //这个类型就是延迟加载
+    })
+    List<User> findAllUserAA();
+     
+二.延迟加载.
+   1.fetchType = FetchType.LAZY即可.
+     在one或many标签中.
+   
+
+三.缓存使用.
+   一级缓存也是默认开启的.
+   这里说一下二级缓存的步骤:
+    1.相关类实现serilizable接口.
+    2.mybatis.xml中配置CacheEnable=true,在setting标签中.
+    3.在使用二级缓存的类上配置注解:@CacheNamespace(blocking = true)
+     

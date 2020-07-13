@@ -1,0 +1,50 @@
+一.创建方式
+   1.var date1=new Date();
+     说明:获取当前时间的对象
+
+     返回默认时间格式:
+     Sun Mar 24 2019 10:25:55 GMT + 0800（中国标准时间）
+     星期 月份 日期
+       例:
+         var date1=new Date();
+      
+   2.var date2=new Date(milliseconds)
+     获取某一个毫秒值的时间对象(从1970.1.1到某个毫秒值)
+       例:
+         var date2=new Date(1433642764);
+         var date2=new Date(date1.getTime());
+       
+   3.var date3=new Date(dateString)
+      获取某一个日期的时间对象.
+       例:
+          var date2=new Date(1996,5,5);
+
+   4.var date4=new Date(year,mouth,day,hours,minites,seconds,milliseconds)
+     获取某一个时间点的时间对象.
+       例:
+          var date3=new Date(1996,03,19,5,36,55,22);
+
+
+
+二.方法
+   1.getTime()
+     获取当前对象的当前毫秒数.(从1970年1月1日开始)
+
+   2.toLocaleString()
+     将当前对象转换为容易阅读的字符串形式.
+     例:2019/3/24上午11:22:39
+
+   3.toLocaleDateString()
+     把当前对象的日期部分转为字符串
+     例:2019/3/24
+  
+   4.toLocaleTimeString()
+     把当前对象的时间部分转为字符串.
+     例:11:22:39
+
+   4.getFullYear(),getMouth(),getDate(),gethours(),getMinutes(),getMilliSeconds()
+     分别获取当前对象的年,月,日,时,分,秒.
+     注意:这里月份是0-11,所以要获取我们平常的月份要+1.
+
+   5.getUTCFullYear(),getUTCMouth(),getUTCDate(),getUTChours(),getUTCMinutes(),getUTCMilliSeconds()
+     根据世界时分别获取当前对象的年,月,日,时,分,秒.

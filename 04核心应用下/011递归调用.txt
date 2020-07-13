@@ -1,0 +1,41 @@
+
+  递归:java中递归就是当前方法调用自己的现象
+   
+  1.直接调用
+    public void a(){
+      a()
+    }
+  2.间接调用
+    public void a(){
+      b();
+    }
+    public void b(){
+      c();
+    }
+    public void c(){
+      a();
+    }
+注意事项:
+   1.有边界条件:
+   2.如果递归过深,会造成程序内存溢出.
+
+案例:
+  求1到n的和;
+  public static int sum(int a){
+        if(a==1){
+            return 1;
+        }
+        return a+sum(--a);
+  }
+  打印多级目录:
+   public static void print(File file){                        //这个案例只能用listFiles()构成数组.才能用isFile函数判断.
+        File[] files = file.listFiles();                       //构成file数组
+        for (File file1 : files) {
+            if(file1.isFile()){                                //判断是否为文件.
+                System.out.println(file1);
+            }
+            if(file1.isDirectory){
+                print(file1);                                  //如果是目录继续执行该函数.
+            }
+        }
+    }

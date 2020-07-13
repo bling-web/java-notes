@@ -1,0 +1,33 @@
+### Servlet3.0
+
+* 好处：
+
+  * 支持注解配置，可以不需要web.xml文件。
+
+* 步骤：
+
+  * 创建JavaEE项目，选择Servlet3.0以上，可以不创建web.xml
+
+  * 定义一个类，实现Servlet接口
+
+  * 复写其中方法
+
+  * 在类上使用@WebServlet注解配置。
+
+    ``` java
+    @WebServlet("/demo03")        //这个注解在servlet中,servlet在tomcat中.
+    ```
+
+    
+
+二 IDEA与TOMCAT配置
+  1.首先介绍一下目录:
+      a.源代码目录: 存放源代码的目录。 `D:\code\JAVAWEB\chapter07_servlet`
+      b.tomcat主目录：idea会为每一个tomcat部署的项目单独建立一份配置文件。`C:\Users\CarlosXiao\.IntelliJIdea2018.2\system\tomcat\_JAVAWEB\conf`
+      c.部署目录: `D:\code\JAVAWEB\out\artifacts\chapter07_servlet_war_exploded`
+
+  2.直接哪个项目要用tomcat,Configration加一个tomcat即可.
+  3.创建某一个servlet项目.
+     a.创建java Enterprice项目.
+     b.勾选web application
+

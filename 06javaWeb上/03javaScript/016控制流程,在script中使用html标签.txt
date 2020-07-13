@@ -1,0 +1,60 @@
+1.if else
+  和java一样.
+2.switch
+  在Java中,switch可以接受的类型有byte,char,short,int ,枚举(1.5),String(1.7)
+                            即不可以接受的类型有boolean,long,float,double.和其它引用类型.
+  在JS中,switch可以接受任意类型的变量.
+    例:
+    var a="a";
+    switch(a){
+      case 1:document.write("number");break;
+      case "a":document.write("string");break;
+      case true:document.write("boolean");break;
+      case null:document.write("null");break;
+      case undefined:document.write("undefined");break;
+      default:break;
+    } 
+
+3.while
+  和java一样.
+
+4.do while
+  和java一样.
+
+5.for
+  例:
+    var sum=0;
+    for(var i=1;i<=100;i++){
+      sum += i;
+    }
+  
+
+
+如果想在<script></script>中使用html标签,可以用document.write("")输出这个标签即可.
+例:打印九九乘法表 ,并加边框.
+   <head>
+    <meta charset="UTF-8">
+    <title>hello</title>
+    <script src="var.js"></script>
+    <style>
+        td{
+            border:1px solid black;                   //CSS控制边框样式
+        }
+    </style>
+  </head>
+  <body>
+            <script>
+                document.write("<table >");           //打印表格,使用<table>
+                for( i=1;i<=9;i++){
+                    document.write("<tr>");
+                    for(var j=1;j<=i;j++){
+                    document.write("<td  >");
+                        document.write(j+"*"+i+"="+(i*j))
+                    document.write("</td>");
+                    }
+                    document.write("</tr>")
+                    document.write("<br>");           //这一步其实不需要,因为每输出一行之后自动换行.
+                }
+                document.write("</table>");
+            </script>
+  </body> 

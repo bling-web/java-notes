@@ -1,0 +1,20 @@
+简介
+  1.JavaScript是一种客户端脚本语言.
+    客户端:在浏览器上运行,每一个浏览器都有一个解析JS的解析引擎.
+    脚本语言:不需要编译,直接在浏览器上解析运行.
+  2.功能:可以增强用户和界面的控制过程,增加交互过程,让页面有动态的效果,提高用户体验.
+
+
+发展历史:
+  1.1992年:Nombase公司研发出了一种客户端脚本语言,专门用来做表单效验,取名c--.后来优化代码并且更名为ScriptEase.
+  2.1995年:Netscap(网景)公司,也开发出了一种客户端脚本语言,叫LiveScript.(因为有些技术缺陷).和SUN公司的专家一起改造了LiveScript
+           并且更名为JavaScript.
+  3.1996年:微软公司借鉴JavaScript,开发出了新的客户端脚本语言.JScript.
+  4.1997年:ECMA(欧洲计算机制造协会).制定了所有客户端语言得标准.ECMAScript.
+
+
+所以我们要学习ECMAScript(标准)和JavaScript(BOM和DOM)
+  BOM:Brower Object Modder 浏览器对象模型
+  DOM:Document Object Modder 文件对象模型
+  
+   

@@ -1,0 +1,71 @@
+Element对象
+  一创建:
+    通过document对象创建即可.
+ 
+  二.方法:
+     1.setAttribute.
+     2.removeAttribute.
+ 
+  例:
+    <a id="link" >超链接</a>
+    <input id="setAttribute" type="button" value="设置跳转">
+    <input id="cancalAttribute" type="button" value="取消跳转">
+    <input id="input" type="text" placeholder="输入你想跳转的网页">
+    <script>
+        var link=document.getElementById("link");
+        //设置属性
+        var setAttribute=document.getElementById("setAttribute");
+        setAttribute.onclick=function () {
+            //获取用户输入的想要跳转的网页
+            var inp=document.getElementById("input");
+            var text=inp.value;                        //这里获取的用户输入的text已经是string类型了
+            link.setAttribute("href",text);            //注意注意注意:text这里不加引号,对一个变量的引用不要加引号.
+        }                                              
+        //取消属性
+        var cancalAttribute=document.getElementById("cancalAttribute");
+        cancalAttribute.onclick=function () {
+             //取消跳转功能
+             link.removeAttribute("href");
+         }
+
+     </script>
+
+
+Node对象
+  
+特点:所有DOM对象都可以看做一个节点.(文本,属性,元素)
+
+方法:
+  1.appendChild():在某结点的子节点列表末尾加一个新的节点.
+    谁调用,谁就是父节点,在它下面增加结点.
+     
+  2.removeChild():删除并返回当前节点指定的子节点.
+     例:
+       <div class="big">
+           <div class="little">
+
+           </div>
+       </div>                                 //定义两个结点
+       <a href="javaScript:;" id="a">连接</a> //这个超链接如果是href="".会刷新当前页面,加上javaScript:;或者javaScript:void(0);
+       <script>                                 就不会有任何连接操作.
+           var aObj=document.getElementById("a");
+           aObj.onclick=function () {
+               var bigObj=document.getElementsByClassName("big");
+               var littleObj=document.getElementsByClassName("little");
+               bigObj[0].removeChild(littleObj[0]);                   //这里通过类名获取的是一个数组
+           }
+       </script>
+     注:超链接有两个功能:1.可以点击  2.可以连接.'
+        即使写成href=""也会刷新当前页面,如果不想让其刷新可以加href="javaScript:;",就只有点击功能.
+        
+  3.replaceChild(新节点,旧节点):用新节点替换一个子节点.
+    谁调用,谁就是父节点.
+
+属性:
+  1.parantNode():
+    返回父节点的结点对象.
+    该属性的最大用处就是在找到需要删除的结点时,可以不用再找出其父节点.
+    例:
+      obj.parentNode.removeChild(obj);
+    
+    

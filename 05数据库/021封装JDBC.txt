@@ -1,0 +1,280 @@
+1.为什么要使用接口BaseDao? 
+   接口可以看做一个计划,事先把你要做的东西写出来.它会提醒你.
+
+2.为什么接口下面要有一个专门的实现类BaseDaoimpl,而后面具体的实现类又要继承这个类?不直接实现BaseDao接口?
+   a.这里相当于做了一个抽取的工作,把重复的工作抽取出来,写一次就好了.如果每个具体的实现类都直接实现BaseDao接口,则每个具体的实现类都要重     写其中的方法,很繁琐.而有一个专门的实现类去做这一件事就比较好.
+
+3.为什么要在类上使用泛型?
+   这个问题拆分为两个.
+   a.第一个为什么使用泛型?
+     因为这个类要处理不同的表(对应不同的类),必须使用泛型才能传进来.
+   b.为什么要在类上使用?
+     使用泛型的前提是获取其字节码对象,获取类名称(也就是表名称)
+     (1).多数方法都要使用,不如获取一次,其实是一个提取的过程
+     (2).在方法中应该不容易获取到字节码对象(自己暂时理解的,没有具体操作)
+
+                   
+  
+
+4.如果你要传很多的东西,可以把这些东西封装到一个对象里,变成他的属性,传的时候就很方便.
+
+5.数据表和类可以一一对应上,如果要获取一个表的属性,可以将表的属性都定义到一个类里面.
+
+
+
+新知识一:父类使用了泛型,子类继承父类时指定了泛型,能否在父类中加载类时就加载出这个泛型对象.并表示出来.
+   实现思路:
+       1.在父类构造方法中利用getGenericSuperclass()方法获取父类的参数化类型(这里参数化类型指泛型).
+         注意:父类的泛型必须指定(在子类中指定),才可以使用getGenericSuperclass()方法强转成参数化类型,本来是class类型.
+       2.getActualTypeArguments()获取实际的泛型名称.这里的泛型就是一个类,就是获取了该类的字节码对象.
+   例:
+     public class BaseDaoimpl<E> implements BaseDao<E> {
+     protected Class clazz;
+     public BaseDaoimpl() {
+         //ParameterizedType就是指泛型,必须转成泛型才能获取泛型的名称
+         ParameterizedType pt = (ParameterizedType)this.getClass().getGenericSuperclass();
+         //getActualTypeArguments()获取实际的泛型名称,其实就是获取具体泛型所对应的类.[0]的意思是第零个泛型,因为泛型可以传好多个.
+         //所有的泛型都有自己对应的类.
+         clazz= (Class)pt.getActualTypeArguments()[0];
+         System.out.println(clazz);
+     }
+     说明:在其子类中指明泛型,然后new子类对象即可达成目标.
+
+
+一个大大的例子:
+   public class BaseDaoimpl<E> implements BaseDao<E> {
+    protected Class clazz;  //泛型类的字节码对象
+     public BaseDaoimpl() {
+         //getGenericSuperclass()就是指泛型,只有转成泛型,才能获取泛型名称.
+         //注意父类的泛型必须指定,才能强转.
+         ParameterizedType pt = (ParameterizedType)this.getClass().getGenericSuperclass();
+         //getActualTypeArgument获取实际的类型参数--泛型,也就是一个类,这个类的字节码对象,每一个泛型都是一个类.
+         //0就是第零个泛型
+         clazz= (Class) pt.getActualTypeArguments()[0];
+         System.out.println(clazz.getSimpleName());
+     }
+    /***
+     *查询方法
+     * @return一个集合,将封装有对应表信息的对象装进去
+     */
+    @Override
+    public List<E> findAll() {
+        ResultSet resultSet=null;
+        //1.获取连接对象
+        Connection connection = pre.getConnection();
+        //2拼接字符串
+        //getSimpleName就是获取该类的类名
+        String ur="select * from "+clazz.getSimpleName();
+        //3.获取语句对象
+         PreparedStatement preparedStatement=pre.getPre(connection,ur);
+         //获取一个链表.
+        List list=new ArrayList<>();
+        //4.执行语句
+        try {
+            resultSet= preparedStatement.executeQuery();
+            //5.获取反射表中的属性(这里把每个表都对应了一个相应的类,直接获取类中的变量就可以)
+            //注意这里获得的变量名称是加上包名的,必须getName获得单独变量名.getSimpleName是字节码对象获取类名使用的
+            Field[] fields = clazz.getDeclaredFields();
+            while(resultSet.next()){
+                //通过字节码对象获取类的实例化对象
+                Object o = clazz.getConstructor().newInstance();
+                for (int i = 0; i < fields.length; i++) {
+                   //6.拼接出各种setName,setId类似这中方法.
+                    //toUpperCase将小写转为大写.
+                    String methodName="set"+fields[i].getName().substring(0,1).toUpperCase()+fields[i].getName().substring(1);
+                    //7.获取方法对象.执行该方法可将得到的信息封装到对象中.
+                    Method method = clazz.getMethod(methodName, (Class)fields[i].getType());
+                    //8.执行该方法
+                    method.invoke(o,resultSet.getObject(fields[i].getName()));
+                }
+                list.add(o);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }finally {
+            pre.close(resultSet,preparedStatement,connection);
+        }
+        return list;
+    }
+    /***
+     * 通过id查询方法
+     * @param id
+     * @return 装有表对象的集合,表对象----将表中的信息封装到相应对象中
+     */
+
+    @Override
+    public List<E> findById(int id) {
+        ResultSet resultSet=null;
+        //1.获取连接对象
+        Connection connection = pre.getConnection();
+        //2拼接字符串
+        //getSimpleName就是获取该类的类名
+        String ur="select * from "+clazz.getSimpleName()+" where id=?";
+        //3.获取语句对象
+        PreparedStatement preparedStatement=pre.getPre(connection,ur);
+        //获取一个链表.
+        List list=new ArrayList<>();
+        try {
+            //4.设置id的值.
+            preparedStatement.setInt(1,id);
+            //5.执行语句
+            resultSet= preparedStatement.executeQuery();
+            //5.获取反射表中的属性(这里把每个表都对应了一个相应的类,直接获取类中的变量就可以)
+            //注意这里获得的变量名称是加上包名的,必须getName获得单独变量名.getSimpleName是字节码对象获取类名使用的
+            Field[] fields = clazz.getDeclaredFields();
+            while(resultSet.next()){
+                //通过字节码对象获取类的实例化对象
+                Object o =  clazz.getConstructor().newInstance();
+                for (int i = 0; i < fields.length; i++) {
+                    //6.拼接出各种setName,setId类似这中方法.
+                    //toUpperCase将小写转为大写.
+                    String methodName="set"+fields[i].getName().substring(0,1).toUpperCase()+fields[i].getName().substring(1);
+                    //7.获取方法对象.执行该方法可将得到的信息封装到对象中.
+                    Method method = clazz.getMethod(methodName, fields[i].getType());
+                    //8.执行该方法
+                    method.invoke(o,resultSet.getObject(fields[i].getName()));
+                }
+                list.add(o);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }finally {
+            pre.close(resultSet,preparedStatement,connection);
+        }
+        return list;
+    }
+    /***
+     * 插入方法,所有属性都设置
+     * @param entity
+     */
+    @Override
+    public void insert(E entity) {
+         //1.获取连接对象
+        Connection connection = pre.getConnection();
+        //2.通过反射获取属性
+        Field[] fields = clazz.getDeclaredFields();
+        //3.拼接字符串
+        String ur="insert into "+clazz.getSimpleName()+" values  (null,";
+        //这里忽略id,所以从1开始
+        for (int i = 1; i < fields.length; i++) {
+            if(i<fields.length-1){
+                ur+= ("?, ");
+            }
+            else {
+                ur += ( "?)");
+            }
+        }
+        //4.获取语句对象
+        PreparedStatement preparedStatement = PrepareStatement.pre.getPre(connection, ur);
+        //5.对占位符进行设置
+        for (int i = 1; i < fields.length; i++) {
+            //6.拼接获取对象属性的方法名称
+            String method="get"+fields[i].getName().substring(0,1).toUpperCase()+fields[i].getName().substring(1);
+            //7.获取该方法
+            try {
+                Method method1 = clazz.getMethod(method);
+                //8.调用该方法,这里面用的对象.是参数中传过来的.
+                Object filed = method1.invoke(entity);
+                //9.正式对占位符进行设置.
+                preparedStatement.setObject(i,filed);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        //10.执行SQL语句
+        try {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            pre.close(null,preparedStatement,connection);
+        }
+     }
+
+    /***
+     * 删除方法,根据id删除
+     * @param id
+     */
+    @Override
+    public void delete(int id) {
+        //1.获取连接对象
+        Connection connection = pre.getConnection();
+        //2拼写SQL语句
+        String delete="delete from "+clazz.getSimpleName()+" where id=?";
+        //3.获取语句对象
+        PreparedStatement preparedStatement = PrepareStatement.pre.getPre(connection, delete);
+        //4.设置id
+        try {
+            preparedStatement.setObject(1,id);
+            //5.执行SQL语句
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally{
+            //6.关闭资源
+            pre.close(null,preparedStatement,connection);
+        }
+        //
+    }
+    /***
+     * 更新方法,更新所有字段,除了id.
+     * @param entity
+     * @param idi
+     */
+    @Override
+    public void update(E entity,int idi) {
+        //1.获取连接对象
+        Connection connection = pre.getConnection();
+        //获取属性
+        Field[] fields = clazz.getDeclaredFields();
+        //2.拼接字符串
+        String update="update "+clazz.getSimpleName()+" set ";
+        //注意不算id,从1开始
+        for (int i = 1; i < fields.length; i++) {
+            if(i<fields.length-1){
+                update +=fields[i].getName()+"=?,";
+            }
+            else {
+                update +=fields[i].getName()+"=?";
+            }
+        }
+        update+=" where id="+idi;
+        //3.获取语句对象
+        PreparedStatement preparedStatement = PrepareStatement.pre.getPre(connection, update);
+        //4.设置占位符的值
+        //从1开始
+        for (int i = 1; i < fields.length; i++) {
+            //获取从对应类中获取属性的方法名称
+            String method="get"+fields[i].getName().substring(0,1).toUpperCase()+fields[i].getName().substring(1);
+            try {
+                //获取该方法
+                Method method1 = clazz.getMethod(method);
+                //执行该方法
+                Object filed = method1.invoke(entity);
+                //设置占位符
+                preparedStatement.setObject(i,filed);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //执行SQL语句
+        try {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            pre.close(null,preparedStatement,connection);
+        }
+    }
+}
+
+
+
+
+
+
+思考,能不能把具体的实现类取了,它的作用无非是传一个泛型,那我在new 对象时也可以传一个泛型过去. 
+     答:不能.先获取子类字节码对象,在获取类直接超类时(用getGenericSuperClassff),才能获取泛型.

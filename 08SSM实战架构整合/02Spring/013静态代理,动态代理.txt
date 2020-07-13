@@ -1,0 +1,149 @@
+一.代理模式:.
+   1.代理模式是常用的java设计模式,他的特征是代理类与委托类有同样的接口,有相同的接口的目的就是有相同的方法,有相同的行为,这样才能够代理.
+   2.特点:
+         a.代理模式最主要的就是有一个公共接口,一个具体的类,一个代理类.代理类持有具体类的实例,代替具体类执行实例方法.
+         b.代理模式就是在访问实际对象时引入一定程度的间接性,因为这种间接性,就可以增加许多操作.
+
+二.静态代理.
+   由程序员创建代理类,代理类在程序运行之前就已经确定生成.
+   1.静态代理的一个简单例子.
+    
+     *** 创建一个公共接口 ***
+
+  public interface Person {
+    void submitMoney();
+  }
+
+
+     *** 创建学生类 ***
+
+  public class Student implements Person {
+
+    private String name;
+    public String getName() {
+        return name;
+    }
+    public Student(String name) {
+        this.name = name;
+    }
+    //交班费方法
+    public void submitMoney() {
+        System.out.println(name+"上交班费50元");
+
+    }
+  }
+    *** 创建学生代理类 ***
+
+  public class StudentProxys implements Person{
+    private Student student;
+
+    public StudentProxys(Student student) {
+        this.student = student;
+    }
+
+    public void submitMoney() {
+        System.out.println(student.getName()+"最近表现很好");
+        student.submitMoney();
+    }
+  }
+   
+    *** 测试方法 ***
+  
+  public class test {
+    public static void main(String[] args) {
+        //创建学生对象
+        Student student = new Student("张三");
+        //创建代理对象
+        StudentProxys studentProxys = new StudentProxys(student);
+        //代理执行方法
+        studentProxys.submitMoney();                   
+    }
+  }
+    
+    *** 输出结果 ***
+ 
+  张三最近表现很好
+  张三上交班费50元
+   
+   以上是一个简单的例子,学生和学生代理(班长)都继承了person接口,有了共同的交班费的行为,这样班长就能代理学生上交班费.在上例中,没有通过张   三(被代理对象)来执行交班费的行为,而是通过班长(代理对象)来执行了,这就是代理模式.
+
+
+
+
+
+
+三.动态代理.
+   1.动态代理的最大区别就是,代理类不是程序员写的,而是在运行时根据我们的"指示"动态生成的.作为程序员,只需提供一个接口,动态生成的代理类会     实现这个接口.
+   2.那么既然让别人(别人写好的程序)帮我们生成代理类,那我们就需要遵循别人的规则,在实际中,我们可以通过Proxy类的newProxyInstances方法来     动态生成代理类.
+   3.有了具体的方法,我们还需要告诉程序那个类是被代理类,要实现哪个接口,代理中具体执行的操作是什么.
+   4.那么代理类大概是怎么样进行代理,执行操作的呢?
+     在具体设计中,所有代理对象要执行的方法都会被替换成invoke方法.然后在invoke方法中,根据方法名称再执行具体的实例方法.
+   5.实现:  
+         *** 创建proxy实例:proxy.newProxyInstance(ClassLoader classLoder,class[] classes,InvacationHander)
+         *** 方法参数说明:
+             ClassLoder:类加载器.
+                  告诉程序哪个类是被代理类
+             Class[]:字节码对象数组,
+                  告诉程序要实现哪一个接口
+             InvacationHander:提供增强机制.
+                  告诉程序在代理中具体执行的操作是什么,一般都是会写一个InvocationHandle(调用处理)的匿名内部类.
+  例:
+
+   *** 一个公共的代理的接口 ***
+
+  public interface ProducerProxyInterface {
+    void spanMoney(double money);
+  }
+
+   *** 被代理类Producer ***
+
+  public class Producer implements ProducerProxyInterface {
+    public void spanMoney(double money) {
+        System.out.println("花费"+money+"元");
+    }
+  }
+   *** 具体测试,动态生成代理类 ***
+
+  public class Consumer {
+    public static void main(String[] args) {
+        //new一个被代理对象,因为代理类执行被代理类的方法时,需要用到被代理类的对象
+        final Producer producer = new Producer();
+        //等号右面这一大串就相当于生成了一个代理类,这个代理类肯定会实现ProducerProxyInterface接口
+        ProducerProxyInterface proxyInstance = (ProducerProxyInterface) Proxy.newProxyInstance(producer.getClass().getClassLoader(),         producer.getClass().getInterfaces(),
+                new InvocationHandler() {  //调用处理,
+                    /**
+                     *通过代理对象执行任何方法都会执行该方法
+                     * @param proxy 代表动态处理对象
+                     * @param method 代表正在执行的方法
+                     * @param args   代表正在执行方法中传入的实参
+                     * @return 和被代理对象执行方法的返回值相同
+                     * @throws Throwable
+                     */
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        System.out.println("正在执行的方法" + method);
+                        Double money = (Double) args[0];                   //这里的args[0]就是执行方法时传入的1000.
+                        //这一步就相当于真正执行被代理对象的方法
+                        Object obj = method.invoke(producer, money * 0.8); //第一个参数要执行方法的对象,第二个就是方法真正的参数
+                        return obj;
+
+                    }
+                });
+        //执行代理类中的spanMoney方法
+        proxyInstance.spanMoney(1000);
+    }
+  }
+   
+   *** 输出结果 ***
+
+  正在执行的方法public abstract void com.cc.spring.proxy.ProducerProxyInterface.spanMoney(double)
+  花费800.0元
+     
+
+
+
+四.动态代理的优势.
+   1.可以对所有的被代理对象的方法进行预处理,而只需简单的代码.
+   2.随时用,随时生成.
+                  
+          
+   

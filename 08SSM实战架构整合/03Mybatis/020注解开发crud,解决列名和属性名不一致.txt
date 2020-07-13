@@ -1,0 +1,43 @@
+一.Mybatis注解开发
+   注解开发简化了步骤,可以直接在方法上写sql语句,很方便.
+   1.常用注解
+     @select 查询
+     @Insert 
+     @Update 
+     @Delete 
+     @Results 相当于配置文件中的ResultMap
+     @Result  相当于ResultMap中的result.
+     @ResultMap 用来引用某一个Results
+     @One 一对一结果集封装
+     @Many 实现一对多结果封装
+     @SelectProvider 实现动态SQL映射
+     @CacheNameSpace 实现二级缓存使用
+
+
+二.CRUD的举例.
+   不需要对应的mapper映射文件,直接写就可以.
+    @Select("select * from user")
+    List<User> findAll();
+
+    @Insert("insert into user (username,name,password,type) values (#{username},#{name},#{password}, #{type})")
+    void saveUser(User user);
+
+    @Update("update user set username=#{username},name=#{name},password=#{password} where id = #{id}")
+    void updateUser(User user);
+
+    @Select("select * from user where id = #{id}")
+    User findById(Integer id);
+
+    @Delete("delete from user where id = #{id}")
+
+三.解决列名不一致.
+   也是两种方法,第一种还是当返回的时候通过起别名让其一致.这里不再说明.
+   第二中.
+    @Select("select * from account")
+    @Results(id = "accountMap" ,value = {
+            @Result(id = true, column = "id", property = "aid"),
+            @Result(column = "uid", property = "userId"),
+            @Result(column = "name", property = "aname"),
+            @Result(column = "money", property = "amoney")
+    })
+    List<Account> findAll();

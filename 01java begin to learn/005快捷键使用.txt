@@ -1,0 +1,25 @@
+ctrl+1快捷修复
+ctrl+z撤销操作
+ctrl+y恢复操作(相对于撤销来说)
+ctrl+d快捷删除,删除一行
+shift+enter快速到该行的下一行,如果这一行特别长,实用
+ctrl+f11快速运行程序(我改成了ctrl+0)
+alt+↑/↓快速的将该行代码上移或下移
+ctrl+alt+↑/↓快速复制行
+ctrl+m快速放大所选区域
+`快速补全代码(原本是Alt+/)
+    修改方法:window->Prefence->General->Keys->Content Assists
+ctrl+o快速查看大纲视图(就是快速查看有几个方法)
+
+ctrl+/快速注释行(选中要注释行）
+ctrl+shift+/快速注释块
+ctrl+shift+R快速调整代码格式到规范(原本是ctrl+shift+f)
+Ctrl+Shift+o快速导入包
+ctrl+h查看这个类在哪个文件中使用
+ctrl+Alt+h直接跳到使用这个类的文件中
+Shift+Alt+s(我改成了Alt+z),然后再按C 构建无参构造方法
+Shift+Alt+s(我改成了Alt+z),然后再按o 构建有参构造方法
+Shift+Alt+s(我改成了Alt+z),然后再按r->Tab->Enter->Tab->Enter
+Shift+Enter.在光标后添加空白行
+ctrl+Shift+Enter在光标前添加空行
+ctrl+(+,-)快速放大,缩小字体

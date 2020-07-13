@@ -1,0 +1,48 @@
+### JSP脚本
+
+**JSP定义Java代码的方式**
+
+* `<% java代码 %>`： 定义的java代码，在service方法中。service方法可以定义什么，这个脚本也就可以定义什么。
+* `<%! java代码 %>`:   定义的java代码，在jsp转成java类的成员位置，可以定义成员变量，成员方法，静态块。。
+* `<%= java代码 %>`:  定义的java代码，会输出到页面上；
+
+
+
+### JSP的内置对象
+
+**在jsp页面中不需要获取和创建，直接使用的对象，一共有9个内置对象**
+
+* request
+* reponse
+* out: 字符串输出流对象，可以将数据输出到页面上。和response.getWriter()类似。
+  * 在web容器中真正客户端做出响应之前，会先找response缓冲区数据，再找out缓冲区的数据。
+  * response.getWriter数据输出永远再out.write()之前。
+
+| 变量名      | 真实类型                               | 描述                                        |
+| ----------- | -------------------------------------- | ------------------------------------------- |
+| pageContext | javax.servlet.jsp.PageContext          | 当前页面共享数据、可以获取其他内置对象      |
+| request     | javax.servlet.http.HttpServletRequest  | 一次请求访问的多个资源间共享数据(转发)      |
+| session     | javax.servlet.http.HttpSession         | 一次会话的多次请求                          |
+| application | javax.servlet.ServletContext           | 整个web容器共享数据                         |
+| response    | javax.servlet.http.HttpServletResponse | 响应对象                                    |
+| page        | java.lang.Object                       | 当前jsp/servlet对象（this）                 |
+| out         | javax.servlet.jsp.JspWriter            | 输出对象，输出数据到页面上。                |
+| config      | javax.servlet.ServletConfig            | Serlvet的配置对象                           |
+| exception   | java.lang.Throwable                    | 异常对象, 只有isErroPage=ture的时候才能访问 |
+
+
+**jsp和servlet区别:
+   jsp:本质就是一个servlet,是一个java类.是servlet的简易方式,更强调应用的外用表达.侧重于视图.在mvc模型中,作为view层.
+
+   Servlet:也是一个java类.,其实就是一个接口,定义了java类能被浏览器客户端所访问的规则,在mvc模型中,主要运用于逻辑控                制.作为控制层.
+
+   相同点:
+      1.其本质都是一个java类.
+      2.都可以输出html页面.
+
+   不同点:
+      servlet: 1.主要用于控制逻辑.
+                  2.需要进行配置,不方便维护.
+                  3.很难向网页中输出html页面内容.
+      jsp:1.侧重于视图.
+            2.擅长输出html标签.

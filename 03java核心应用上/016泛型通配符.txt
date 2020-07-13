@@ -1,0 +1,29 @@
+泛型通配符概述
+    当使用泛型类或接口时,传递的数据中,泛型类型不确定,可以通过通配符<?>.来确定.但是一旦使用泛型的通配符后,只能使用Object类中的共性方法,集合元素自身方法无法使用.
+  例:
+    public static void main(String[] args) {
+        Collection<String> costr=new ArrayList<>();       
+        Collection<Integer> cosin=new ArrayList<>();
+        Collection<Number> cossh=new ArrayList<>();
+        Collection<Object> cossh=new ArrayList<>();
+        convert(cosin);
+        convert(costr);
+        convert(cosnu);
+        convert(cosob);
+    }
+    private static void convert(Collection<?> c ) {     //<?>这个就是使用了通配符,使用通配符可以做上下限
+        System.out.println(c.isEmpty());
+    }
+   注意:Object是String和Number的父类,Number是Integer的父类. 
+
+使用通配符可以做上下限(优点)
+   上限.
+     (? extends Number) 泛型通配符的上限,只有Number和它的子类能够传递.
+    private static void convert(Collection<? extends Number> c ) {
+        System.out.println(c.isEmpty());
+    }
+   下限.
+     (? super String) 泛型通配符的下限,只有String和它的父类能否传递
+    private static void convert(Collection<? super String> c ) {
+        System.out.println(c.isEmpty());
+    }

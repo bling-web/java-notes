@@ -1,0 +1,29 @@
+线程池:
+  就是一个容纳多个线程的容器,其中的线程可以反复使用,省去了频繁创建线程对象的操作,无需反复创建线程而消耗过多资源.
+
+线程池好处:
+  1.降低资源消耗.
+    减少了创建和销毁线程的次数,每个工作线程都可以被重复利用.
+  2.提高相应速度.
+    当任务到达时,任务可以不需要等到线程创建就能立即执行.
+  3.提高线程的可管理性.
+    只能容纳固定数量的线程,多了也进不来.
+
+线程池使用:
+  Java里面线程池的顶级接口是java.util.concurrent.Executor,但是严格意义上讲Executor并不是一个线程池.而只是一个执行线程的工具.真正的线程池接口是java.util.concurrent.ExcutorService.
+
+步骤:
+  1.创建线程池对象.
+    ExecutorService executorSercive=Executor.newFixedThreadPool(nThreads:2)
+    注意:这个2是线程池的容量,即只能同时运行2个线程,如果提交了三个线程,第三个线程必须等待其中一个线程运行完后再运行
+    不能直接new,通过方法来创建.
+  2.创建Runnable接口子类对象
+    一个类实现Runnable接口.是线程任务对象(不是线程对象)
+    public class MyThread implements Runnable{}
+  3.提交Runnable接口子类对象 
+    executorSercive.submit(MyThread);
+
+    某个线程任务对象提交了线程池,就会执行该对象任务.该语句相当于t1.start();t2.start().
+
+  4.关闭线程池.
+    一般不关,一旦关闭,里面的线程都会销毁.

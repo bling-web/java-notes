@@ -1,0 +1,45 @@
+创建;
+  location对象就是从window对象获取的.
+ 
+属性:
+  1.location.hostname:返回主机的域名.
+  2.location.pathname:返回当前页面的路径和文件名.
+  3.location.port:返回web主机的端口.
+  4.location:protocal:返回使用的web协议(http或https)
+  5.location.href:返回当前页面的URL(可以用这个属性在当前页面直接打开新的网页)
+    例:
+       location.href="http://www.baidu.com"  即从当前页面直接跳到百度页面.
+  
+
+
+
+方法:
+  1.reload():重新加载当前页面.
+    例:
+       location.reload().
+
+
+一.html和script怎样结合使用?
+   可以在script直接获取html标签中的属性,
+   
+
+  1.获取一个标签里的文本内容.
+    <font id="seconds" >5<font>
+    <script>
+    var seconds=document.getElementById("seconds");
+    seconds.innerText=6.     //这样既可获取到.也可对其进行设置.
+    <script>
+  
+
+  2.获取一个标签里的属性.
+    <img id="picture">
+    <script>
+    var picture=document.getElementById("picture");
+    picture.src.            //可以直接进行设置.
+    <script>
+
+  3.获取用户输入的值.
+    标签对象.value.
+
+注意:script一定要放在html的后面,尤其是注册一个事件的时候.script放在前面是获取不到信息的.
+  

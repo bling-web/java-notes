@@ -1,0 +1,78 @@
+一.控制反转.
+   Inversion of Control,缩写为loc,是面向对象编程的一种设计原则,可以用来降低计算机之间的耦合度,其中最常见的方式叫做依赖注入.还有一种方式叫依赖查找.通过控制反转,对象在被创建的时候,有一个控制系统内所有对象的外界实体,将其所依赖的对象的引用传递给他.也可以说,依赖被注入到对象中.
+   为什么叫控制反转?
+      以前创建对象的方式是主动的.
+      现在获取对象的方式是和工厂要,是被动的.
+
+
+
+二.明确loc的作用.
+   消减程序之间的耦合.
+
+
+三.spring快速入门.
+   步骤:
+      1.引入spring-context包.
+         <dependency>
+            <groupId>org.sprinframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.1.0.RELEASE</version>
+        </dependency>
+      2.配置beans.xml文件
+        a.引入schame约束.
+        b.配置bean.
+          <?xml version="1.0" encoding="UTF-8"?>
+          <beans xmlns="http://www.springframework.org/schema/beans"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.springframework.org/schema/beans
+              http://www.springframework.org/schema/beans/spring-beans.xsd">
+             <bean id="userService" class="com.cc.spring.service.impl.UserServiceImpl"></bean>
+             <bean id="userDao" class="com.cc.spring.dao.impl.UserDaoImpl"></bean>
+         </beans>
+      3.获取对象
+        a.使用ClassPathxmlApplicationContext对象加载容器.
+        b.使用getBean方法获取对象.(注意类首字母要小写)
+        例:
+         //加载核心容器对象
+         ApplicationContext applicationContext=new ClassPathXmlApplicationContext("beans.xml");
+        //获取想要的对象
+        Object userService = applicationContext.getBean("userService");
+
+
+
+四.applicationContext常用的实现类.
+   1.ClassPathxmlApplicationContext.加载类路径下的配置文件,只能读取类路径下的(其他地方找不到)
+     说明:1.类路径就是java项目(一般是web项目)打包,编译后classes这个文件夹所在的路径.就是特指.
+          2.使用这个实现类,要传入对应的文件名称.
+   2.FileSystemxmlApplicationContext.加载磁盘任意位置的配置文件(注意访问权限).
+   3.AnnotationConfigApplicationContext. 
+     说明:1.当我们使用注解来创建对象时,需要用此类来创建spring容器,这个容器用来读取注解.
+          2.使用这个实现类,要传入配置类的字节码对象.
+
+
+
+
+五.applicationContext和BeanFactory的.
+   说明:applicationContext继承与BeanFactory.他们都是通过读取xml.
+   区别:
+     1.applicationContext是读取配置文件后立即创建对象.适用于单例(只创建一次)
+     2.BeanFactory是什么时候根据id获取对象时才创建,适用于多例.
+       使用例子:
+          Resource resource=new ClassPathResource("beans.xml");
+          BeanFactory beanFactory=new XmlBeanFactory(resource);
+          Object userService = beanFactory.getBean("userService");
+          System.out.println(userService)
+     因为spring中大多数都是单例,所以常用applicationContext.
+
+
+   
+
+
+
+
+  
+   
+ 
+
+  
+        

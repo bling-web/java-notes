@@ -1,0 +1,25 @@
+一.服务端三层架构.
+   表现层(springMVC):接收请求参数,参数效验,调用业务层,展示数据.
+   业务层(spring):处理业务逻辑,调用持久层.
+   持久层(Mybatis):定义增删查改方法,连接数据库.
+
+二.MVC
+   M(model):javaBean,用来封装数据.
+   V(view):jsp/html,用来展示数据.
+   C(controller):Servlet.用来接收请求,使用javaBean封装数据,调用逻辑层,然后返回给jsp.
+
+三.SpringMVC
+   SpringMVC是一种基于java实现的mvc设计模型的请求驱动模型的轻量级web框架,是目前最主流的mvc框架之一.
+   通过一套注解,让一个简单的java类成为处理请求的控制器,而无需实现任何接口,同时它还支持RESTful编程风格的请求.
+
+四.SpringMVC的优势.
+   1.清晰的角色划分.
+     a.前端控制器(DispatcherServlet):根据请求url,找到请求处理的映射器.
+     b.请求到处理器映射(Hander Mapping):根据映射关系找到具体的类,真正的类.
+     c.处理器适配器(Hander Adater):电脑上的USB接口匹配不同的硬件.
+     d.视图解析器(View Resolver):页面结果显示.
+     e.处理器或页面控制器(Controller):
+     f:验证器(Validator):
+     g:命令对象(Command请求参数绑定到的对象就叫命令对象)
+     h:表单对象(Form Object提供给表单展示和提交的对象叫表单对象)
+     

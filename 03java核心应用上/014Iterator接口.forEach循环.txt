@@ -1,0 +1,48 @@
+   
+    java中为了方便遍历集合中的元素,提供了java,util.Iterator接口进行迭代(不停的更替)访问,因此Iterator对象成为迭代器.
+    Collection中提供了专门的方法iterator()方法,返回在此collection元素上进行迭代的迭代器.
+    例:
+     Collection coll=new ArrayList<>();//多态 使用
+        coll.add("王");
+        coll.add("亮");
+        coll.add("亮");
+        coll.add("来");
+        coll.add("静");
+     Iterator iterator = coll.iterator();//通过iterator()方法返回一个迭代器(迭代对象)
+
+     while(iterator.hasNext()){          //hasNext()方法,如果仍有元素可以迭代,则返回true.
+        System.out.println(iterator.next());//next()方法.自动返回下一个迭代元素.
+     }
+原理:迭代器对象在遍历集合时,内部采用指针的方式来跟踪集合中的元素.
+    步骤:
+      1.获取集合的迭代对象
+      2.通过hasNext()判断是否有元素
+      3.通过next()获取这个元素,并且指针后移.(next()方法使指针后移.hasNext()方法不会.)
+
+    有的循环循环的时候是不能删除的.例:
+    for(int i=0;i<list.size;i++){
+       list.remove();
+    }
+    此时删除lisd的大小就会发生变化,就会发生错误.
+    如果想要安全的删除,可以用迭代器.例:
+    Iterator iterator=list.iterator;
+    while(iterator.hasNext){
+        Object o=iterator.next;
+        if(needDelate(o)){
+            iterator.remove();
+        }
+    }
+    注意:不能连续调用两次remove,调用remove之前最少调用一次next方法的调用.
+    
+    
+
+
+注意:增强for循环的内部原理就是Iterator迭代器.
+    增强for循环用来快速遍历集合和数组.
+    增强for循环只能读取数组或集合中的值,并不能改变值.因为增强for循环是把集合中的值依次赋给某个变量,并不是对直接集合中的值进行操作.
+    
+ 
+增强forEach循环.(JDK1.8以后)
+    coll.forEach(i->{      //coll是一个集合对象.
+        System.out.println(i); 
+    });
