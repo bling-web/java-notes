@@ -1,0 +1,12 @@
+
+一.打印流PrintStream类.
+   1.常识:平时我们在控制台打印输出,是调用print方法和println方法完成的,这两个方法都来自java.io.PrintStream类,该类能够方便打印各种数据类型的值,是一种便捷的输出方式.
+ 
+   2.构造方法:
+     public PrintStream(String fileName):使用指定的文件名创建一个新的打印流.如果没有该文件会创建该文件.
+     即:可以改变流向,直接输出到该指定文件中.
+     例:
+     System.out.println(97);//调用系统的打印流,控制台直接输出97
+     PrintStream ps=new PrintStream("F:\\PS.txt");//创建打印流对象,指定该对象的文件
+     System.setOut(ps);//设置输出路径(流向),直接输出到文件ps.txt中
+     System.out.println(97);//输出到文件ps.txt中.

@@ -1,0 +1,37 @@
+String
+    缺点:不可变.
+    优点:可以一下子输出,有拼接,截取等操作.可以通过size()和charAt()方法遍历字符串.
+  转换:
+    数组.StringBuilder
+    String转换为数组:byte[] b="ldhbjdhb".getBytes();
+StringBuilder
+    优点;可变,占用内存小,效率高
+    缺点:没有太多操作函数.用的最多的是append()
+  转换:
+    String.
+数组:
+    优点:可以循环内部元素.排序.
+    缺点:不能较快的一下子输出.不可变,灵活性不高.
+  转换:
+    String.
+    数组转换为String:  new String(数组)
+ArrayList
+    缺点:
+    优点:可变的数组.存储对象数据.(基本类型要包装).有各种操作函数.
+  转换:
+    数组.
+   
+    
+
+字符串转化为数组:
+    "sfhbhd".getByte或者"hdvh".getChar
+数组,StringBurder转换为字符串:
+    new String()
+    注意:这个括号里面只可以放Char和Byte类型的数组.还有StringBurder类型.
+数组转为List:
+    Arrays.asList(数组) 
+    也可以看作给list赋值的快速方式.
+List转为数组:
+   list.toArray(arr);
+   说明:list是一个集合对象的引用,arr是已经声明的数组.
+

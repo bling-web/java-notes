@@ -1,0 +1,55 @@
+在实际工作中一般都用的是PrepareStatement接口,主要因为有以下优点.
+
+一.PreparedStatement接口:
+   PrepareStatement是Statement接口的子接口.继承父类接口中所有的方法.它是一个预编译的SQL语句.
+    1.因为有预编译的功能.能提高SQL的执行效率.
+    2.可以有效地预防SQL注入的问题,安全性更高.
+      说明:在一个方法中可能回传一个参数,而这个参数可能会是字符串拼接的形式.比如说我是删除方法,传一个3 or 4,那么如果不使用?占位,就会一下子删除两条.使用?占位则不会.
+
+
+二.PrepareStatement执行效率高的原理:
+
+   1.Statement每执行一条语句,都会将SQL语句发送给数据库,数据库先编译这一条语句,再执行.
+     所以假设有一万条类似的语句,数据库需要编译一万次,执行一万次.效率低.
+
+   2.而PrepareStatement会先将SQL语句发送给数据库进行预编译.然后引用预编译后的结果.可以传入不同的参数给Preparement对象并执行.
+     所以假设有一万条相似的语句,数据库只需预编译一次.提高执行效率.
+
+三.使用PrepareStatement.
+   1.获取PrepareStatement对象.
+     PrepareStatement ps=connection.PrepareStatement(String sql); //ps是connection对象.
+   2.使用方法发送.
+    a.int executeUpdate()         //执行DML.执行增删改操作.返回影响的行数.
+    b.ResultSet executeQuery()    //执行DQL,查询操作,返回结果集.
+
+四.使用步骤.
+   1.编写SQL语句,未知内容使用?占位. select * from user where name=? and password=?;
+   2.创建PrepareStatement对象.
+   3.设置实际参数.setXXX(),设置占位符的值.
+   4.调用执行语句.
+   5.关闭资源.
+
+      例:
+        //1获取连接对象
+        connection= pre.getConnection();                //这里pre是一个类.getConnection是其中一个静态方法.就是获取连接对象
+        //2.获取语句对象
+        String ur="update user set name=? where id=?";
+        preparedStatement= pre.getPre(connection, ur);  //这个也是,获取语句对象
+        //3.对?的内容进行设置.
+        preparedStatement.setString(1,"张三");
+        preparedStatement.setInt(2,4);
+        //执行
+        int i = preparedStatement.executeUpdate();
+        System.out.println("影响行数:"+i);
+        //关闭所有使用的资源对象.自己封装的一个方法.
+        pre.close(re,preparedStatement,connection);
+
+
+  
+     
+
+
+
+     
+  
+  

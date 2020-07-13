@@ -1,0 +1,53 @@
+一.Git工作流。
+   1.集中式。
+     就是所有管理，修改都在一个远程库中,每个人都有一个本地库。
+   2.GitFlow工作流.
+     一般分为master(线上)分支,lisense(上线)分支,develop(开发)分支,fencher(功能)分支.在java图解中有详细说明.
+
+
+
+二.idea中使用git.
+   1.导入 
+     file---from version control---git---输入远程库对应的url---clone.
+   2.add和commit.
+     选中项目---右键---git---commit或者git,快捷键ctrl+k
+   3.push
+     直接快键键ctrl+shift+k
+   4.pull,fetch
+     选中项目---右键---GIt---repostory---pull,fetch,切换分支,合并
+
+
+三.文件忽略
+   1.提交的时候记得忽略.idea中的文件,这些文件每个人都是不一样的,在commit提交后的页面中.可以选中,右键,忽略
+
+   2.或者,在项目中新建一个名字为.gitignore的文件夹.
+     
+     # Compiled class file
+     *.class
+
+     # Log file
+     *.log
+
+     # BlueJ files
+     *.ctxt
+ 
+     # Mobile Tools for Java (J2ME)
+     .mtj.tmp/
+ 
+     # Package Files #
+     *.jar
+     *.war
+     *.nar
+     *.ear
+     *.zip
+     *.tar.gz
+     *.rar        //在这里补充不需要提交的文件
+     *.iml
+     .idea/ 
+    
+     # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+     hs_err_pid*
+  
+
+   
+     

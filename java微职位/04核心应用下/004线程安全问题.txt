@@ -1,0 +1,47 @@
+线程安全:
+  如果有多个线程同时运行,而这些线程可能会同时运行这段代码,如果程序每次运行结果和单线程运行结果是一样的,而且其他的变量值也和预期的一样,就是线程安全的.
+
+  
+  
+  原因:线程安全都是由全局变量和静态变量引起的,若每个线程中对全局变量和静态变量只有读操作,没有写操作,一般来说,这个变量就是线程安全的;若同时有读写操作,一般都需要考虑线程同步,否则就可能影响线程安全.
+
+  案例:售票程序.
+  例:
+   //创建目标类实现Runnable接口
+  public class TestSellTicket implements Runnable{
+    int TicketNumnle=100;
+    @Override
+    public void run() {
+        while(true){
+            if(TicketNumnle>0){
+                //出票
+                try {
+                    Thread.sleep(1001);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName()+"正在出票"+TicketNumnle--);  //i--,先调用i,再自减1.
+
+            }
+        }
+    }
+  }
+  //
+  public static void main(String[] args) {
+        //创建目标对象
+        TestSellTicket testSellTicket = new TestSellTicket();
+        //创建多线程
+        Thread t1 = new Thread(testSellTicket, "窗口一");
+        Thread t2 = new Thread(testSellTicket, "窗口二");
+        Thread t3 = new Thread(testSellTicket, "窗口三");
+        //开启线程
+        t1.start();
+        t2.start();
+        t3.start();
+    }
+发现问题:
+  1.有重复票.
+     一个线程在打印,还没有自减的时候,另一个线程也开始打印.
+  
+  2.有超卖.超出卖票范围.
+     当还有1张票的时候,三个线程都进入if()语句中,执行卖票操作.

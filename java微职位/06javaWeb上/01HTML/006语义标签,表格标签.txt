@@ -1,0 +1,74 @@
+在没有语义标签时,一般用id来区分位置.
+  <div id="head"></div>
+
+
+html5中为了提高程序的可读性,增加了语义化标签:
+  <header></header>    头部
+  <article></article>  文章
+  <footer></footer>    页脚
+
+
+
+表格标签:
+  1.<table></table> 表
+    <tr></tr>  行
+    <td></td>  单元格
+    <th></th>  表头(居中,字体加粗)
+    属性:
+       a.width:宽度
+       b.border:边框,一般设置为1
+       c.cellpadding:单元格和内容之间的距离.
+       d.cellspacing:单元格之间的空白,一般设置为0.
+       e.bgcolor:背景色
+       f.align:对齐方式
+       g:caption:表格表题.
+
+    注意:这些属性可以灵活使用,想在哪设置,添加到哪个标签就可以了.行,单元格都可以.
+    举例:
+        <tr>中可以设置的属性:bgcolor,align.width等
+        <td>中特有属性:(其他属性也可以设置)
+            colspan:合并列 设置=2.就是合并两列
+            rowspan:合并行  
+
+
+
+补充:还有一些语义标签:
+     使程序结构更加明确,可读性更高.在表格中不会显示.
+     1.<thead></thead> 表头
+     2.<tbody></tdoby> 表内容
+     3.<tfoot></tfoot> 表尾
+
+
+    例:
+    <table border="1" cellspacing="0" cellpadding="5">
+    <caption>物体信息表</caption>                                //设置表名称
+    <thead>                                                      //语义标签:表头
+    <tr align="center">
+        <td >形状</td>
+        <td width="50" >边</td>                                  //设置这一单元格所占的宽度
+        <td >长度</td>
+    </tr>
+    </thead>
+    <tbody>                                                      //语义标签:表内容
+    <tr align="center">
+        <td rowspan="2">长方形</td>                              //合并两行
+        <td align="center">长</td>
+        <td>10</td>
+    </tr>
+    <tr align="center">
+        <td >宽</td>
+        <td >5</td>
+    </tr>
+    </tbody>
+    <tfoot>                                                       //语义标签:表尾
+    <tr align="center">                                 
+        <td>面积</td>
+        <td colspan="2">50</td>                                   //合并两列
+    </tr>
+    </tfoot>
+    </table>
+
+
+补充:插入空格:直接加上&nbsp.
+  
+   

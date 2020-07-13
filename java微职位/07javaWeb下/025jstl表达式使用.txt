@@ -1,0 +1,39 @@
+## JSTL
+
+### 概念
+
+**JavaServer Pages Tag Library （JSP标准标签库），是由Apache组织提供的开源免费的jsp标签**
+
+### 作用
+
+**用于简化和替换jsp页面中的java代码**
+
+### 使用步骤
+
+* 导入jstl相关jar包
+* 在jsp页面中引入标签库: tablib指令
+* 使用标签
+
+### 常用标签
+
+* if标签：java中的if判断
+* choose标签：java中的switch
+  * 使用choose标签取出变量
+  * 使用when标签判断
+  * 使用otherWise标签做其他情况的声明
+* forearch标签：java中for循环
+
+
+一般el表达式和jstl表达式混合使用.
+  例:
+      <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+      <c:forEach items="${goods}" var="i" varStatus="s">
+                <tr>
+                    <td>${i.number}</td>
+                    <td>${i.name}</td>
+                    <td>${i.weight}</td>
+                    <td>${i.size}</td>
+                    <td>${i.quantity}</td>
+                    <td>${i.price}</td>
+                </tr>
+      </c:forEach>

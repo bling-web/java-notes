@@ -1,0 +1,23 @@
+所有类都直接或间接的继承了Object类.
+
+包名:com.公司.项目
+
+toString方法(public String toString())
+   说明:toString方法改回该对象的字符串表示,其实返回的就是地址值,由于toString返回的结果是内存地址,而在开发   中经常需要按照对象的属性得到相应的字符串变现形式,因此也需要重写它.
+
+重写:通常要求返回格式为
+    对象{属性1,属性2}
+    例:
+        public String toString() {
+            return "Test4{" +
+                "name='" + name + '\'' +
+                ", age='" + age + '\'' +
+                '}';
+        }
+
+注意:在我们直接通过输出语句输出对象的时候,其实就是调用对象的toString方法.(不用输出语句输出是不会调用的)
+
+
+getClass方法.返回此object的运行时类.
+
+

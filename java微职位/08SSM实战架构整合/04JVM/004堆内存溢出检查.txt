@@ -1,0 +1,34 @@
+  一.小例子具体分析内存溢出.
+   设置内存溢出时生成dump文件:
+      -XX:Xms20m;
+      -XX:Xms20m:
+      -XX:+HeapDumpOnOutOfMemoryError
+      -XX:HeapDumpPath=D:/(注意这里没有加号)
+   eclipse:生成dump文件后,下载插件Memory Analizy(help-markPlace),安装之后把生成的hprof文件导入即可查看.
+   idea:同样生成dump文件后,需要下载插件Jprofiler.安装集成可以参考博文https://blog.csdn.net/qq_22194659/article/details/83829891.
+        然后打开jprofiler.点击Heap sna...  打开生成的dump文件即可.
+  
+   
+   以上的命令是已经发生内存溢出的时候我们配置让其输出溢出信息.在实际工作中不可能等到真正溢出再去处理,会实时监控数据.
+
+二.使用jmap实时查看内存情况/导出dump文件
+   一般来说有以下几步:
+   1.jps -l:找到当前进程id.
+   2.jmap -heap pid:查看当前进程的数据.(老年代新生代的使用情况)
+   3.jmap -dump:format=b,file=app.hprof pid(导出该进程的hprof的文件,关于内存情况的映射)
+     说明:file后面跟的是文件名称,文件路径自动生成,显示在cmd中,去对应路径中找文件即可.
+          dump:倾倒,导出.
+
+三.设置新生代和老年代内存比例.
+   1.这个参数对系统性能以及GC行为有很大影响,新生代一般设置整个堆空间的1/3-1/4.
+     -Xmn10m: 设置新生代初始大小为10m.
+   2.-XX:SurvivorRatio:用来设置新生代中eden空间和from/to空间的比例.
+     也就是-XX:SurvivorRatio=eden/from=eden/to
+     举例:-Xmn10m -XX:SurvivorRatio=2    那么eden5m,from和t各2.5m
+   3.-XX:NewRatio=老年代/新生代
+     设置老年代和新生代比例.
+
+
+   基本策略:尽可能将对象预留在新生代,减少老年代的GC次数.
+     
+    

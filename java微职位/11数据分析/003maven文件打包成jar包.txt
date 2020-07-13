@@ -1,0 +1,139 @@
+
+一.如果时普通maven项目,没有用到spring.framwork.在pom文件上加入以下内容即可.如果用到就不能使用这个依赖.会出现问题.
+    <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId> maven-assembly-plugin </artifactId>
+                   <configuration>
+                        <archive>
+                             <manifest>
+                                  <addClasspath>true</addClasspath>
+                                  <mainClass>com.example.Application</mainClass>        
+                             </manifest>
+                        </archive>
+                        <descriptorRefs>
+                             <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
+                   </configuration>
+                   <executions>
+                        <execution>
+                             <id>assembly-all</id>
+                             <phase>package</phase>
+                             <goals>
+                                  <goal>single</goal>
+                             </goals>
+                        </execution>
+                   </executions>
+              </plugin>
+            <plugin>
+	      <groupId>org.springframework.boot</groupId>
+	     <artifactId>spring-boot-maven-plugin</artifactId>
+	     <configuration>
+                        <fork>true</fork>
+                        <mainClass>${start-class}</mainClass>
+                     </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>repackage</goal>
+                                </goals>
+                            </execution>
+                    </executions>
+            </plugin>
+
+
+
+
+二.spring.framework有关项目的打包插件.	
+     1.在pom中build标签中加上以下内容.
+      <plugins>
+    		<plugin>
+		    	<groupId>org.apache.maven.plugins</groupId>
+		    	<artifactId>maven-shade-plugin</artifactId>
+		    	<version>2.4.1</version>
+		    	<executions>
+		    	 	<execution>
+		    	 		<phase>package</phase>
+		    	 		<goals>
+		    	 			<goal>shade</goal>
+		    	 		</goals>
+		    	 		<configuration>
+		    	 			<transformers>	
+		    	 			      <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <transformer
+                                    implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
+                                    <resource>META-INF/spring.factories</resource>
+                                </transformer>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>${start-class}</mainClass>
+                                </transformer>
+		    	 			</transformers>
+		    	 		</configuration>
+		    	 		
+		    	 		
+		    	 	</execution>
+		    	 
+		    	 </executions>
+	</plugin>  
+	<plugin>                                                                                  //如果不加这个插件会报错找不到主清单.
+                    <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+              </plugin>
+        </plugins>
+      2.然后执行mvn package
+         (1)执行之后发现程序并没有执行完整,执行了一部分,执行到JSONObject就不会再继续执行了.
+         (2)然后加上lagback日志,再次运行.
+         (3)在日志中发现以下错误:
+             Found multiple occurrences of org.json.JSONObject on the class path:
+
+                   jar:file:/E:/maven_repository_new/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar!/org/json/JSONObject.class
+                   jar:file:/E:/maven_repository_new/org/json/json/20160810/json-20160810.jar!/org/json/JSONObject.class
+
+             You may wish to exclude one of them to ensure predictable runtime behavior
+          上面那个关于JSONObject的依赖并不是自己引入的,但肯定是某个包中包含的,所以需要进行排除.
+
+        (4)那怎么进行排除?
+            首先要知道具体哪个包引入了这个依赖.
+               eclipse:
+                      打开pom.xml-->点击下方的dependancy Hierarchy(等级)-->在fiter搜索框中输入android-json即可看到是哪个包下的.
+               idea:
+                     点击pom.xml,然后右键Maven-->show dependancies-->搜索android-json即可找到.
+            知道是哪个包就简单了,这里是spring-boot-start-test中的.直接进行排除即可.
+               	<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.vaadin.external.google</groupId>
+					<artifactId>android-json</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+
+
+三.以上是eclipse运行的项目,在idea好像只需要这个插件就可以,因为实验的项目只是一个静态文件而已
+    <plugin>                                                                                 
+                    <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+              </plugin>
+
+  
+
+注意在运行的时候:java -jar  <path>.jar
+      如果不加.jar会出现 Unable to access jarfile错误.
+                     
+         

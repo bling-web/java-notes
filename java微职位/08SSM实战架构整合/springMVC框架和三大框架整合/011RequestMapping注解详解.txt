@@ -1,0 +1,70 @@
+一.源码.
+   @Target({ElementType.METHOD, ElementType.TYPE})
+   @Retention(RetentionPolicy.RUNTIME)
+   @Documented
+   @Mapping
+public @interface RequestMapping {
+    String name() default "";
+
+    @AliasFor("path")
+    String[] value() default {};
+
+    @AliasFor("value")
+    String[] path() default {};
+
+    RequestMethod[] method() default {};
+
+    String[] params() default {};
+
+    String[] headers() default {};
+
+    String[] consumes() default {};
+
+    String[] produces() default {};
+}
+
+二.作用.
+   用于建立请求URL和处理请求方法之间的对应关系,
+三.说明.
+   1.RequestMapping注解作用在类上:第一级的访问目录.
+   2.作用在方法上:第二级访问目录.
+   3.如果只标识一个路径属性,可以直接写.
+     例:@RequestMapping("/springmvc")  如果两个就都要写了.
+
+四.属性.
+   1.path和value一样,都是请求路径.
+   2.method请求该方法的请求方式.
+     例:
+       @RequestMapping(path="/springmvc" , method= RequestMethod.POST)
+     想使用多个请求方式可以这样写(但一般不这样写,什么请求方式就写什么):
+       @RequestMapping(path="/springmvc" , method= {RequestMethod.POST,RequestMethod.GET})
+     
+     注意:路径+请求方式的注解也可以这样简化
+           @GetMapping("/rm")
+           @PostMapping("/rm")
+
+    
+   3.params指定限制请求参数的条件.
+     例:params={"username"},表示请求参数必须有username.
+        params={"price!=100"}表示请求参数中price不能是100.
+     @GetMapping(value="/rmg",params = {"username","age!=0"})
+      注意:不能使用大于小于号.
+
+   4.header发送的请求中必须包含的请求头.
+     例:
+       @GetMapping(value="/rmh",headers = "Accept")  //请求头中必须包含Accept.
+     目前猜想:可以和cookie配合使用.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,56 @@
+  
+    集合就是存储对象类型的容器
+集合和数组的区别:
+    1.数组长度是固定的,集合长度是可变的.
+    3.数组存储一种类型(基本类型或引用类型),而集合存储对象类型,可以同时存储多个类型的数据,(不指定泛型时默认对象是Object)
+ 
+一.javaSE提供了整个API供我们使用.要想有序,合理的运用,要了解其继承和接口框架..
+
+二.集合按照存储结构可以分为两大类,分别是单列集合java.util.Colletion和双列集合java.util.Map.
+
+三.Collection:单列集合的根接口,用来存储符合某种规则的元素.它有两个主要的子接口,java.util.List和java.util.Set,List是有序(可排序),可重复的,Set是无序的,不可重复的(排重),List的主要实现类是java.util.ArrayList.和java.util.LinkedList.Set的主要实现类是java.util.HashSet和java.util.TreeSet.
+  Collecton继承了Iterable
+  
+四.常用方法.
+    1.public boolean add(E e):将指定的元素追加到当前集合中.    
+    2.public void clear();清空集合中的元素.
+    3.public boolean remove();移除指定的对象.
+    4.public boolean cantains(Object obj);判断当前对象是否包含给定的对象
+    5.public boolean isEmpty();判断当前集合是否为空
+    6.public int size();返回集合元素的个数
+    7.public Object[] toArray();转换当前对象为数组.注意返回类型.
+    8.addAll(Collection<? extends E> c);把指定元素中的集合全部加到当前集合.(这个E指代的是当前对象的类型)
+      例:
+    public static void main(String[] args) {
+        Collection<Number> collnu=new ArrayList<>();      //创建集合collnu
+        collnu.add(1);
+        collnu.add(2);
+        collnu.add(3);
+        collnu.add(4);
+        collnu.add(5);
+        Collection<Integer> collte=new ArrayList<>();     //创建集合collte
+        collte.add(6);
+        collte.add(7);
+        collte.add(8);
+        collte.add(9);
+        collte.add(10);
+        ((ArrayList<Number>) collnu).addAll(collte);     //将collte这个集合追加到colnu集合当中. collte(Integer)是collnu(Number)的子类
+        collnu.forEach(i->{                               //增强forEach循环输出集合元素.注意
+            System.out.println(i);
+        });                 
+        
+    }
+    输出:1,2,3,4,5,6,7,8,9,10.
+    9.remove(Collection<?> c);将指定集合内中的元素从当前集合中删除.(没有上下限限制,就都可以.)
+      例:
+     collnu.removeAll(collte);
+        collnu.forEach(i->{
+            System.out.println(i);
+     });
+     输出:1,2,3,4,5.
+ 
+
+    
+
+
+    

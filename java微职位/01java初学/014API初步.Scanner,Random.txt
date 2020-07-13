@@ -1,0 +1,23 @@
+API(Application Progatmming Interface),应用程序编程接口,是一本程序员的字典.在JDK中提供
+
+使用方法:
+1.打开帮助文档
+2.点击显示,找到索引,看到输入框
+3.你要找谁?在输入框输入,然年后回车
+4.看包.java.lang下的类不需要导包.其他需要
+5.看类的解释和说明(可以直接看方法解释)
+6.学习构造方法
+7.使用成员方法
+
+例:扫描仪使用步骤
+1.引入:打头写 import java.util.Scanner;
+2声明:Scanner sc =new Scanner(System.in);
+     int i=sc.nextInt();
+ 说明:字节,字符类型:sc.next();
+               整形:sc.nextInt();
+               实形:sc.Double();
+Random类
+使用方法,和普通类使用方法一样
+1引入:打头写import java.util.Random;
+2.声明:Random r=new Random();
+       int i =r.nextInt(n);(生成0-n之间的随机数,不保扩n)

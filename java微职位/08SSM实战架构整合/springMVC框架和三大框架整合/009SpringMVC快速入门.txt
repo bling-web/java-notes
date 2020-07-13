@@ -1,0 +1,107 @@
+快速入门:
+  一.新建module(使用webapp模板)
+  二.修改. 
+     1.Maven compiler(编译级别):1.8
+     2.目录:新建java,resources(main下面)
+            java-->Source
+            resources-->Resources
+       快捷方式:a.选中根目录 ,project Structure
+                b.选中根目录.直接按F4.
+     3.加tomcat,  工具栏-->Configation
+       deplopment中添加一个war explor包.选择这一个有update class and resources的选项.
+       说明:以debug方式启动就可以更新类.
+  三.添加依赖.
+   <properties>
+    <spring.version>5.0.7.RELEASE</spring.version>
+   </properties>
+   <dependencies>
+     <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>jsp-api</artifactId>
+        <version>2.0</version>
+        <scope>provided</scope>
+    </dependency>
+  </dependencies> 
+ 四.新建一个类.
+     @Controller             //标识为Control层,处理器才会扫描这个类,才能访问其中的方法.就像servlet方法中必须继承一个servlet接口一样
+     public class hello {
+       @RequestMapping(path="/hello")
+       public String hello(){
+         return "success";   //这个success是一个页面,本来是一个全路径,/WEB-INF/views/success.jsp  前缀,后缀在.spring-mvc.xml中配置
+       }
+     }
+
+ 五.在resources中新建一个配置文件.spring-mvc.xml
+    配置以下内容:
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd">
+    <!-- 配置spring创建容器时要扫描的包 -->
+    <context:component-scan base-package="com.cc.springMVC"></context:component-scan>
+    <!-- 配置视图解析器 -->
+    <bean  id="viewResolver2" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"></property>       //对应上面success的前缀                                  
+        <property name="suffix" value=".jsp"></property>                 //对应上面success的后缀
+    </bean>
+    <!-- 配置spring开启注解mvc的支持-->
+    <mvc:annotation-driven></mvc:annotation-driven>
+</beans>
+
+ 六.在web.xml文件中配置以下内容.
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+    <servlet>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- 配置Servlet的初始化参数，读取springmvc的配置文件，创建spring容器 -->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring-mvc.xml</param-value>
+        </init-param>
+        <!-- 配置servlet启动时加载对象 -->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+此时已经可以正常访问.项目运行成功.如果想要先到index.jsp然后跳到success页面,可以在index,jsp配置以下.
+
+<body>
+<h3>入门案例</h3>
+<a href="${ pageContext.request.contextPath }/hello">入门案例</a>
+</body
+   
+ 

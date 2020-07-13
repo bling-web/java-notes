@@ -1,0 +1,77 @@
+约束:规范xml文档中的内容的规则.
+  一.分类: 
+      1.DTD:简单的约束技术.
+      2.Schema:一种比较复杂的约束技术
+  二.作为程序员,只需要能够在xml文件中引入约束文档,能够简单的读懂约束文档即可.
+  
+  三.DTD:(文件后缀名是.dtd)  
+       只能进行一些简单的约束,比如一些元素中有哪些元素,有些约束则不能进行,比如性别只能填男和女.
+
+     1.内部DTD:将约束规则直接定义在xml文档中.
+       <!DOCTYPE 跟标签名[约束内容]>
+       例:(注意大小写一个都不能错)
+        
+          <?xml version="1.0" ?>
+          <!DOCTYPE students                           //students就是规定的跟标签,前面是固定写法
+          [
+              <!ELEMENT students (student+)>           //约束students这个元素.里面可以有一个或多个student元素.
+              <!ELEMENT student (name,age,gender)>     //约束student这个元素,里面有且必须有name,age,gender三个子元素.
+              <!ELEMENT name (#PCDATA)>                //约束name这个元素,里面的内容是文本型的(#PCDATA)
+              <!ELEMENT age (#PCDATA)>       
+              <!ELEMENT gender (#PCDATA)>  
+              <!ATTLIST students number ID  #REQUIRED> //约束student这个元素的属性列表,里面要有属性名称(number),属性类型(ID)                                                           #REQUIRED(表示必须)                                                   
+          ]>
+          <students number="s001">
+          <student>
+             <name>王五</name>
+             <age>19</age>
+             <gender>男</gender>
+          </student>
+          </students>
+ 
+     2.外部DTD:将约束规则定义在外部的DTD文档中.
+        a.本地
+          <!DOCTYPE 跟标签名 SYSTEM "dtd文件路径">
+          例:<!DOCTYPE students SYSTEM "students.dtd">
+          注意:如果出现Resource registered by this uri is not recognized (Settings | Languages & Frameworks | Schemas and D 错误
+               解决方法是:复制红色的文件路径名-->file-setting-(搜索DAD)找到schemes and DADS-->把路径拷进去即可
+        b.网络
+          <!DOCTYPE 跟标签名 PUBLIC "文件别名" "资源路径">
+          说明:文件别名是随意起的.资源路径就是http://www......dtd
+
+  四.schema(文件名后缀是xsd)
+      能进行一些更为复杂的约束.
+      引入方法:
+        1.引入xsi;
+        2.引入xsd,命名空间
+        3.起别名
+          也可以不起直接写成  xmlns="对应的目标命名空间"
+          如果起了别名,标签前面一定要声明用的是哪个限制schema文件(用别名声明)
+          说明:
+             第二部引入中的网址 http://www.bfxy.com/xml是schema文件中xmlns=""的内容.
+             随着它改变而改变.
+             xmlns="http://www.bfxy.com/xml"
+      例1:
+         <a:students xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"       //引入xsi.后面网址是固定写法
+                     xsi:schemaLocation="http://www.bfxy.com/xml student.xsd"    //引入引入xsd,命名空间
+                     xmlns:a="http://www.bfxy.com/xml">                          //起别名
+         </a:students>
+      例2:
+         <students xmlns="http://www.bfxy.com/xml">                              //这里没有起别名,不需要在标签前声明
+         </students>                                                               只引入一个xsd文件的特殊写法.
+   
+   补充:
+     这里注意某个文件引入了多个限制schema文件.可以这样写.
+
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"                       //第一步不变
+     xsi:schemaLocation="http://www.bfxy.com/xml student.xsd"
+     xsi:schemaLocation="http://www.bfxy.com/xml2 student2.xsd"
+     xmlns:a="http://www.bfxy.com/xml"
+     xmlns:b="http://www.bfxy.com/xml2"
+     如果仅仅有一个限制文件,也可以简略写成:
+     <a:students xmlns:a="http://www.bfxy.com/xml">
+     </a:students>
+     
+     
+       
+    

@@ -1,0 +1,21 @@
+
+一.执行流程.
+  1.当启动Tomcat服务器的时候,因为配置了load-on-startup标签,所以会创建DispatcherServlet对象,就会加载springmvc.xml配置文件.
+  2.开启了注解扫描,对应类的对象就会被创建,创建对象才能调用其中的方法.
+  3.当浏览器发送请求,请求会先到达DispatcherServlet核心控制器,然后根据@RequestMapping注解,找到执行的具体方法.
+  4.根据执行方法的返回值,再根据配置的视图解析器,去指定的目录下查找指定名称的JSP文件.
+  5.Tomcat服务器渲染页面,做出响应.
+
+二.组件分析
+  1.前端控制器（DispatcherServlet）
+    用户请求到达前端控制器，它就相当于 mvc 模式中的 c， dispatcherServlet 是整个流程控制的中心，由 它调用其它组件处理用户的请求，     dispatcherServlet 的存在降低了组件之间的耦合性。
+  2.处理器映射器（HandlerMapping）
+    HandlerMapping 负责根据用户请求找到 Handler 即处理器， SpringMVC 提供了不同的映射器实现不同的 映射方式，例如：配置文件方式，实现接    口方式，注解方式等
+  3.处理器（Handler）
+     它就是我们开发中要编写的具体业务控制器。由 DispatcherServlet 把用户请求转发到 Handler。由 Handler具体的用户请求进行处理。
+  4.处理器适配器（HandlAdapter）
+    通过 HandlerAdapter 对处理器进行执行，这是适配器模式的应用，通过扩展适配器可以对更多类型的处理 器进行执行。
+  5.视图解析器（View Resolver）
+    View Resolver 负责将处理结果生成 View 视图， View Resolver 首先根据逻辑视图名解析成物理视图名 即具体的页面地址，再生成 View 视图对    象，最后对 View 进行渲染将处理结果通过页面展示给用户。
+  6.视图（View）
+    SpringMVC 框架提供了很多的 View 视图类型的支持，包括： jstlView、 freemarkerView、 pdfView 等。我们最常用的视图就是 jsp。 一般情况    下需要通过页面标签或页面模版技术将模型数据通过页面展示给用户，需要由程序员根据业务需求开发具体的页面。

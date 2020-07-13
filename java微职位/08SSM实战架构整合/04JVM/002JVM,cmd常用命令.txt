@@ -1,0 +1,29 @@
+一.java虚拟机的常见参数查看.
+   1.jps--java process state.(注意在jdk-bin文件下打开才行)=====查看具体进程
+   2.jps -l=====查看JVM具体的进程.
+   3.查看计算机中所有的进程.tasklist.
+  
+
+二.jinfo
+   1.jinfo -flags 进程id=====查看该进程运行时的内存分布信息.
+   2.jinfo -flag MaxHeapSize pid=====查看该进程运行时的MaxHeapSize(pid就是进程id) 
+ 
+三.jstat
+   1.jatat -class pid times count:该进程被加载的类的数量.
+                      1000   5   :1000,5的意思就是每隔一秒打印一次,一共打印5次.
+   2.jstat -gc pid times count:垃圾收集器的相关属性.
+     属性说明:a.以c结尾的代表容量,U结尾的代表已使用的情况.
+              b.S0区和S1区容量永远是相等的,且同一时间只能使用一个.
+              c.YGC:年轻代垃圾收集事件数量
+              d.YGCT:年轻代垃圾收集时间.
+              e.FGC:fullGC事件的数量(同时在年轻代和老年代的GC称为fullGC).(影响系统性能)
+              f:FGCT:fullGC垃圾收集时间.
+              g:有不了解的可以去官网查看.
+                  
+
+  初始值:java -XX:+PrintFlagsInitial -version
+  最终值:java -XX:+PrintFlagFinal -version
+
+具体的参数可以查看Oracle的官方文档.
+  https://docs.oracle.com/javase/8/docs/technotes/tools/unix/index.html
+

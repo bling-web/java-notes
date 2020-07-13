@@ -1,0 +1,139 @@
+一.mapreduce编程规范.
+     用户编写的程序分成三个部分,mapper,reduce,Driver(提交运行mr程序的客户端)
+     mapper阶段.
+       1.用户自定义的mapper要继承自己的父类.
+       2.map的输入数据是kv键值对的形式(类型可以自己定义)
+       3.可以在map()方法中编写自己的自定义程序.
+       4.map的输出数据形式也是kv键值对的形式.
+       5.maptask进程对每个kv键值对调用一次map()方法. 
+     reduce阶段.
+       1.用户自定义的reduce要继承自己的父类.
+       2.reduce的输入数据是kv键值对的形式,
+       3.可以将业务逻辑写在reduce()方法中.
+       4.reduce task进程对每一组相同k的<k,v>组调用一次reduce()方法.
+          什么意思:就是在经历map阶段后,还有一个group and sorting 程序,他会把相同的key放在一起.在传入reduce的时候,把相同key的value封装成数组,作为reduce的value传进去.
+    Driver阶段:
+       整个程序需要一个driver进行提交,提交的是描述了各种信息的job对象.
+
+
+二.mapreduce过程详解(以wordcount为例)
+    1.split阶段.
+       读取输入的文件,并将其内容分割并转化成kv键值对.
+       对于wordcount来说,key就是行号,value就是这一行的内容.
+    2.maptask阶段.
+       对每一个<k,v>均运行一次map()方法,代码逻辑可以自己定义.
+       对于wordcount来说就是再次分割成一个一个单词,然后利用context写出去即可.
+    3.group and sorting
+       将maptask的输出进行分组,相同key的分到一起,并进行排序.(并将相同的key的多个键值对转换成一个键值对).
+        对于wordcount来说,还会把相同key的多个键值对整合成一个键值对.k就是原来的,v就是所有value整合的一个数组,
+        例: tim:1 tim:1 tim:1
+              有三个键值对:会整合成tim:{1,1,1}    
+    4.reduce task阶段.
+       对每一组相同的k的<k,v>运行一次reduce方法,代码逻辑可以自己定义.
+       对于wordcount就是将每一组的value中的值相加起来作为新的value,写出去键值对即可.
+
+三.编写wordCount程序.
+    1.首先要引入jar包.
+     <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-mapreduce-client-core</artifactId>
+      <version>2.7.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-mapreduce-client-common</artifactId>
+      <version>2.7.6</version>
+    </dependency>
+    2.要修改一下源代码.不然会报NativeIO.access错误.
+       org.apache.hadoop.io.nativeio下的NativeIO类.
+       修改该方法:
+           public static boolean access(String path, NativeIO.Windows.AccessRight desiredAccess) throws IOException {
+              return true;                              //原来不是返回true,现在要返回true.
+           }
+      就是在java包下新建一个org.apache.hadoop.io.nativeio包,然后新建一个NativeIO类,把源码中NativeIO类的代码全部拷过来,修改想要的代码即可.
+
+3.MapTask类.
+Public class MapTask extends Mapper<LongWritable, Text,Text,IntWritable> {
+    //定义了文本对象和数字对象,用于传入context
+    Text k=new Text();
+    IntWritable v=new IntWritable(1);
+    /***
+     * @param key 行号
+     * @param value 包装了每一行内容的文本对象
+     * @param context 上下文,通过上下文写出数据
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        //1.将一行的内容转换成字符串,本来传入的是一个Text对象
+        String string = value.toString();
+        //2.分割成单词
+        String[] words = string.split(" ");
+        //循环写出数据
+        for(String word:words){
+            k.set(word);
+            context.write(k,v);
+        }
+    }
+}
+
+4.ReduceTask类.   
+public class ReduceTask extends Reducer<Text, IntWritable,Text,IntWritable> {
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+        int sum=0;
+        //循环把value加起来即可.
+        for(IntWritable count:values ){
+            sum += count.get();
+        }
+        context.write(key,new IntWritable(sum));
+    }
+}
+
+
+5.wordCound主类.
+/**
+ * job对象是用来上传任务信息的,将所有的信息封装,然后上传
+ */
+public class MyWordCount {
+    public static void main(String[] args) throws Exception {
+        //1.获取job对象
+        Configuration conf = new Configuration();
+        Job job=Job.getInstance(conf);
+        //2.获取jar包的位置
+        job.setJarByClass(MyWordCount.class);
+        //3.设置传入maptask类和reduceTack类
+        job.setMapperClass(MapTask.class);
+        job.setReducerClass(ReduceTask.class);
+        //4.设置map输出数据类型
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+        //5.设置最终输出数据类型
+        job.setOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+        //6.设置输入和输出文件路径.就是运行命令时传入的参数,main方法参数
+        FileInputFormat.setInputPaths(job,new Path(args[0]));
+        FileOutputFormat.setOutputPath(job,new Path(args[1]));
+        //7.提交任务
+        job.waitForCompletion(true);
+    }
+}
+
+
+
+四.在本地运行hadoop
+    一般来说要现在本地运行,如果没问题再上传至集群.
+    1.在本地模拟hadoop环境.
+       a.解压hadoop.tar文件.并且为其配置环境变量.
+    2.将hadoop-2.7.6-windows-bin-master/bin下面的所有文件拷到刚刚解压后的hadoop/bin目录下.
+    3.设置输入输出参数.
+       在configuration(那个以前开启tomcat的那个地方)中配置MyWordCount的Program Arguments,也就是运行时会传入main方法中的参数.
+      
+
+
+
+
+       
+          
+    

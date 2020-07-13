@@ -1,0 +1,42 @@
+链接标签:
+  1.<a>修饰内容</a>
+    属性:a.href:必须添加---表示要跳转的资源
+           1)可以加载网页上的内容,注意加上http
+           2)也可以加载本地资源,注意要把本地需要跳转到资源放到存放程序的文件夹下
+             原因就是系统不允许访问本地文件,和加载图片的原因一样.
+           3)可以直接跳转到邮箱.例如网站上的联系我们.
+             格式:mailto
+                 <a href="mailto:carlosxiaocc@163.com">联系我们</a>
+             本地安装邮件客户端才可以工作.
+           4)挑转锚点(比如从网页的一个末尾跳转到顶端)
+             <div id="test"></div>   //1.注意写到标签里面.   2.这个id="test"可以写到任意标签里面
+             <a href="#test">锚点</a>
+             表示点击锚点就可以跳到<div id="test"></div>这一行所在位置.
+
+         b.target:表示新网页要打开的地方.
+                  _self表示在原有网页打开,会覆盖当前网页的内容,     _black表示在新的网页打开,对当前网页没有影响.
+         例:<a href="http://www.baidu.com" target="_blank">打开百度</a>    注意:打开外部网址一定要加http
+
+  2.连接标签配合图片标签使用,形成点击图片跳转页面效果.
+    例:
+      <a href="https://baike.sogou.com/v56289.htm?fromTitle=%E8%8C%83%E5%86%B0%E5%86%B0" target="_blank">
+      <img src="https://img03.sogoucdn.com/v2/thumb/crop/x/0/y/0/w/213/h/240/resize/w/120/h/135/zi/on/iw/90.0/ih/101.25?t=2&url=http                  %3A%2F%2Fpic.baike.soso.com%2Fugc%2Fbaikepic2%2F6809%2Fcut-20170916105809-1955226921_jpg_368_460_21186.jpg                              %2F300&appid=200524&referer=http://baike.sogou.com/v56289.htm?fromTitle=%E8%8C%83%E5%86%B0%E5%86%B0"></a>
+   
+  
+  
+ 
+
+
+
+
+块标签:
+  1.<span></span>(又称行内标签或内联标签) :多个<span></span>包裹的内容会在一行展示
+    例:
+      <span>我是一个英雄</span>
+      <span>我是一个超人</span>
+      这两个内容会在一行展示.不换行不空格.
+
+  2.<div></div>(又称块级标签):每个<div></div>标签的内容都会在一行展示
+      <div>我是一个英雄</div>
+      <div>我是一个超人</div> 
+      这两个内容会占两行.

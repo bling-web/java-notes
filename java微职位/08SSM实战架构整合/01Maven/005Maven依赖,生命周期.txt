@@ -1,0 +1,134 @@
+首先说明:如果不知道引入jar包的artifactId和groupId,可以到mvnrepository.com网站中查找.
+  1.在新建的maven-web项目引入jsp-api和servlet-api依赖才能使用其内置对象.
+     <dependency>                                  //引入servlet-api   
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>                              //引入jsp-api
+          <groupId>javax.servlet.jsp</groupId>
+          <artifactId>jsp-api</artifactId>
+          <version>2.1.1</version>
+          <scope>provided</scope>
+    </dependency>
+
+
+一.Maven的依赖.
+    依赖是Maven中最关键的部分,我们使用Maven主要就是使用它的依赖管理功能.
+
+   1.依赖的目的.
+      当项目A用到了项目B的方法或类时,A就对B产生了依赖.
+     添加依赖.
+      如上面所示.
+
+   2.依赖的范围. 
+     a.compile(默认)
+       对主程序:     有效.
+       对测试程序:   有效
+       是否参与打包: 参与
+       说明:不是web容器中的api会标识为这个.
+     b.protected
+       对主程序:     有效
+       对测试程序:   有效
+       是否参与打包: 不参与
+       说明:web容器中的api会标识为这个,因为web容器在编写程序过程中是不起作用的,在程序运行时才起作用,但是又要用到里面的api,所以要标识为            这个属性.
+     c.test:  
+       对主程序:     无效.
+       对测试程序:   有效
+       是否参与打包: 不参与
+       说明:测试用的api才会标识为这个,比如Junit-api.
+
+     举例:以servlet-api.jar来举例说明(web容器中有,标识为protected)
+       代码编写过程中:使用依赖的(引入的)
+       运行过程中:    使用web容器的
+       打包过程中:    忽略依赖的.
+
+   3.依赖的传递性.
+     A依赖B,B依赖C.A能使用C中的类或代码吗?
+       可以,但是只能使用依赖范围是compile的.也就是说非compile范围的依赖不能传递.
+
+     说明:a.在一个project中,新建module(模块),一个dao,一个service都是一个module.注意在dao模块和service模块都是不加web,servlet的.
+            变成模块后,一个模块是不能用另一个模块的内容的,需要添加依赖(坐标在对应模块的pom.xml文件中)
+          b.坐标和仓库的对应关系.
+            * groupid对应三级目录,例com-->cc-->maven.依次找com文件夹,cc文件夹,maven文件夹.
+            * 找完groupid后,找artifactid的全称对应的文件夹,如果没有则说明仓库没有这个依赖(jar包)
+          c.在idea设置好依赖后,(就是webapp01(servlet)--依赖--service--依赖--dao),但是package时会报错,因为编写代码时,idea能找到这个项               目对应的类,而在打包时,是按Maven的规则来的,Maven发现依赖时,回去本地仓库找,但是没有(去中央仓库也找不到),就会报错.
+            * 所以要把生成的依赖(jar包),装到本地仓库中,执行install.
+            * 注意:先执行dao模块的install,再执行service模块的install.
+            * 最后再执行webapp01的package,会发现target--lib里面有dao层的jar包,说明产生依赖.
+     上述的project的结构是maven-webapp01,maven-service,maven-dao
+  
+   4.依赖的排除.
+     A依赖B,B依赖C,但是在A中不想访问不想访问C的内容,或者C中的内容影响了A中的编译,就需要做依赖的排除.
+     怎么排除?
+       方式一:右边Maven Project中的(ii)图标.进入依赖树,找到想排除的依赖,右键exclude即可.
+       方式二:在A中 <dependency>标签中加上
+               <exclusions>
+                 <exclusion>
+                    <artifactId>servlet-api</artifactId>           //排除依赖的坐标信息
+                    <groupId>javax.servlet</groupId>
+                 </exclusion>
+               </exclusions>
+   5.依赖的原则.
+     a.路径最短者优先.(-->代表依赖)
+       举例:A-->B-->C
+            B-->x.jar(1.0版本)
+            C-->x.jar(1.1版本)
+       则最后A中编译的使用的是B中的1.0版本.
+     c.相同路径先声明者优先.
+       举例:A-->B  A-->C
+            B-->x.jar(1.0版本)
+            C-->x.jar(1.1版本)
+       此时两个依赖路径是相同的,谁先声明(代码放在前面),A就使用谁.
+            
+   6.依赖的最佳实践.
+     a.统一管理版本:
+         对同一个框架的一组jar包最好使用相同的版本,为了方便升级.可以将jar包版本的信息统一提取出来.
+     b.步骤:  
+        * 统一声明版本
+          <properties>
+            <spring.version>4.3.17.RELEASE</spring.version>
+          </properties>
+        * 然后用el表达式引用即可
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+         </dependency>
+       
+
+二.Maven的生命周期:
+   1.Clean生命周期(三个phase阶段)
+       pre-clean:执行一些需要在clean之前完成的工作.
+       clean:移除上一次构建的问题件.
+       post-clean:执行一些需要在clean之后完成的工作.
+   2.Site生命周期.
+   3.Default生命周期.
+   这里不再一一列出各个具体的声明周期.总之,每一个声明周期都有不同的阶段,每个阶段会用到不同的插件.
+
+三.插件和目标.
+   1.生命周期的各个阶段只是定义了要执行的任务是什么.
+   2.各个阶段和插件的目标是什么.
+   3.相似的目标由特定阶段来完成,可以将目标看做调用插件的命令.
+   
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+

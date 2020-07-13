@@ -1,0 +1,18 @@
+
+  mybatis中的事务默认设置autoCommit是false.所以当我们执行增删改的时候,这些执行并不会生效,原因就是没有提交发生了回滚.
+  那么怎样设置autoCommit为true呢?
+     @Before 
+     public void init() throws IOException { 
+         // 1. 读取mybatis配置文件 
+         inputStream = Resources.getResourceAsStream("mybatis-config.xml"); 
+         // 2. 创建SqlSessionFactory构建对象 
+         SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder(); 
+         SqlSessionFactory sqlSessionFactory = sqlSessionFactoryBuilder.build(inputStream); 
+         // 3. 使用工厂创建SqlSession对象 
+         sqlSession = sqlSessionFactory.openSession(true);    //这里就是设置成true.
+         // 4. 使用SqlSession对象创建Dao接口的代理类对象.
+         userDao = sqlSession.getMapper(UserDao.class); 
+     }
+
+
+  当然,除了上面这个设置,也可以通过sqlSession.commit()方法来手动提交事务。

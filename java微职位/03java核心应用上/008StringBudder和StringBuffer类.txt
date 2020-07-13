@@ -1,0 +1,39 @@
+先看一个例子:
+    String s="hello";
+    String +="world";
+    System,out,println(s);
+    String对象不可变,这个过程会创造三个对象,s最终指向helloworld
+    造成内存浪费
+ 
+    java.long.StringBulder称为可变字符序列,它是一个类似String的字符串缓冲区.通过某些方法可以改变序列的长度和内容.
+    StringBuilder是个字符串的缓冲区(过了缓冲区存到常量池中就不可变了),即它是一个容器,容器中可以装很多字符串.并且能够对其中的字符进行各种操作,它的内部拥有一个数组用来存放字符串内容,进行字符串拼接时,直接在数组中加入新内容.StringBuider会自动维护数组扩容.
+    注意:这个容器可以存储不同类型的数据.
+
+一.常用构造方法
+   (1)StringBuilder().
+      构造一个不带字符的字符串生成器,初始容量为16个字符.
+   (2)StringBuilder(String src)
+      构造一个字符串生成器,并初始化为指定字符串内容.
+二.常用方法.
+   (1)append(),可以增加不同类型的数据,有许多方法进行重载,并返回当前对象.
+      因为返回了当前对象.就可以进行链式编程.
+      例:
+      StringBuilder stringBuilder=new StringBuilder();
+      stringBuilder.append("1").append("王亮");
+
+
+   (2)toString()方法,将当前StringBuilder对象转换为String型,返回String类型.
+
+三.StringBuilder和String类型的区别和联系.
+
+     StringBuilder内存占用小,可以在原有基础上改变,效率高.
+
+     String类型可以有更多的操作函数,拼接,截取,还可以转换为数组.  
+     (所以有时需要将StringBuilder转换为String) 
+
+四.StringBudder和StringBuffer的区别和联系
+   
+   StringBudder和StringBuffer都是可变的字符串容器,两者的方法也没太大区别.
+  
+     但在线程安全方面StringBuffer是线程安全的,可以在有多线程时使用,因为其内部的许多方法是用synchronized修饰的.
+   而StringBudder是线程不安全的.但是效率比较高一点.   

@@ -1,0 +1,56 @@
+一.date类:
+
+1.构造方法()
+    注意:1.用哪个类都需要new该类的一个对象,才能调用其方法,除非其方法是static.
+         2.构造方法在初始化时执行(根据参数执行哪个构造方法),不通过对象调用.
+         3.所以这两个方法都重写了toString方法,通过输出语句显示.
+
+    public date():要求分配date对象并初始化次对象,可以获取现在的时间点(毫秒值)
+        1.用的时候要new一个Date对象,然后就会分配它的时间
+        2.输出时间格式  星期 月份 号数 时间  东八区 年份
+        3.Date类重写了toString方法.将毫秒值转换了格式.
+       
+        例: Date date=new Date();//new对象时候就会获取当前时间点.然后赋给对象引用.
+
+    public date(long date):分配date对象并初始化此对象,表示自从标准基准时间(1970年1月1日GMT)以来的指定毫秒数.       
+        1.使用方法和上面一样,返回从1970年+date之后的时间点.                 
+
+2.方法:
+   getTime();
+        返回自 1970 年 1 月 1 日 00:00:00 GMT 以来此对象(调用该函数对象)表示的毫秒数。
+        一切以对象为主,一切围绕着对象.
+        例:
+        System.out.println("请从输入你的出生日期,按以下格式输入哦(yyyy-MM-dd)");
+        String time = new Scanner(System.in).next();                                     //接收从键盘录入的日期
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");          //new一个该格式的对象
+        //将字符串型数据转换为date类日期,然后赋给date类变量,也就相当于创建了一个date类的对象
+        Date youdate = simpleDateFormat.parse(time);
+        long youtime = youdate.getTime();                                                 //获取youtime对象存储的时间的毫秒数.
+
+二.SimpleDateFormat
+    注意:1.他继承了DateFormat这个抽象类.
+        
+         2.含义理解:Format:格式化,将日期类转换为你指定的字符串形式.
+                    parse:解析,将指定的字符串形式转换为默认的日期类格式.
+         3.y--年,M--月,d--日,H--时,m--分,s--秒
+1.构造方法:
+    SimpleDateFormat()用默认的格式和语言环境创建日期格式.
+    SimpleDateFormat(String pattern)用给定的格式和默认的语言创建日期格式.
+
+2.方法:
+    (1)Format(某一个时间点)方法.(将日期转换为指定字符串形式.可以有汉字)
+       例:
+       SimpleDateFormat s=new SimpleDateFormat(pattern:"yyyy-MM-dd,HH:mm:ss");//将这个格式赋给这个对象,传给s这个引用.可以加上汉字.
+       Date date=new Date();                                                  //new date对象,获取当前时间.
+       System.out,println(s.format(date)); //s这个引用指向的堆内存中存储了该对象指定的格式,将现在获取的时间date转换为该格式.
+                                        //注意都是以对象为主的,构造函数中的初始化都是给了当前对象.
+    (2)parse(某一个自定义日期格式):方法.(指定的字符串形式的时间转换成默认日期类格式)
+       例:
+       String s="2019年1月31日";
+       SimpleDateFormat si=new SimpleDateFormat(pattern:"yyyy年MM月dd日");
+       Date date=si.parse(s);             //该对象的日期格式一定要和要转换的日期格式一样,否则会报错.
+       System.out.println(date);
+
+
+  
+

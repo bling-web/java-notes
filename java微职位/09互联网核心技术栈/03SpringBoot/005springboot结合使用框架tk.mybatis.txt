@@ -1,0 +1,81 @@
+
+   springboot结合mybatis使用tk.mybatis框架.
+  
+一.步骤.
+      1..使用generator工具,这是一个针对某一个数据库自动生成entity,mapper,mapping的工具.
+         使用: 
+              *修改generator这个xml文件.数据名啊,存储位置啊,还有其他等等.
+              *打开生成语句这个文件夹,复制里面的语句,然后退出按shift+鼠标右键,打开PowerShell窗口,执行语句,即可.
+              *然后可以看到文件生成在src文件下,直接复制到我们的项目中即可.
+       2.在实体类中注意加上以下两个注解,也要注意实现Serializable接口.
+          @Id
+          @GeneratedValue(generator = "UUID")   //应该是tk.mybatis的一个机制.必须要生成ID.
+       3.在config包下新建一个BaseMapper接口,然后继承Mapper和MysqlMapper接口,
+         public interface BaseMapper<T> extends Mapper<T>,MySqlMapper<T> {
+         }
+       4.将用generator工具生成的mapper类拷到mapper包中,把自动生成的方法删除,然后继承BaseMapper接口.
+         public interface UserMapper extends BaseMapper<User> {
+         }
+       5.然后把用generaor接口生成的mapper.xml文件拷到mapping包下,也把自动生成的各种方法删除.
+      
+      然后在service层注入mapper对象,就可以发现可以使用各种基础的CRUD方法.因为继承的接口中已经写好了这些方法.
+
+      总结:其实总共也就两步.
+         1.给一个BaseMapper接口继承Mapper接口和MysqlMapper接口,然后自己的mapper再继承BaseMapper接口即可.
+         2.在实体类中加上那两个注解.
+
+
+二.测试.
+    直接在junit测试中测试,把mapper注入进去(其实注入进去的是代理类对象),然后执行方法即可.
+     @Resource
+    UserMapper userMapper;
+    @Test
+    public void insert(){
+        User user1 = new User();
+        user1.setAge("18");
+        user1.setName("小王");
+        user1.setAddr("上海");
+        userMapper.insert(user1);
+    }
+    这些都是简单的增删查改方法.如果想自定义,可以在mapper里面写上,在mapper.xml写对应的sql语句即可.
+    
+   例.根据addr查找,并进行分页.
+       ---service层----
+          @Resource
+          private UserMapper userMapper;
+
+         public List<User> findByAddr(String addr,int page,int limit){
+             PageBounds pageBound = new PageBounds(page,limit);                        //把该对象传进去即可实现分页
+             return this.userMapper.findByAddr(addr,pageBound);
+         }
+     ---mapper层---
+        public interface UserMapper extends BaseMapper<User> {
+            List<User> findByAddr( String addr, PageBounds pageBounds);
+        }
+    ---对应的mapper.xml文件中----
+         <resultMap id="BaseResultMap" type="com.bfxy.springboot.entity.User" >
+            <id column="id" property="id" jdbcType="CHAR" />
+            <result column="name" property="name" jdbcType="VARCHAR" />
+            <result column="age" property="age" jdbcType="CHAR" />
+            <result column="addr" property="addr" jdbcType="VARCHAR" />
+         </resultMap>
+  
+         <select id="findByAddr"  resultMap="BaseResultMap">
+            select id, name, age, addr from user where addr=#{addr}
+         </select>
+     ---测试----
+          @Test
+          public void testfindByAddr(){
+             List<User> list = userService.findByAddr("北京", 2, 3);                            //这个属性的意思是把返回的数据分成2页,每页3个数据,显示第2页的数据.
+             for(User addr: list){
+                 System.out.println(addr.getName());
+             }
+         }
+
+
+三.使用logback输出执行的sql语句.
+     直接在logback的xml文件中加上,就是输出mapper这个文件下编译并执行的内容,以debug水平输出.
+    <logger name="com.bfxy.springboot.mapper" level="DEBUG"></logger>
+     
+          
+      

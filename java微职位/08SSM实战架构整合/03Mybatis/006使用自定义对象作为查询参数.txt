@@ -1,0 +1,46 @@
+
+
+一.parameterType参数类型说明:
+   传递简单类型:
+      int/INT/java.lang.INTERGER/integer/INTEGER
+      string/STRING/java.lang.String
+   传递自定义类型
+      Mybatis使用ognl表达式解析对象字段的值，#{}，${}括号中的值为对象的属性名称。
+
+
+二.
+   OGNL 表达式概念：Object Graphic Navigation Language（对象 图 导航 语言），
+   它通过对象的取值方式来获取数据，在写法上把get给省略了。
+   比如我们获取一个用户的名称类中的写法：user.getUsername();OGNL写法：user.username;
+
+
+
+三.使用自定义对象作为查询参数.
+   1.实体类.
+     public class QueryVo {
+
+       private User user;
+
+       public QueryVo() {
+       }
+
+       public User getUser() {
+          return user;
+       }
+
+       public void setUser(User user) {
+          this.user = user;
+      }
+    }
+   1.dao方法中.
+     /**
+     * 复杂查询
+     * @param queryVo
+     * @return
+     */
+     List<User> findByVo(QueryVo queryVo);
+
+   2.对应的mapper方法中.
+      <select id="findByVo" parameterType="com.cc.mybatis.vo.QueryVo" resultType="user">
+         select * from user where name like concat('%',#{user.name},'%')                  //OGNL表达式.user是queryVo中的一个属性.
+      </select>

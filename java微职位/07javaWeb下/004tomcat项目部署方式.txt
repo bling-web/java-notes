@@ -1,0 +1,27 @@
+方式一:
+   1.直接将项目复制到webapps中.
+   2.然后访问http://127.0.0.1:8080/项目文件名称  即可.
+     例:http://127.0.0.1:8080/test/hello.html
+    
+   说明:如果文件多的话可以先压缩成war包再拷.
+      步骤:a.把该项目中所有的文件压缩成zip.
+           b.改后缀名:zip改成war.
+           c.复制到webapps即可.(服务器会自动解压这个war包,注意路径的改变)
+      注意:如果war包被删除,从这个war包解压的东西也会被自动删除.
+
+方式二.(不推介使用)
+   配置server.xml文件
+   1.打开server.xml文件.找到<host>标签.
+   2.配置:  <Context docBase="F:\$360RTLOG$\test\" path="demo" />          //一定要有结束标志/
+           说明: docBase是项目所在路径.  path是虚拟路径(就是从网络上访问时访问哪个文件夹)
+     例:http://127.0.0.1:8080/demo/hello.html
+     注意:更改server.xml里面的东西每次必须重启才会生效.
+
+方式三:
+   1.在conf/Catalina/localhost下新建一个任意名称的xml文件.例:hello.xml
+   2.在该文件内配置 <Context docBase="F:\$360RTLOG$\test\"  />  
+     访问即可,虚拟路径名就是该文件名.
+     例:http://127.0.0.1:8080/hello/hello.html
+
+
+      

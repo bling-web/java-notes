@@ -1,0 +1,12 @@
+
+还是针对student这个entity来说的.
+
+一.更新数据:
+   1.接口中的方法.
+     Integer updateUser(User user);
+   2.对应mapper中的sql语句.
+     <update id="updateUser" parameterType="com.cc.mybatis.entity.User"> 
+        update user set username=#{username},name=#{name},password=#{password} where id = #{id} 
+     </update>
+   
+  

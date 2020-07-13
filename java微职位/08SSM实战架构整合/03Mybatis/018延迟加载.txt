@@ -1,0 +1,58 @@
+一.延迟加载.
+   就是用到数据时才进行加载,不需要用到数据就不加载数据,延迟加载也叫作懒加载.
+   好处:
+       即时即用,不占用内存.
+   坏处:
+       临时查询如果数据大,需要等到时间,造成用户体验下降.
+   其实主要的就是开启延迟加载的开关.当开启开关后,所有的关联加载都会变成懒加载.
+    <settings>
+       <setting name="lazyLoadingEnabled" value="true"/>
+    </settings>
+   
+   lazyLoadingEnabled:延迟加载的全局开关,当开启时,所有的关联对象都会延迟加载.
+  
+   
+举例:
+   1.UserMapper文件中.
+     
+    <resultMap id="userMap" type="user">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="name" property="name" />
+        <result column="password" property="password" />
+        <result column="type" property="type"/>
+        <collection property="accounts" ofType="account" column="id"
+            select="com.cc.mybatis.lazyload.mapper.AccountMapper.findByUid">   //关联到account中的findByUid方法中.
+        </collection>
+    </resultMap>
+    <select id="findAllUser" resultMap="userMap">
+        select id,name,username,password,type from user
+    </select>
+
+  2.AccountMapper文件中.
+    <select id="findByUid" parameterType="int" resultType="account">
+        <include refid="query" />
+        where uid = #{id}
+    </select>
+  3.mybatis.xml中的延迟开关设置
+    <settings>
+       <setting name="lazyLoadingEnabled" value="true"/>
+    </settings>
+  4.junit测试.
+    @Test
+    public void testFindUser1() {
+        List<User> allUser = userDao.findAllUser();
+        for (User account : allUser) {                               //当输出时,就会加载,否则就不会加载.当输出时调用toString方法,会用到user里面的account
+            logger.info(account);
+        }
+    }
+    
+
+    
+    
+  
+
+
+
+
+如果mybatis有一些不懂的,可以到www.mybatis.org网站学习.

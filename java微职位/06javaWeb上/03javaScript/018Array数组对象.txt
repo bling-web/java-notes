@@ -1,0 +1,28 @@
+一.创建方式
+   1.var arr=new Array(参数列表);   参数列表中的元素加"".无论什么类型.
+
+   2.var arr1=new Array(数组长度);
+   
+   3.var arr2=[参数列表];    参数列表中string加"",其他不加.
+       
+
+二.属性
+   
+
+三.方法
+   1.join(参数):将数组中的元素按照指定的分隔符拼接成字符串.(数组本质不变,只是在输出时候显示,所以是在输出函数中使用)
+     例:
+       document.write( arr3.join("*"));
+   2.push(参数列表):向数组的末尾添加一个或者更多元素,并返回新的数组长度.
+       
+   此外:还有length,reduce,sort等常用方法.    
+四.特点
+   1.JS中一个数组中的参数类型可以是任意的.没有任何限制.
+     例:
+        var arr3=[1,"hello",true,null,undefined ];
+        document.write(arr3);
+   2.数组的长度可变(java不可变)
+     例:
+        var arr2=new Array();
+        arr2[0]="hello";
+        arr2[1]="world";

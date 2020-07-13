@@ -1,0 +1,33 @@
+
+   首先说明:linux所有的命令要不在/bin文件夹下,要不在/usr/bin文件夹下.
+
+一.小例子.
+   #!/bin/sh                                    //shell第一行必须有的规定.                     
+   #This is to show what a example looks like.   //#一个注释
+   echo "My First Shell"                 //echo 输出命令,就像System.out.println()
+   echo "This is current directory" //一样,也是输出命令
+   /bin/pwd                                   //执行pwd命令,这里就是执行这个命令所在的文件
+   echo "This is file"                       //输出
+   /bin/ls                                       //执行ls命令.  
+  
+   注意:shell脚本文件的名称后缀必须为sh
+   这就是一个简单的输出命令,然后运行sh  [shell脚本的名称].
+   说明: sh 命令也可以加选项-x ,代表跟踪的意思,它会把每一步执行的内容和执行的结果都输出.
+
+二.小例子2.
+   #!/bin/sh
+   /bin/date +%F >> /test/shelldir/ex2.info                    //date输出日期, +%F,转换成我们常见的年月日格式,   >>追加重定向到文件中.
+   echo "disk info:" >> /test/shelldir/ex2.info                 
+   /bin/df -h >> /test/shelldir/ex2.info                           //df -h输出磁盘信息的一个命令
+   echo >> /test/shelldir/ex2.info
+   echo "online users:" >> /test/shelldir/ex2.info
+   /usr/bin/who | /bin/grep -v root >> /test/shelldir/ex2.info    //who,谁在使用这台计算机, grep 过滤, -v root表示排除root.
+   echo "memory info:" >> /test/shelldir/ex2.info
+   /usr/bin/free -m >> /test/shelldir/ex2.info                 //free -m 输出内存信息的一个命令.
+   echo >> /test/shelldir/ex2.info
+   /usr/bin/write root < /test/shelldir/ex2.info && /bin/rm /test/shelldir/ex2.info    //左边表示把ex2.info的信息输入,并写给root.也就是输出到命令窗口,右边是删除ex2.info文件
+
+   crontab -e                                                                   //定时命令.定时执行以下命令.
+   0     9        *     *    1-5    /bin /sh  /test/ex2.sh            //这两句话的命令就是每周一到周五,每天九点执行sh /test/ex2.sh 
+   分   小时   天   月  星期  
+  注意: 0     9        *     *    1-5    /bin /sh  /test/ex2.sh  这句话应该是弹出编辑crontab命令时输入的,分和小时只能输入某一个固定的数字,不能输入一个范围.

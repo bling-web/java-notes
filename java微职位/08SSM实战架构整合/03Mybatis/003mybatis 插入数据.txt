@@ -1,0 +1,74 @@
+以下插入数据是针对student这个entity来说的.
+
+
+一.插入数据.
+   此时的文件配置和上一个是一样的,就是多了一个方法.这里只列出不一样的文件.
+   1.dao文件中.
+     public interface StudentDao {
+        void saveStudent(Student student);
+        List<Student> findAll();
+     }
+   2.StudentMapper中.
+     <insert id="saveStudent" parameterType="Student">                                //这里本应该是全类名的.这样写是因为在mybatis.xml中定义了别名.
+      <selectKey keyProperty="stuId" keyColumn="id" resultType="INT" order="AFTER">   //这个selectKey包裹的是返回插入数据的id.返回的id存储在传入的方法参数student对象中
+          select last_insert_id()
+      </selectKey>
+      insert into student(name,gender,birthday,snative,deptno,tel,address,description)
+      values (#{stuName},#{stuGender},#{stuBirthday},#{stuSnative},#{stuDeptNo},#{stuTel},#{stuAddress},#{stuDesc})
+     </insert>
+   3.测试.
+      private Logger logger = Logger.getLogger(TestStudent.class);
+
+    private InputStream inputStream;
+    private SqlSession sqlSession;
+    private StudentDao studentDao;
+
+    // 用于在测试方法执行之前执行
+    @Before
+    public void init() throws IOException {
+        // 1. 读取mybatis配置文件
+        inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+        // 2. 创建SqlSessionFactory构建对象
+        SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory sqlSessionFactory = sqlSessionFactoryBuilder.build(inputStream);
+        // 3. 使用工厂创建SqlSession对象
+        sqlSession = sqlSessionFactory.openSession();
+        // 4. 使用SqlSession对象创建Dao接口的代理类对象
+        studentDao = sqlSession.getMapper(StudentDao.class);
+    }
+
+    // 用于在测试方法执行之后执行
+    @After
+    public void destroy() throws IOException {
+        // 提交事务
+        sqlSession.commit();
+        // 6. 资源释放
+        sqlSession.close();
+        inputStream.close();
+    }
+
+    @Test
+   public void testSaveStudent() {
+        Student student = new Student();
+        student.setStuName("张三");
+        student.setStuAddress("火星");
+        student.setStuBirthday(new Date());
+        student.setStuDeptNo("120000");
+        student.setStuGender(0);
+        student.setStuSnative("汉族");
+        student.setStuDesc("备注");
+        student.setStuTel("13800138000");
+        logger.info("保存前：" + student);
+        studentDao.saveStudent(student);
+        logger.info("保存后：" + student);
+   }
+
+   @Test
+   public void testFindAll() {
+       List<Student> studentList = studentDao.findAll();
+       for (Student item : studentList) {
+           System.out.println(item);
+       }
+   }
+     
+

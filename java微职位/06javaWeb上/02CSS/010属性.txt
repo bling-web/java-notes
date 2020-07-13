@@ -1,0 +1,49 @@
+1.字体,文本.
+   a.字体大小:font-size
+   b.文本颜色:color
+   c.文本对其方式:text-align
+   d.行高:line-height(相邻两行之间的宽度)
+     
+ 
+2.背景:
+   background;背景
+     设置背景颜色:background-color:颜色
+     设置图片为背景:background:url(图片地址)
+       设置图片时 no-repeat可以使图片不重复.repeat-x,repeat-y分别在水平和竖直方向重复.
+        
+          
+
+3.边框轮廓:
+   border:设置边框,符合属性(必须一次设置多个属性)
+   border(边框宽度 实线或虚线 颜色)   实线:solid   虚线:dashed
+     注意:1.没有逗号.
+          2.里面顺序不能错.
+ 
+4.尺寸:
+   height:高
+   width:宽
+
+
+如果想在一个地方设置空格,可以来一个空内容的标签.然后对这个标签设置height和width即可.还可设置背景.
+
+
+小技巧:使一段文字居中的方法:
+            margin-left:auto;
+
+            margin-right:auto;
+
+            width:80%;          //文本横向宽度
+
+            text-align:left;    //最后的文本向左对齐
+       这样也可以:(而且这个兼容性更好)
+            position:absolute;
+
+            left:40%;                  //举例左边的绝对位置,可以自己调
+
+            width:900px;               //整个文本所占宽度
+
+            margin-left:-380px;
+
+
+
+

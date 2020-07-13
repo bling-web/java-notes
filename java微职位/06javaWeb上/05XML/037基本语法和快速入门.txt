@@ -1,0 +1,30 @@
+基本语法:
+  1.xml文档的后缀名是xml.
+  2.xml的第一行必须是文档声明<?xml version="1.0" ?>
+    (不是代码的第一行,是文档的顶头第一行)
+  3.xml文件必须有且只有一个跟标签.,
+     下面例子中students就是跟标签.
+  4.属性值必须使用双引号或单引号括起来.
+  5.标签必须正确关闭.
+  6.xml表签区分大小写,html不区分.
+  
+快速入门:
+
+<?xml version="1.0" ?>  //第一行必须是这个
+<students>              //有且只有一个跟标签,必须有
+    <student>
+        <name>张三</name>
+        <age>19</age>
+        <gender>男</gender>
+    </student>
+    <student>
+        <name>李四</name>
+        <age>20</age>
+        <gender>男</gender>
+    </student>
+    <student>
+        <name>王五</name>
+        <age>22</age>
+        <gender>男</gender>
+    </student>
+</students>

@@ -1,0 +1,79 @@
+总之思想就是把sqlSession传进去,执行对应的CRUD方法,把mapper中的sql的id传进去.
+
+
+
+1.实体类.
+public class UserDaoImpl implements IUserDao {
+
+    private SqlSessionFactory factory;
+
+    public UserDaoImpl(SqlSessionFactory factory) {
+        this.factory = factory;
+    }
+
+    public List<User> findAll() {
+        // 1. 根据factory获取sqlSession对象
+        SqlSession sqlSession = factory.openSession();
+        // 2. 调用sqlSession中的方法实现查询
+        // 3. 参数就是获取配置信息(Mapper)的key
+        List<User> list = sqlSession.selectList("com.cc.mybatis.dao.IUserDao.findAll");
+        sqlSession.close();
+        return list;
+    }
+
+    public void saveUser(User user) {
+        // 1. 根据factory获取sqlSession对象
+        SqlSession sqlSession = factory.openSession();
+        // 2. 调用sqlSession中的方法实现查询
+        // 3. 参数就是获取配置信息(Mapper)的key
+        sqlSession.insert("com.cc.mybatis.dao.IUserDao.saveUser", user);
+        sqlSession.commit();
+    }
+
+    public void updateUser(User user) {
+        // 1. 根据factory获取sqlSession对象
+        SqlSession sqlSession = factory.openSession();
+        // 2. 调用sqlSession中的方法实现查询
+        // 3. 参数就是获取配置信息(Mapper)的key
+        sqlSession.update("com.cc.mybatis.dao.IUserDao.updateUser", user);
+        sqlSession.commit();
+    }
+
+    public void deleteUser(Integer id) {
+        // 1. 根据factory获取sqlSession对象
+        SqlSession sqlSession = factory.openSession();
+        // 2. 调用sqlSession中的方法实现查询
+        // 3. 参数就是获取配置信息(Mapper)的key
+        sqlSession.update("com.cc.mybatis.dao.IUserDao.deleteById", id);
+        sqlSession.commit();
+    }
+}
+
+
+2.对应的mapper文件中.
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.mybatis.dao.IUserDao">
+
+    <select id="findAll" resultType="com.cc.mybatis.entity.User">
+        select * from user
+    </select>
+
+    <insert id="saveUser" parameterType="com.cc.mybatis.entity.User">
+        <selectKey keyProperty="id" keyColumn="id" resultType="INT" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into user (username,name,password,type) values (#{username},#{name},#{password}, #{type})
+    </insert>
+
+    <update id="updateUser" parameterType="com.cc.mybatis.entity.User">
+        update user set username=#{username},name=#{name},password=#{password} where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="int">
+        delete from user where id = #{id}
+    </delete>
+</mapper>

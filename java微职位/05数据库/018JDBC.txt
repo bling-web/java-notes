@@ -1,0 +1,126 @@
+一.JDBC简介:
+   JDBC是java访问数据库的标准规范.真正操作数据库还需要具体的实现类,也就是数据库驱动,每个数据库厂商根据自家数据库的通信格式编好自己的数据库驱动,所以我们只需要会调用JDBC接口中的方法即可.
+   数据库驱动由数据库厂商提供,本质上是一个文件系统,还是以文件的方式存在服务取得电脑上的.
+
+二.适应JDBC的好处:
+   1.程序员要开发访问数据库的程序,只需要会调用JDBC接口中的方法即可,不用关注类是如何实现的
+   2,使用同一套java代码.进行少量的修改就可以访问其他JDBC支持的数据库.
+
+三.JDBC使用包
+              会使用的包                 说明
+               java.sql                  所有与JDBC访问数据库相关的接口和类
+               javax,sql                 数据库扩展包,提供数据库额外的功能,如,连接池.
+               数据库的驱动              需要额外去下载,JDBC接口实现的类
+
+四.JDBC的核心API:
+    
+         接口或类                        作用
+
+        DriverManager类                 1)管理和注册数据库驱动
+                                        2)得到数据库连接对象
+        
+        Connection接口                  一个连接对象,可用于创建Statement和PrepredStatement对象
+ 
+        Statement接口                   一个SQL语句对象,用于将SQL预防给数据库服务器
+    
+       PreparedStatement接口            一个SQL语句对象,是Statement的子接口.(最常用,稳定)
+  
+       ResultSet接口                    用于封装数据查询的结果集,返回给客户端java程序.
+
+五.使用JDBC.
+  1.导入jar包.(jar包就是一个压缩包)
+    a.eclipse:
+      下载---在工程下创建包---将jar包拖进去---右键.buildPath---add libarly ----use libarly -----new 增---add jars
+    b.idea
+      下载---在工程下创建包---将jar包拖进去----在需要导入的jar包上.右键选择add as libarly即可
+                                               或者左上角File---Project Structure--libarly
+      
+  2.检验导入的包能否正常使用.
+    a.Class.forName("com.mysql.jdbc.Driver");//运行没有异常则导入正确.
+
+  3.获取连接对象.(DriverManager获取)
+    说明:DriverMannager类中有两个静态方法,可用于连接,获得连接对象.
+
+         a.getConnection(String url,String user,String password)  通过连接字符串,用户名,密码获取连接对象(该方法返回一个连接对象)
+           如果出现乱码现象;可以指定JDBC的字符集.在url中指定.
+           例:
+           String ur1="jdbc:mysql://localhost:3306/dbtest1?characterEncoding=utf8";//连接本主机dbtest1数据库,并指定字符集.
+
+         b.getConnection(String url,Properties info)     通过连接字符串,属性对象来获得来连接对象.
+    方式一举例:
+         String ur1="jdbc:mysql://localhost:3306/db1";         //格式:jdbc:mysql://主机ip:端口号/数据库;
+         Connection connection= DriverManager.getConnection(ur1,"root","root");
+    方式二举例:
+         String ur1="jdbc:mysql://localhost:3306/dbtest1";
+         Properties info=new Properties();
+         info.setProperty("uesrname","root");
+         info.setProperty("password","root");
+         Connection connection=DriverManager.getConnaction(ur1,info);
+
+  4.创建SQL语句对象Statement.(connection获取)
+    通过Connection对象,createStatement方法获取
+       例: Statement statement=connaction.createStatement();     //返回一个Statement对象.
+
+  5.使用Statement执行SQL语句.
+       常用两个方法:
+         1.executeUpdate(String ur) //执行增删改操作,返回对数据库影响的行数
+         2.executeQuecy(String ur)  //执行查询操作.返回一个结果集(ResultSet).
+       例:
+         statement.executeUpdate("create table user(id int primary key auto_increment,name varchar(20) not null,gerder                     boolean,brithday date)");
+
+  6.返回结果集.
+     如果是查询语句会返回一个结果集.查看方法是while进行遍历.
+     例:
+       ResultSet re = statement.executeQuery(query1);
+       while(re.next()){
+           int id=re.getInd("id");
+           String name=re.getString("name");
+           String gerder=re.getString("gerder");
+           int score=re.getInt("score");
+           System.out.println("id:"+id+",name:"+name+",gerder:"+gerder+",score:"+score);
+       }
+
+  7.释放资源.
+    释放资源的时候,要注意从小的资源对象开始释放,从里往外.
+    这里先释放Statement对象,再释放Connection对象.
+
+
+
+注意:涉及到释放资源的时候,如果有异常一定要捕获,不然抛出异常资源就是放不了了.
+     try{
+     }catch{
+     
+     }finally{
+     }
+ 
+如果java控制数据库数显乱码问题,可从以下几个层面考虑.
+
+出现字符集问题就是因为编码规则不一致造成的.这是主要考虑四个方面:(以UTF-8为例)
+
+   1.idea工具;又分为两个层面;
+
+      a.系统工具,查看默认的字符集是否是UTF-8,
+
+      b.配置文件 File Encondings-UTF-8;
+
+  2.JDBC.(连接)
+
+      查看jdbc连接时是否有设置字符集,如果没有在数据库名字后面添加: ? character Encoding ='utf8';
+
+ 3.数据库
+
+     查看对应操作的数据库是否设置字符集为utf8;
+     alter datebase 库名 default character set 'utf8';
+
+  4.数据表
+
+     查看对应中数据库中的表的字符集是否为utf8;
+
+
+
+
+
+
+
+
+

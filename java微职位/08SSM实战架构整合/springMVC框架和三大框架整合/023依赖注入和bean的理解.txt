@@ -1,0 +1,38 @@
+一.spring中bean的作用.  
+   对于使用spring框架开发的人员来说,我们主要做的是两件事情,a.开发bean(类的代理),b配置bean.
+   可以把spring容器理解成一个大工厂,Bean就是该工厂的组件,小机器(这些组件其实对应程序中的一个类),我们可以自己生产组件,然后把这个组件给了spring(在配置文件中配置),spring就能自行运用这些组件,产出对应的产品(bean实例),当然spring有自己的组件,放在仓库中,我们可以把他直接拿出来使用(使用注解).
+
+   工厂(spring容器)能使用什么样的组件(Bean)产出对应的产品,完全取决与我们配置文件的配置.而spring 帮我们做的就是根据配置文件来创建bean实例(对应类的对象),并调用该对象的方法完成"依赖注入".
+  
+
+二.依赖注入的理解.
+   1.所谓依赖,举个例子说明.一个类person,另一个类Car.如果person的某个方法比如说drive.需要用到car.那么Person就是依赖Car.代码如下.
+     Public Person{
+     ...
+     public void drive(){
+         Car toyota=new Car("TOYOTA");
+         toyota.挂档;
+         toyota.踩油门;
+         toyota.打方向;
+     }
+  
+       这其中的依赖关系,就导致了对象boy需要负责对toyota的创建.甚至生命周期的管理(想一下每调用一次drive方法,就要new一个Car对象).而这样   显然会带来耦合度高,不易维护等缺陷.如果要让这个男孩驾驶一辆Aodi,则还需要改Person的代码.
+
+       因此在java的设计理论中就提出了一条非常著名的原则，依赖倒转原则（Dependence Inversion），也就是依赖注入,其核心思想就是要将这种具   体类之间的依赖，尽量转换成抽象依赖，就是把创建对象的代码提到类外面去,在类中只用对象的引用,什么时候用,什么时候把实例对象传进来即可.
+    
+    Public Person{
+          private ICar car;
+          public Person(ICar onecar){
+              car=onecar;
+          }
+          public void drive(){
+             car.挂档;
+             car.踩油门;
+             car.打方向;
+          }
+     }
+
+     Toyota toyota=new Toyota();
+     Person boy=new Person(toyota);
+     boy.drive();
+  

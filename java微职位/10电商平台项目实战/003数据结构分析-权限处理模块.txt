@@ -1,0 +1,69 @@
+
+一.权限处理模块:
+      也就是不同的人看到不同的系统.
+   怎么实现:
+      最开始想到的就是给每个user赋予不同的角色,在user表中,然后查询user表,根据返回的角色不同,去调用不同的页面.
+      这样有两个问题:
+           1.增加代码量.这些代码的逻辑其实在数据库层面就能完成.
+           2.不容易细粒度划分.比如要控制到页面中的某个按钮,启不是光权限处理就需要很多几乎重复代码.
+      那么怎么处理:
+           1.可以设计一个user表,
+             设计一个菜单表,菜单表里面就存储了不同菜单对应的url.
+             还可以设计一个部门表,也就是进行分组划分,对于公司来说这是必要的.进行分类.
+           查询user表,然后对应的部门表,然后根据菜单表可以直接打开对应的系统.
+
+
+二.数据结构.
+    三个数据表,两个连接表
+    1.admin_user              //user表
+       id  INT(11)
+       ten an tid INT(11)       //多组登录时用到这个id
+       name VARCHAR(20)
+       psw VARCHAR(32)
+       email VARCHAR(32)
+       creator INT(11)           //下面这几个创建人,创建时间,修改人,修改时间可以记录对数据库的操作,并且可以在对数据库运维中有很大作用.
+       createtime TIMESTAMP
+       flag INT(1)                 //标记用户状态,是否过期等.
+       logtime TIMESTAMP
+       updateuser INT(11)
+       updatetime TIMESTAMP
+     2.menu                     //菜单表
+        in INT(11)
+        name VARCHAR(32)
+        url VARCHAR(500)
+        icon VARCHAR(20)    //图标,可能菜单对有对应的图标,也要存起来
+        menutype ENUM('0','1','2')   //菜单类型,可能是一个菜单,页面,甚至可能是一个按钮,所以有三种类型
+        display INT(1)            //是否展示
+        parentid INT(11)        //可能是某个菜单的子菜单,因为菜单是有层级关系的
+        creator INT(11)    
+        createtime TIMESTAMP
+        updateuser  INT(11) 
+        updatetime TIMESTAMP
+        flag ENUM('0','1')
+     3.role                      //角色表
+        id INT(11)             
+        name VARCHAR(20)
+        createtor INT(11)
+        createtime TIMESTAMP
+        description VARCHAR(500)
+        updateuser INT(11)
+        updatetime TIMESTAMP
+        以下是两个连接表.
+     4.user_role               
+        userid INT(11)
+        roleid INT(11)
+        creator INT(11)
+        createtime TIMESTAMP
+     5.role_menu
+        roleid  INT(11)
+        menuid INT(11)
+        flag INT(1)
+        creator INT(11) 
+        createtime TIMESTAMP
+        
+     
+       
+        
+        
+   
+       

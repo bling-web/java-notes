@@ -1,0 +1,22 @@
+
+   这里说的excel文件指xls文件
+
+
+一.引入jar包.
+     <dependency>
+	<groupId>org.jxls</groupId>
+	<artifactId>jxls-jexcel</artifactId>
+	<version>1.0.6</version>
+    </dependency>
+
+
+二.举例说明.
+     ArrayList<String> list = new ArrayList<String>();
+     FileInputStream inputStream=new FileInputStream("test.xls");
+     Workbook workbook= Workbook.getWorkbook(inputStream);         //获取工作表对象
+     Sheet table = workbook.getSheet(0);                                                   //获取第0个sheet.也可以通过名称获取
+     System.out.println("行数为: "+table.getRows());
+     for (int i = 1; i < table.getRows(); i++) {
+         //getCell()获取具体的单元格内容,先是列坐标,后是行坐标
+         list.add(table.getCell(1,i).getContents());
+     }

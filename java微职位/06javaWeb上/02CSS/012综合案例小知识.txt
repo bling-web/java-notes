@@ -1,0 +1,50 @@
+
+
+1.如果要给整体加背景.直接对body标签操作即可.
+
+2.进行网页设置一定要先进行整体布局,先把大盒子放好.
+
+3.横向居中:margin:center  水平居中:vertical-align:middle
+
+4.设计时可以先对每块内容加边框,这样更容易操作.
+
+5.一般开始要对所有两个属性内容间距设置为0,并且设置box-sizing:border box;
+  *{
+   margin:0px;
+   padding:0px;
+   box-sizing:border box;
+  }
+
+6.<div class="reg_content">
+    <p></p>
+    <p></p>
+  </div>
+  如果想要设置第一个p标签:可以设置:  .reg_content p:first-child{ }
+              最后一个:              .reg_content p:last-child{ }
+
+7.<div><p><a>  </a></p></div>
+  想要设置a:可以设置:div p a{}
+           也可以直接:div a{}
+
+8.快速控制表格的列:
+  table tr td:nth-child(1){}
+  (1)表示第几列.
+
+9.要控制一列中的间距,可以直接选这个列,然后使用内边距,不需要再选中列里面的内容.
+
+10.设置输入框变成圆角:
+   选中边框:border-radius:5px;
+
+11.对一个元素,可以同时定义多个class名.分别进行控制.
+   如:class="名1  名2"     中间没有逗号.
+
+12.如果一个属性的边框有阴影或其他效果,可以通过加边框设置.
+
+13.table中最后一行的td:
+   table tr:last-child td{}
+
+14.文本大小设置:text-size
+   边框大小设置:width,height
+
+15.如果对某一个属性怎样设置都不动时,可以点开检查,选中这个元素,查看style.看看有哪些语句控制着这个元素.
+  

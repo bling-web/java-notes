@@ -1,0 +1,64 @@
+一.创建Function的三种方式:
+  1.var fun1=new Funtion("参数1","参数2"..."方法体");   不推介使用.
+    调用方法:fun1(参数);
+      说明:该方式较后两种方式比较特殊.一个是参数必须加"",一个是Function中的F大写.
+
+      例:
+         var b;
+         var fun1=new Function("b",document.write(b));
+         fun1("hello");
+  
+  
+  2.function fun2(参数){             
+      方法体;
+    }
+    调用方法:fun2(参数);
+     
+      例:
+        function fun2(b){
+            document.write(b);
+        }
+        fun2("world");
+
+
+
+  3.var fun3=function(参数){方法体}; 
+    调用方法:fun3(参数);
+    
+      例:
+        var fun3=function(b){ document.write(b);}
+        fun3("yes");
+   
+  注意:1和3中的var可以省略.其实也就是变量中用不用var的区别.
+
+二.方法
+ 
+三,属性
+   length.方法参数列表的个数.
+
+四.特点
+   1.方法的调用与形式参数列表无关,只和方法名和实参有关.
+     (和方法调用时传的参数无关.)
+     例:
+        var fun3=function(a){ alert(a);}
+        fun3("yes",1,2);//方法调用时怎样传参数都无所谓.
+
+   2.Function是一个对象,方法名可以重复,后面的会覆盖前面的方法.
+
+   3.定义方法时,返回值和参数类型不用写.
+
+   4.在每个方法声明中有一个隐藏的内置对象,arguments[]数组,封装了所有的参数对象.
+      例:求任意个数的和
+           function getSum(){
+            var sum=0;
+            for (var i = 0; i < arguments.length; i++) {
+                sum += arguments[i];
+            }
+            return sum;
+            }.
+
+
+五.调用
+   方法名,实际参数列表.
+  
+说明:JavaScript的对象的创建也是依据"类"创建的.只不过这些类已经帮你写好了.比如方法,数组,日期,数字等.

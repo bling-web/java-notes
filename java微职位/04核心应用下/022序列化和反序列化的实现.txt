@@ -1,0 +1,58 @@
+概念: 序列化(ObjectOutPutStream):对象的原始数据转换为字节.
+      反序列化(ObjectInputStream):字节重构为对象.
+一.ObjectOutPutStream类
+   将java对象的原始数据写出到文件,实现对象的持久存储.
+  
+   1.构造方法:
+     public ObjectOutPutStream(OutPutStream out):创建一个指定字节流对象的ObjectOutPutStream.
+
+注意:一个对象想要序列化,必须满足两个条件:
+     1.该类必须实现java.io.Serializable接口,Serializable是一个标记接口,不实现此接口的类将不会使任何对象序列化或反序列化,会抛出              NotSerializableException.
+     2.该类的所有属性必须是可序列化(正常写即可)的.如果有一个属性不需要可序列化的,则该属性必须标明是瞬态的,使用transient修饰
+     
+     此外:尽量加上默认的序列化版本上(有警告);
+     例:
+        MySeriliable person=new MySeriliable("王亮","男",23);
+        ObjectOutputStream ob=new ObjectOutputStream
+                (new FileOutputStream("F:\\$360RTLOG$\\test4.txt"));
+        ob.writeObject(person);
+        ob.close();                         //看相关文件会出现乱码,属正常现象.
+     
+
+二.反序列化ObjectInputStream类.
+   1.构造方法
+     (1).public ObjectInputStream(InputStream in):创建一个指定字节流的ObjectInputStream.
+反序列化操作:
+      1.对于JVM可以反序列化对象,它必须是能够找到class的类,如果找不到该类的class文件,则抛出一个ClassNotFoundException异常
+      2.如果能找到一个对象的class文件,我们可以进行反序列化操作,调用ObjectInputStream读取对象的方法:public final Object         readObject():读取一个对象
+      3.能找到class文件,但是class文件在序列化对象之后发生了修改,那么反序列化操作也是会失败,抛出InvaidClassException异常.发生这        个异常的原因如下
+        (1).该类的序列版本号与从流中读取的类描述的版本号不匹配.
+        (2).该类包含未知数据类型.(序列化后的文本内容与代码中的某个属性类型不匹配)
+        (3).该类没有可访问的无参数构造方法.
+      补充:Serializable接口给需要序列化的类,提供了一个序列版本号.serialVersionUID该版本号的目的在于验证序列化的对象和对应类                      是否版本匹配.
+   
+    
+      例1:
+        ObjectInputStream ois=new ObjectInputStream
+                (new FileInputStream("F:\\$360RTLOG$\\test4.txt"));
+        try {
+            MySeriliable p=(MySeriliable)ois.readObject();
+            System.out.println(p.getName());                         //这一句不能写在try/catch外面,不然找不到p这个变量.如果想写到外面
+            System.out.println(p.getAge());                            参照例2这个写法.
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+       例2:
+        ObjectInputStream ois=new ObjectInputStream
+                (new FileInputStream("F:\\$360RTLOG$\\test4.txt"));
+        MySeriliable p=null;
+        try {
+            p=(MySeriliable)ois.readObject();
+            
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println(p.getName());
+        System.out.println(p.getAge());
+
+  

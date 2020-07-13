@@ -1,0 +1,41 @@
+一.retry重试机制.
+    1.介绍:
+       就是对一个请求进行多次重试,可以指定重试的参数,例如重试次数,间隔,线程数等,还有什么异常情况下进行重试,如果达到指定上限可以进行最终的失败性处理.
+
+二.步骤:
+    1.第一步引入依赖.
+       <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+    2.在类上使用EnableRetry注解,一般使用在service层.
+       使开启retry功能.
+    3.在需要的方法上使用RetryAble注解.
+       里面可以指定各种参数,如,value指定捕获的异常,maxAttempts指定最大的重试次数.backoff指定重试策略.
+    4.指定最终失败执行的方法.
+       在方法上加上@Recover注解即可,这里注意每一个捕获的异常都必须指定一个具体的失败方法.不能使用一个方法.
+
+三.举例.
+     @Service
+     @EnableRetry    //启动retry重试功能.
+     public class RetryService {
+
+          @Retryable(
+                value = {RemoteAccessException.class, TimeoutException.class},  //指定出现哪几种异常会进行重试策略
+                maxAttempts=3,                                                                            //最大重试的次数
+                backoff = @Backoff(delay=2000,multiplier = 5)                          //指定补偿策略,每隔2秒执行一次,自定线程数为5.
+           ) 
+          public void TestRetry(){
+              System.out.println("测试重试方法执行...");
+              throw new RemoteAccessException("access Exception");
+          }
+          //最终执行失败所执行的方法,每一个异常都必须指定一个专门的方法.
+          @Recover
+           public void retryRemoteAccessException(RemoteAccessException re){
+               System.out.println("访问失败,执行最终处理");
+           }
+          @Recover
+           public void retryTimeoutException(TimeoutException te){
+               System.out.println("访问超时,执行最终处理");
+           }
+      }

@@ -1,0 +1,74 @@
+
+测试:
+  黑盒测试:不需要写代码,只需要把值输进去,看是否会出现期望的结果.
+  白盒测试:需要写代码,关注程序具体的执行流程.
+ 
+  开发人员要对自己的代码先进行测试.要用单元测试.
+说明:
+    写好代码之后,在src包后面新建一个test包,相对于src包中的每个类,每个方法,test包中都有对应的类和方法(命名    规则:Test+源码中的名字.)
+  
+要求:
+   1.使用,导入junit单元测试工具包.
+   2.要求测试方法一定是public void 声明的.(测试方法中一般没有返回值)  
+   3.要求使用标准的测试方式(规范:测试类有几个方法,我们就应该写几个test***的方法)
+   4.加上@Test注解.(以便能单独测试该方法)
+     导入junit.test方法
+         (1)eclipse:选择要测试的工程,右键---Builed Path---AddLibarries---JUnit---JUnit4---finash.
+         (2)idea:直接Alt+InSert导入.
+
+结果判断:
+  红色:失败
+  绿色:成功
+
+  一般我们会使用断言操作来处理结果
+  Assert.assertEquals(期望的结果:实际的结果);
+
+例子1:
+    //要求测试类,测试方法
+    public class methods {
+    /***
+     * 实现两个方法的和
+     * @param 其中一个加数
+     * @param 另一个加数
+     * @return两个数和
+     */
+    public int sum(int a ,int b){
+     return a+b;
+    }
+    //进行测试
+    public class methodstest {
+    @Test                                          //添加@test注解
+    public void testsum(){
+        int sum = (new methods()) .sum(2,3);       //注意:在不同包使用不同类,需要import导入,不是静态方法,需要new对象调用.
+        Assert.assertEquals(5,sum);                //断言操作判断结果.
+    }
+
+
+补充说明:(注解)
+  @Before:初始化动作
+     修饰的方法(方法前加@Before注解)在测试方法(方法前加@test注解)之前被执行.
+  @After:释放资源动作.
+     修饰的方法在测试方法之后自动被执行. 
+
+例子2:
+    //要求测试方法
+    public int multiple(List<Integer> list) {
+        Integer integer = list.stream()                           //本来是map+reduce组合,这里不对单个元素进行操作,省略了map.
+                          .reduce((mul, s) -> mul * s).get();
+        return integer;
+    }
+    //进行测试
+    private List<Integer> list;              //在方法外声明,声明为全局变量,其他方法才可以使用
+    @Before                                  //在测试方法前自动执行.初始化list.
+    public void init(){
+        list= Arrays.asList(1,2,3,4,5);      //给集合赋值的快速方法.集合=Arrays.asList(),不需要去new了.
+    }
+    @Test
+    public void testmultiple(){
+        (new methods()).multiple(list);     //测试畅通,为绿色,一般为正确.
+    }
+ 
+
+
+
+

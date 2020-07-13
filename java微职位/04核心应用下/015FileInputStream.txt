@@ -1,0 +1,42 @@
+一.字节输入流InputStream
+     java.io.InpurStream抽象类是表示字节输入流的所有的=类的超类,可以读取字节信息都内存中.定义了字节输入流   的基本共性功能用法.
+ 
+ 常用方法:
+   1.public void close():关闭此输入流并释放与此流相关联的任何系统资源.
+  
+   2.public abstract int read():从输入流读取下一个字节.
+  
+   3.public int read(byte[] b):从输入流中读取一些字节数,并将它们存储到字节数组b中.
+     (1)读出来是字节,数字表示,转换为字符,直接(char)强制转换即可.
+     (2)该方法返回每次读取的字节长度.如果没有数据则返回-1
+ 例:常用读取方法:
+        
+        byte[] a=new byte[4];                          //每次读取4个字节
+        while ((fileInputStream.read(a))!=-1){
+            System.out.println(new String(a));         //数组转换为字符串
+        }
+    这样有一个问题.比如文本中有abcdef六个字符,输出结果为  
+    abcd
+    efcd.    因为获取该次值时,上一次数组中的值并没有清空,这次只获取到两个值,所以只更新前两个数值,后面两个数值还是原来的.
+    解决办法:
+       
+        byte[] a=new byte[4];                          //每次读取4个字节
+        while ((fileInputStream.read(a))!=-1){
+            System.out.println(new String(a));         //数组转换为字符串
+            for (int i = 0; i <a.length ; i++) {       //每次输出完后都进行清零
+                a[i]=0;                                //也可以用Arrays.fill(a,(char)0);清空.
+            }
+
+       }
+   注意:不能使用增强for循环进行元素的清空,因为增强for循环不直接对元素本身进行操作.只可以读取.
+      
+
+二.InputStream的子类FileInputStream.
+    java.io.FileInputStream类是文件输入流.从文件中读取字节.
+构造方法:
+   1.FileInputStream(File file):
+     创建输入流对象,读取该file对象的数据
+   2.FileInputStream(String name):
+     创建输入流对象,读取该名称文件中的数据
+   注意:当你创建一个输入流对象时,必须传入一个文件路径,如果该路径不存在,会抛出FileNotFoundException.
+   

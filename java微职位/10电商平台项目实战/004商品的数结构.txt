@@ -1,0 +1,127 @@
+一.商品的表结构.
+    1.用户表member(在此项目中没有使用,后台和前台使用了一个user表)
+      id INT(11)
+      username VARCHAR(64)
+      password VARCHAR(32)
+      telphone VARCHAR(11)
+      email VARCHAR(32)
+      register_ip VARCHAR(255)
+      register_date DATETIME
+      create_time DATETIME
+      updated_time DATETIME
+    2.商品表goods
+      id INT(11)
+      name VARCHAR(100)
+      short_name VARCHAR(100)    //简称
+      category_id(11)                       //分类id
+      length DOUBLE
+      width DOUBLE
+      height DOUBLE
+      weight DOUBLE
+      cost_price DOUBLE            //打折价格
+      selling_price DOUBLE        //销售价格
+      original_price DOUBLE      //原始价格
+      detail TEXT 
+      basic_stock INT(11)          //存货量
+      upperShelf char(1)           //是否上架
+      examine CHAR(1)             //是否经过检查,价格等是否正确
+      deleted CHAR(1)              //是否被删除,在实际中,即使有些商品已经没有了,但是也不会把商品真正进行删除,因为如果已经购买了的用户来查,就会查不到,出现bug.所以我们只是标记其状态.
+      create_time DATETIME
+      updated_time DATETIME
+    3.订单表,包含了很多个商品的整个订单(order)
+      id INT(11)
+      order_no BIGINT(20)        //订单编号
+      user_id INT(11)
+      shipping_id INT(11)          //运输地址id
+      payment DECIMAL(20,2)  //付款金额
+      payment_type INT(4)        //付款类型,支付宝,微信等.  (在此项目中该字段被忽略)
+      postage INT(10)               //邮费
+      status INT(10)                   //订单状态,完成,未完成
+      payment_time DATETIME //支付时间
+      send_time DATETIME       //发起时间
+      end_time   DATETIME      //结束时间
+      close_time DATETIMR      //关闭时间
+      create_time DATETIME
+      updated_time DATETIME
+    4.单个商品的订单.(order_item)                      (在此项目中没有使用该表,直接使用了订单表)
+       id INT(11) 
+       user_id INT(11)
+       order_no BIGINT (20) 
+       product_id INT(11)         //商品id
+       product_name VARCHAR(100)
+       product_image VARHAR(500)
+       current_unit_price DECIMAL(20,2)   //目前单个价格
+       quality INT(10)               
+       total_price DECIMAL(20,2)     //精度类型,20表示精度为20,范围是1-65,2表示小数点后两位.
+       create_time DATETIME
+       updated_time DATETIME
+    5.送货地址表shipping      (在此项目中进行了简化,没有具体的省市街道这些,用了一个字段代替)
+       id INT(11)
+       user_id INT(11)
+       receiver_name VARCHAR(20)
+       receiver_phone VARCHAR(20)
+        receiver_mobile VARCHAR(20)
+       receiver_province VARCHAR(20)
+       receiver_city VARCHAR(20)
+       receiver_district VARCHAR(20)
+       receiver_address VARCHAR(20)
+       receiver_zip VARCHAR(20)
+        create_time DATETIME
+        updated_time DATETIME
+     6.商品分类表category.
+       id INT(11)
+       name VARCHAR(50)
+       lev INT(11)
+       parent_id INT(11)
+     7.商品图片表(goods_image).
+        id INT(11) 
+        goods_id INT(11)
+        image_url VARCHAR(256)
+        type INT(11)
+        sort INT(11)	//种类.
+     8.支付信息表(pay_info) 
+        id INT(11)
+        member_id INT(11)
+        order_no BIGINT(20)
+        pay_platform INT(10)       //支付平台
+        plat_number  VARCHAR(200)    //比如支付宝平台对每个支付的订单有一个自己的订单号
+        plat_status   VARCHAR(20)   //状态,是否支付成功,是支付平台的状态
+        create_time DATETIME
+        updated_time DATETIME
+     9.地址表(提供选择的省市区这些东西)
+        id BIGINT(20)
+        name VARCHAR(32)
+        parent_id BIGINT(20)
+        common INT(4)          //common公共
+        type VARCHAR(16)     //类型,省,市等
+        create_time DATETIME
+        updated_time DATETIME
+     10.购物车cart
+         id INT(11)
+         member_id INT(11)
+         product_id INT(11)
+         quantity INT(11)
+         checked INT(11)
+         create_time DATETIME
+         updated_time DATETIME
+      11.喜爱表favorite
+         id INT(11)
+         member_id BIGINT(20)
+         product_id BIGINT(20)
+         create_time DATETIME
+         updated_time DATETIME
+       
+        
+        
+       
+      
+
+
+
+
+在大型项目中,商品的图片不是存在本地的,因为一个图片也就是一个请求,可能一个页面就有三十张图片,如果都是访问项目本身服务器的话会很占用资源.造成一定的压力.
+解决方法:
+   1.集中化存储,搞个FTP.需要自己去搭建.
+   2.单独的文件服务的一个项目.单独做一个image Server的服务.
+   3.各种云厂商的文件服务.
+   本项目使用自己单独的一个服务器上.

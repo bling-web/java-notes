@@ -1,0 +1,58 @@
+一.jsoup:工具类,可以解析HTML和xml文档.(大致可分为以下三类)
+    
+   1.parse(File in,String charSetName):解析xml或者html.
+     传入文件对象和字符集.
+     其他方法中的baseUri属性,就是代表该文件的路径.
+
+   2.parse(String html):解析html或xml字符串.
+     例:
+       String html="<?xml version=\"1.0\" ?>\n" +
+                "<teachers>\n" +
+                "    <teacher>\n" +
+                "        <name>张三</name>\n" +
+                "        <age>19</age>\n" +
+                "        <gender>男</gender>\n" +
+                "    </teacher>\n" +
+                "</teachers>";
+        Document document1=Jsoup.parse(html);
+        System.out.println(document1);
+      说明:输出document1就会输出整个dom树.
+
+   3.parse(URL url,int timeoutMillis):解析指定网络资源的html或者xml.
+     指定一个毫秒值.(给一个时间限定.网络资源不确定性大)
+     例:
+        URL url=new URL("https://edu.51cto.com//center/course/lesson/index?id=1740_335740&type=wejob");   //URL是一个类
+        Document document=Jsoup.parse(url,5000);
+        System.out.println(document);
+
+
+
+二.Document:文档对象,代表内存中的DOM树.
+   1.getElementByid(String id):根据id元素属性获取唯一的element对象.
+     原则上id是唯一的,但是如果id有重复,会默认获取第一个.
+
+   2.getElementByTag(String tagName):根据标签名字获取元素对象集合.
+   3.getElementByAttribute(String key):根据对象属性获取元素对象集合.
+   4.getElementByAttribute(String key,String value):根据属性名称和属性值获取元素对象集合.
+
+三.Element:元素对象集合,可以当做ArraList<Element>来使用,(继承自ArratList).
+    1.获取子元素对象.
+       说明:Document继承自Element,所以Document中有的获取子元素的方法Element只也有.只不过作用域不同.
+            Document作用于整个Dom树,Element仅作用本元素.
+      方法和Document中一样.
+    2.获取属性值.
+      String attr(String key):通过属性名称获取属性值.优先获取本元素的id.
+    3.获取文本内容.
+      a.String text():获取所有子节点的文本内容.
+        只有文本内容,没有标签.
+      b.String html():获取标签体的所有内容(包括子标签的字符串中内容)
+        文本+标签.
+
+四.Node:结点对象.
+   里面有获取parentNode和ChildNode的方法.
+      例:child(int index);获取第几个child.
+   
+
+注意继承关系:
+   Document继承自Element.Element继承自Node.
+ 

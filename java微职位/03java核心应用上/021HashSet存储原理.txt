@@ -1,0 +1,46 @@
+
+     1.存储元素时,会根据元素的HashSet方法算出对应的hash值,代表这个元素的存储位置.
+     
+     2.如果该位置没有存储元素,则直接存到这个位置.
+
+     3.如果该位置已有元素,则会用equals方法进一步和该地址的所有元素比较(一个地址可存储多个元素),如果有一个返回true,则存,否则,则不存.
+     
+哈希表
+    在jdk1.8以前,使用数组+链表实现
+    在jdk1.8以后,如果同一个地址元素不超过8个,则使用数组+链表实现
+                 如果同一个地址元素超过8个,则使用数组+红黑树实现
+
+为什么不能保证哈希表存取顺序一致?
+    A和B按顺序存入HashSet中,并不能保证存储位置,因为存储位置是根据元素的哈希值来确定的.
+
+注意:
+    自己重写的类,要加入到HashSet中
+    1.一定要重新Hashcode和equals方法.
+      为什么要重写equals方法?
+         因为希望要比较对象的内容.而不是对象地址.
+      为什么要重写HashSet方法?
+         在每个重写equals方法的类中必须重写Hashcode方法,如果不这样做,就违反了Object.hashcode的通用约定,从而导致该类无法与基于散列值(hash)的集合类结合在一起,正常使用.
+         自定义类重写了Hashcode方法,两个属性(变量)相同的对象返回的哈希值就一样,不重写肯定不一样.
+    2.尽量重写toString方法
+       可以明确的知道哪个对象.
+例:
+     public static void main(String[] args) {
+        HashSet<Person> people=new HashSet<>();
+        Person p1=new Person("关羽",25);
+        people.add(new Person("韩信",23));
+        people.add(new Person("李白",24));
+        people.add(new Person("张飞",25));
+        people.add(new Person("张飞",25));
+        System.out.println(people.size());
+        for(Person person:people){
+            System.out.println(person);
+        }
+     }
+     如果不重写Hashcode和equals方法,people中就会有两个姓名和年龄都相同的张飞.
+     解释:
+       没有重写,就会调用Object中的Hashcode和equals方法,Hashcode就是地址值,两个不同的对象存储地址肯定不一样,而equals方法比较的内容是包名+类名+@+哈希值,所以也不一样,所以new Person("张飞",25)会被当成两个不同的元素存储进去.
+     如果重写Hashcode和equals方法,只有一个张飞(3个元素).
+     解释:
+       自定义的类重写了Hashcode 方法,两个属性形同的对象返回的哈希值就会一样(比如"张飞",25),就满足比较的条件.开始比较;
+       重写了equals方法,比较内容相同,会返回true,被认为是两个相同的元素,所以会不进行存储.
+       

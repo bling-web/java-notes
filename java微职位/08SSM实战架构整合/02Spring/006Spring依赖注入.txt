@@ -1,0 +1,102 @@
+一.依赖注入.
+   1.Dependency Injection,它是spring框架核心ioc的具体体现.
+   2.其核心思想就是要将这种具体类之间的依赖，尽量转换成抽象依赖，就是把创建对象的代码提到类外面(交给spring)去,在类中只用对象的引用,     什么时候用,什么时候把实例对象传进来即可.
+
+
+   说明:在spring中,加入类A依赖类B,我们把类A添加到bean中,那么类A中所依赖的对象也理应由spring来管理.我们只需做出说明即可.
+
+
+  
+
+二.注入方式.
+   1.通过构造函数注入. 
+     要求:类中需要提供一个对应参数列表的构造函数.
+     标签:contructor-arg
+     属性:
+         a.index:指出参数在构造函数列表中的索引位置,用于给对应的参数赋值
+         b.type:指出参数在构造函数中的数据类型.
+         c.name:指出参数在构造函数中的name,用于给对应的参数赋值.
+         d.value:它能赋的值是基本类型和String类型.
+         f.ref:它能赋值的是其他bean类型,也就是说,必须得是在配置文件中配置过的bean.
+     优点:在获取bean对象时,注入数据是必须的操作,否则对象无法创建.
+     缺点:改变了bean对象的实例化方式,在我们创建对象时,如果用不到这些数据,也必须提供.
+     例:
+        <bean id="userService" class="com.cc.spring.di.service.impl.UserServiceImpl">
+            <constructor-arg name="name" value="张三"/>                                  //这三个参数是构造方法中的参数
+            <constructor-arg name="age" value="20"/>
+            <constructor-arg name="birthday" ref="now"/>
+       </bean>
+      <bean id="now" class="java.util.Date"/>
+    
+    
+
+   2.通过set方法注入.
+     通过配置文件给bean中的属性传值:通过set方法的方式.
+     标签:property
+     属性:
+         a.name:找的是对应方法名称中set后面的部分.举例setUserDao. 那么name就是userDao(id首字母要小写)
+      beans.xml配置文件中:
+       <bean id="userService" class="com.cc.spring.service.Impl.UserServiceImpl" >
+           <property name="userDao" ref="userDao"/>                                //这个是构造函数中的参数
+       </bean>
+       <bean id="userDao" class="com.cc.spring.dao.Impl.UserDaoImpl"/>
+     对应构造函数.
+       public UserServiceImpl(UserDao userDao) {
+          this.userDao=userDao;
+       } 
+      就是通过依赖注入的方式将对象引用传进去.
+
+   3.通过注解注入.
+
+
+
+三.注入类型.
+   1.基本类型和String类型.
+   2.其他bean类型.
+   3.复杂类型/集合类型.(复杂类型一般通过set方法注入.)
+     a.array,list,set.
+       这三种单列结构分别通过array,list,set标签.
+     b.map.properties.
+       这两种双列结构通过map,entry    props,prop标签.
+     说明:相同结构标签互换也可以.
+   例:
+      <bean id="userService" class="com.cc.spring.service.Impl.UserServiceImpl" >
+        <property name="arr">
+            <array>
+                <value>1</value>
+                <value>2</value>
+                <value>3</value>
+                <value>4</value>
+            </array>
+        </property>
+        <property name="list">
+            <list>
+                <value>1</value>
+                <value>2</value>
+                <value>3</value>
+                <value>4</value>
+            </list>
+        </property>
+        <property name="set">
+            <set>
+                <value>1</value>
+                <value>2</value>
+                <value>3</value>
+                <value>4</value>
+            </set>
+        </property>
+        <property name="map">
+            <map>
+                <entry key="王亮" value="来静"></entry>
+                <entry key="来静" value="王亮"></entry>
+            </map>
+        </property>
+        <property name="properties">
+           <props>
+               <prop key="韩信" >刺客</prop>
+               <prop key="张飞">战士</prop>
+           </props>
+        </property>
+    </bean>
+     
+   

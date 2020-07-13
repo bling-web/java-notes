@@ -1,0 +1,86 @@
+一.sentinel哨兵模式介绍.
+       sentinel本身是一个独立运行的进程,用于监控多个master-slave的集群.当发现master宕机之后,可以自动进行切换.
+      (sentinel在工作中部署也是作一个集群部署,因为首先要确保自身没问题)
+
+    1.Sentinel是用于监控redis集群中master状态的工具,是Redis高可用性的解决方案,当某个master服务下线时,自动将该master的某个slave升级为master继续处理请求.
+    2.支持集群.
+       sentinel本身部署就是支持集群的,因为如果sentinel本身出现问题,就谈不上高可用了.
+    3.版本.
+       redis2.8版本以上,选sentinel2.
+       redis2.8以下,选sentinel1.
+     那么怎么监听呢?
+        通过channel(信道)进行监听,每隔两秒钟,每个sentinel会往自己监控的master-slave对应的信道发送消息,然后得到回复.
+        sentinel之间通过发布/订阅系统实现的.类似MQ中的发布订阅(pub/sub)
+     
+  
+二.安装和配置.
+    1.建立文件,就像新建redis节点文件一样.
+      为每一个sentinel节点建立一个文件夹,下面有data,conf.
+      sentinel配置文件简要说明:
+           a.port: sentinel本身使用的端口.
+           b.sentinel monitor mymaster 127.0.0.1 6379 2
+              指定sentinel监听的端口.最后一个数字表示,多少个sentinel认为master断掉了,它才是真的断掉了.才会执行替换主节点的动作.
+              另外最后一个数字一般要超过sentinel的一半以上.
+           c.sentinel down-after-milliseconds mymaster 30000
+              指定在多少毫秒之后,被监听节点没有回复PONG的消息,sentinel认为其断掉了.
+           d.sentinel parallel-syncs mymaster 1
+              指定在发生主备切换的时候,最多有多少个slave同时对新的master进行同步.
+           e.sentinel natification-script  <master-name> <script-path>
+               在出现情况,某个节点断掉的情况等,指定执行某个shell脚本,这个脚本可以干很多事.比如发邮件给一些人,告诉他们节点断掉了.
+           f.sentinel client-reconfig-script <masetr-name> <script-path>
+             指定在发生主从切换时执行的脚本.
+       2.编写配置文件.
+          port 20190
+
+          daemonize yes
+
+          bind 192.168.5.111             //配置了这个只能通过这个连接
+
+          dir "/home/tim/servers/sentinel/20190/data"
+    
+         logfile "/home/tim/servers/sentinel/20190/logs/sentinel.log"
+
+         sentinel monitor mymaster192.168.5.111 10190 2
+
+          sentinel failover-timeout mymaster 20000
+
+          sentinel notification-script mymaster /home/tim/servers/sentinel/scripts/notify.sh
+          
+          sentinel client-reconfig-script mymaster /home/tim/servers/sentinel/scripts/reconfig.sh     
+         此时执行会报一个错.不能执行notify.sh文件.运行以下命令.
+             chmod +x *.sh    //给任何人加上执行*.sh文件的权限.
+      3.启动.
+         redis-sentinel [配置文件路径]
+      4.客户端连接. 
+        redis-cli -h [ip] -p [端口]
+    
+
+三.发送邮件配置.
+     1.安装发邮件的软件.
+       yum install mailx
+      2.进行配置.
+          vim /etc/mail.rc
+        在最下方配置.
+       set from="bling_web@163.com"
+       set smtp=smtp.163.com
+       set smtp-auth-user=bling_web@163.com
+       set smtp-auth-password=13133061126       //这边如果用的是163邮箱,需要开启smtp,这里填的是授权码.
+       set smtp-auth=login
+       测试是否设置成功:
+           echo -e "test content" | mail -s "test subject" bling_web@163.com   
+     3.配置脚本文件.
+       在notify.sh中配置.
+       echo -e "Action:$1 \n Description:$2" | main -s "Redis Sentinel 告警 " bling_web@163.com   //-e表示避免字符.使\n生效.
+
+四.选举机制.
+    1.根据配置文件中的配置,采用投票制,大于配置的节点数则认为是master节点是真的断掉了.
+    2.在真正进行主从切换的时候,其实还需要获得大多数节点的授权,才会真正的进行切换.
+       当一个sentinel被授权后,它会获得一个最新的master的一个版本号.当failover执行以后,这个版本号将会用于最新的配置.这个时候也就是大多数的sentinel知道版本号被要执行failover的sentinel拿走了.
+       其他sentinel也就不能再去使用这个版本号了.也就是说每次failover的时候,都会携带一个独一无二的版本号,保证数据不被污染.
+五.一致性.
+    当某一个机器down掉之后,这台机器上的redis和sentinel都会down掉,而其他sentinel进行failover之后,会有一个最新的配置,当这台机器重新连接后,会自动更新自己的配置,就是一致性.
+   持久化:
+   把failover之后的结果写入到配置文件中去就是持久化.
+
+    补充说明:当我们在配置文件中配置了slaveof [id] [端口]类似这样的语句,如果这个master 断掉了,在进行failover时候,sentinel就会修改配置文件.以配合failover之后的结果.
+  

@@ -1,0 +1,37 @@
+finally:
+    有一些特定的代码无论异常是否发生,都需要执行.另外,因为异常会引发程序跳转,导致有些语句执行不到.而finally就是解决这个问题.在finally这个代码块中存放的代码都是一定会被执行的.
+    常用于资源的释放,比如文件的操作,连接池的释放.
+    
+  例:
+public class Finally {
+    public static void main(String[] args) {
+        progrom("2019年");
+    }
+    private static void  progrom(String str)  {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            simpleDateFormat.parse(str);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }finally {                                  //不论程序有无异常,代码块里的内容始终会被执行.
+            System.out.println("我执行了");
+        }
+    }
+}
+
+1.运行时异常被抛出可以不处理.即不捕获也不声明抛出.
+2.如果父类某个方法抛出了多个异常,子类重写该方法时,该方法只能抛出相同的异常或它异常的子集.
+3.父类方法没有抛出异常,子类覆盖方法时也不能抛出异常,如果产生异常,只能在该方法内捕获处理.
+4.当多异常处理(catch语句中)时,前边的类不能是后边的父类.(因为如果是它的父类相当于把这个异常也捕获了)
+  例:
+  void print()  {
+        try {
+            throw new FileNotFoundException();
+            throw new IOException();
+        } catch (IOException e) {                              //IOException是FileNotFoundException的父类
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {                    //这里的FileNotFoundException已经被捕获了.       
+            e.printStackTrace();
+        }
+    }
+5.finally语句块中尽量避免return语句.

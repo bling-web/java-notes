@@ -1,0 +1,73 @@
+一.自定义注解
+  1.格式:
+    元注解(描述注解的注解)
+    public @interface 注解名称{
+       属性列表;(可有可无)(注意后面都要加括号)
+       1.基本数据类型
+       2.String 
+       3.枚举
+       4.注解
+       5.以上类型的数组.(只可以有这五种类型)
+     
+    
+    }
+  2.属性列表例子:
+     int value();          //如果属性列表只有一个参数,且该参数名称叫value,可以直接赋值--@注解名称(5);
+     String srr();
+     Item item();枚举    
+     Load load();注解
+     String [] arr();    //如果该String类型的数组只有一个值,可以省略{},就像字符串一样赋值即可.
+ 
+  3.使用:
+    有了属性之后,就需要给属性赋值.
+    例:@SelfDefine(a=1,srr="here",item= Item.BLUUE,load=@Load,arr="there")
+
+  4.特殊点:
+    (1).可以给属性赋默认值,使用时就不需要赋值了
+      如:int value() default 1;
+         String srr() default "here";
+    (2).如果属性列表只有一个属性,且名称是value,那么使用时可以直接赋值.
+    (3).String类型的数组,当且只有一个参数时,可以省略{},就像字符串赋值一样.
+
+  5.元注解:
+    JDK提供了四个基本注解,target和retention有一个叫value的属性,赋值时value写不写都可以.
+    1.@Target:描述注解能够作用的位置(不加的话默认任何位置都可以)
+        ElementType取值:
+        a.TYPE:只能作用于类上
+        b.METHOD:只能作用于方法上
+        c.FIELD:只能作用于成员变量上.
+        d.CONSTRUCTOR:作用于构造器上
+    2.@Retention:描述注解被保留的阶段
+        @Retention(RetentionPolicy.RUNTIME):当前被描述的注解,会一直保留到运行阶段,被JVM读取到.
+    3.@Documented:描述注解是否被抽取到api文档中.
+    4.@Inherited:描述注解是否被子类继承.
+
+  6.注解例子:
+      @Target({ElementType.METHOD,ElementType.FIELD})    //目标作用范围.
+      @Retention(value= RetentionPolicy.RUNTIME)
+      public @interface SelfDefine {
+         String srr();
+         Item item();
+      }
+
+
+二注解的本质.
+  注解本质上就是一个接口,该接口默认继承java.lang.annotation下的Annotation接口.
+  属性:接口中的抽象方法.
+  
+问:注解怎么去实现的?
+   答:注解本质上是一个接口,只不过这个接口有点特殊,它继承自java.lang.annatation下的Annotation接口,注解中的属性本质上就是一个抽象方法.
+      注解在使用的时候其实就是有了一个实现类.重写了内部的属性(抽象方法).
+
+
+
+
+补充知识:
+  1.一个类有三个阶段:
+     (1).字节码,源代码阶段(自己写的代码.),SOURCE阶段
+     (2).类加载的字节码阶段.(加载到JVM中,),CLASS阶段
+     (3).运行时阶段.(程序跑起来了),RUNTIME阶段
+
+  
+ 
+  

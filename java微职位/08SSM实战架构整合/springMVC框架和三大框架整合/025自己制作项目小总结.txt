@@ -1,0 +1,5 @@
+1.在spring中,如果访问静态资源,有时会被dispactherRequest当做动态资源,去找对应的servlet,就会导致找不到,所以一般会新建一个static文件夹,然  后在配置spring.xml中配置<mvc:resources mapping="/static/**" location="/static/"/>即可.
+
+2.在jsp页面中,一般会默认忽略el表达式,可以设置isELIngored="false";
+
+3.href的链接一定全都用绝对路径来写,因为有时候是从不同地方转发过来的请求,相对路径,路径会变.
