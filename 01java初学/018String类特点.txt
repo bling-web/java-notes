@@ -64,8 +64,6 @@
       
     6.replace(oldobject,newobject)
       用新的替换旧的,返回一个新字符串
-       String的replaceAll()支持正则表达式的匹配替换
-
     7.split(标志符)
       用某一种标志符分隔,返回一个字符串型数组
     8.getBytes()

@@ -23,11 +23,14 @@
              所以要需要使用mvn clean install -P dev,直接在terminal,相当于cmd ,运行该命令即可.
           
               $$不仅可以在application.properties文件中使用,还可以在自己的配置文件中使用.
+<<<<<<< HEAD
 
 3.springboot start
    实现ApplicationRunner接口,在run方法中执行.所有的解析参数都在ApplicationArguments
    这里面只传一个接口而已.然后具体实现类实现这个接口.	
 
+=======
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
              
       
       

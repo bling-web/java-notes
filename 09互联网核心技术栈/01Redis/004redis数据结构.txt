@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 一.数据结构.
+=======
+	 一.数据结构.
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
     redis有五种数据结构(对外),string,hash,list,set,zset
     但其实每一种数据结构都有两种或两种以上的内部编码,根据存储内容的不同,选择不同的编码.
     例:
@@ -140,9 +144,12 @@
        f.sinter(交集,interior:n内部)
           sinter key [key...] 返回第一个集合在指定集合的交集.
           sinterstore destination key [key...]  类似于sinterstore,不同的是不返回结果集,而是将结果集存放在destination集合中,如果destination已经存在,会覆盖原有的内容.
+<<<<<<< HEAD
 
          注意:两个集合做集合操作,则必须在一个槽点内,
 
+=======
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
        g.sunion(并集,union:并集)
           sunion key [key...] 返回指定集合的并集.
           sunionstore destination key [key...] 将指定集合的并集存储在destination集合中,如果destination存在,会覆盖原有内容.
@@ -189,9 +196,12 @@
           zrevrank key member 和上面一样,只不过返回从大到小的排名(按分数)
        e.返回个数.
           zcount key min max 返回分数在min到max之间的元素个数.	
+<<<<<<< HEAD
           zcard key 返回该key的全部元素.
 
        修改就直接再加一次即可.
+=======
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
 
 
 二.redisObject实例讲解.

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 c一.配置网络.
+=======
+一.配置网络.
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
      1.点击右上角的连接网络的图标,
      2.Edit,选中Connect automatacally和Available to all users
      3.选IPV4,method选Manual(手动)
@@ -30,6 +34,7 @@ c一.配置网络.
      检查防火墙是否关闭。出现6个off 证明全部关闭.
    7.service network restart
      重置网卡.
+<<<<<<< HEAD
 	 
 
 	linux命令模式下修改ip地址和网关
@@ -43,6 +48,8 @@ c一.配置网络.
 		 service network restart
 
  
+=======
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
 
 
 

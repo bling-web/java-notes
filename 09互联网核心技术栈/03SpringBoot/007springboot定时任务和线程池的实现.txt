@@ -1,5 +1,8 @@
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
    定时任务,我们在工作中使用非常广泛,在springboot中,我们可以更简单的去使用注解进行配置.然后直接使用即可.
    1.EnableScheduling 标识该类可以配置开启taskscheduler,启用注解功能.
    2.scheduled 可以设置固定时间进行执行fixedDelay,或者使用cron表达式执行.
@@ -130,7 +133,11 @@
            corePoolSize和maximumPoolSize都是传入的最大线程数,所以是固定大小,第三个参数存活时间为0,意思是当队列中线程数超过corePoolSize时,线程的存活时间为0,以此来保证固定数量的线程数目,
            第五个参数是无界队列,意思是当队列数达到maximumPoolSize后,又有新任务时,就把任务加到无线队列中等待.直至内存被用完.
         2.CatchThreadPool
+<<<<<<< HEAD
            corePoolSize是0,Integer.MAX_VALUE表示无穷大,存活时间60秒,意思是非核心线程,存活60秒之后就会被回收,使用队列是直接提交队列,就是提交到队列中的任务会被直接执行,如果有空闲线程,
+=======
+           corePoolSize是0,Integer.MAX_VALUE表示无穷大,存活时间60秒,意思是只要有空闲线程,存活60秒之后就会被回收,使用队列是直接提交队列,就是提交到队列中的任务会被直接执行,如果有空闲线程,
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
            使用空闲线程,如果没有,而,Integer.MAX_VALUE又是无穷大,就会直接新建一个线程去执行任务.
         3.newThreadPool
            corePoolSize和maximumPoolSize都是1来保证只有一个线程.

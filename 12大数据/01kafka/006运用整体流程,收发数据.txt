@@ -46,7 +46,11 @@
           mtime = Fri Jun 19 19:16:25 CST 2020
           pZxid = 0x300000077
           cversion = 0
+<<<<<<< HEAD
           dataVersion = 2	
+=======
+          dataVersion = 2
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
           aclVersion = 0
           ephemeralOwner = 0x0
           dataLength = 73

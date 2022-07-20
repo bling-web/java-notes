@@ -1,4 +1,8 @@
+<<<<<<< HEAD
  一.前言.
+=======
+一.前言.
+>>>>>>> c60e222a4385ab38dafeb863ba57081c97b139d6
     其实springboot就是对SSM进行了整合而已.在spring-MVC中,我们需要访问某一个静态文件,需要配置视图解析器.在xml文件中配置.
    <bean  id="viewResolver2" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/views/"></property>       //对应上面success的前缀                                  

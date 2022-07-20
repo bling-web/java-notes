@@ -31,6 +31,7 @@
 布尔型              boolean          1个字节     true-false
 
 注意:byte,short,char类型进行计算时都自动提升为int类型.
+       int类型和String类型自动相加时,int会自动转为String,然后进行字符串的拼接.
 
 
 
