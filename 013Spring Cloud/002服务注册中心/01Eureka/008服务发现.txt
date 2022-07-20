@@ -1,0 +1,34 @@
+
+一.在Eureka注册中心中主要有以下几个功能.
+   服务注册与发现
+   调用
+   负载均衡与容错
+   
+   其实在之前我们已经学习使用了服务注册,调用,负载均衡与容错,还差一个服务发现(在代码中从注册中心获取服务信息)
+   
+二.服务发现(在代码中从注册中心获取服务信息)
+   1.开启注解@EnableDiscoveryClient
+     在启动类上开启注解@EnableDiscoveryClient
+   2.在需要获取服务信息的类中直接注入对象DiscoveryClient即可.
+     例:
+	@Resource
+    private DiscoveryClient discoveryClient;
+	@GetMapping(value = "/payment/get/discover")
+    public Object getDiscoverClient(){
+        List<String> services = discoveryClient.getServices();
+        for (String service : services) {
+            log.info("当前微服务名称: "+service);
+            List<ServiceInstance> instances = discoveryClient.getInstances(service);
+            for (ServiceInstance instance : instances) {
+                log.info(instance.getServiceId());      //服务名称
+                log.info(instance.getInstanceId());     //实例名称
+                log.info(instance.getHost());     
+                log.info(String.valueOf(instance.getUri()));  //url
+                log.info(String.valueOf(instance.isSecure()));
+            }
+        }
+        return discoveryClient;
+    }
+   
+   
+  

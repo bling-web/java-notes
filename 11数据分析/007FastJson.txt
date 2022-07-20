@@ -1,0 +1,59 @@
+1.JSon字符串转为JsonObject.
+   JSONObject jsonObject= JSON.parseObject(String json);
+   返回JSONObject的好处是可以动态的往里面增加,删除元素
+         jsonObject.put()
+         jsonObject.remove()
+
+2.JSon字符串转为自定义对象(是一个{},才能用该方法)
+   String json="{"items":[{"code":"0303010000","offsets":[0],"word":"北京"},{"code":"0301030100","offsets":[3],"word":"南京"}]}";
+   Receive parse = JSON.parseObject(json,Receive.class);
+
+   其中Receive的类定义如下:
+      public class Receive {
+         private List<DistriceCoding> items;
+         @Override
+        public String toString() {
+            return "Receive{" +
+                "items=" + items +
+                '}';
+        }
+
+        public List<DistriceCoding> getItems() {
+            return items;
+        }
+   
+        public void setItems(List<DistriceCoding> items) {
+            this.items = items;
+        }
+    }
+   DistriceCoding类定义如下:
+         public class DistriceCoding {
+            private String Word;
+            private String code;
+            private List<Integer> offsets;
+
+           @Override
+           public String toString() {
+                 return "DistriceCoding{" +
+                      "Word='" + Word + '\'' +
+                      ", code='" + code + '\'' +
+                       ", offsets=" + offsets +
+                 '}';
+           }
+           //这里省略的get,set方法.
+          
+       }
+
+3.如果传入的json字符串是一个数组,那么就要用解析数组的方法.
+    String json="[{"code":"0303010000","offsets":[0],"word":"北京"},{"code":"0301030100","offsets":[3],"word":"南京"}]";
+    List<DistriceCoding> districeCodings = JSON.parseArray(json, DistriceCoding.class);    //第二个参数是数组里面包的对象
+ 
+    该方法如果不加后面的强制转换类,那么会转为JsonArray对象
+       JSONArray objects = JSON.parseArray(json);
+    该对象可以add,get对象
+
+
+4.对象转为json字符串
+   String jsonString=JSON.toJSONString(object);
+
+

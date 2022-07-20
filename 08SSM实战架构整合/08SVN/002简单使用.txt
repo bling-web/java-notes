@@ -1,0 +1,57 @@
+一常用命令.
+    1.Checkout:
+       连接服务器,下载项目数据到本地.
+    2.Update.
+       更新项目数据到本地.
+    3.Commit.
+       提交数据到服务器.
+
+
+服务器:
+一.创建,初始化仓库.
+    1.打开仓库,新建一个文件夹,作为根目录.这里是app.
+    2.在app里再建一个文件夹,这里是demo.作为一个项目的根目录.
+    3.在命令行中执行命令.
+       svnadmin create E:\javaPrograming\SvnRepo\app\demo
+       创建,初始化这个项目仓库.
+    4.如果创建成功,demo下面会有一些文件夹.
+       比如hooks,钩子文件,同步复制和更新会用到这个.
+       locks,追踪用户.
+       format:版本仓库的层次结构.
+
+二.服务器监管.也就是让客户端软件可以访问到服务器端.每一次都需要.
+    1.在cmd执行命令.
+       svnserve -d -r E:\javaPrograming\SvnRepo\app\demo
+       -d:表示后台运行.
+       -r:表示监管目录,后面跟路径.
+     通过以上命令:我们的svn://ip地址就可以直接指向对应的版本仓库,意思也就是通过客户端可以访问仓库,这里就是demo.
+
+三.权限控制.
+     默认情况下,SVN服务器是不允许匿名服务器上传文件到服务器的,所以需要更改配置.
+     conf->svnserve.conf->第十九行变为anon-access = write        //anon就是匿名的意思.
+     
+
+项目经理一般要做的:
+客户端:
+    一.执行Checkout的功能.
+       1.打开一个文件夹,任意你想要下载项目到本地的一个文件夹.这里是test.
+       2.右键单击TortoiseSVN-->Repo-browser.
+       3.输入url,这里是svn://localhost,确定.
+       4.打开左边的框框,上面有个svn://localhost的文件夹,右键点击checkout,然后确定.
+       再在test文件夹中,右键单击出现SVN update和SVN commit两个命令,即拉取数据成功.
+   二.执行commit的功能.
+       1.在test文件夹中新建文件,一般是需求分析,index.xml,core.xml文件等等,写上内容.
+       2.右键单击commit. 
+       3.注意填写备注信息.
+
+那么个人开发者做的和上面的步骤基本一样.
+    一.执行Checkout功能.第一次.
+    二.执行commit功能.
+        提交自己编写的代码到服务器中.
+
+    update操作就是更新该项目中别人写的代码,第一次是Checkout,后面都是update.
+
+
+
+
+     

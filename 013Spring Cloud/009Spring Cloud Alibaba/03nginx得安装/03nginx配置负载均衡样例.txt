@@ -1,0 +1,75 @@
+负载均衡配置
+测试案例：
+
+ 
+
+如下，分别在两台服务器(192.168.1.103, 192.168.1.102)上部署了相同的应用，并通过8080端口访问网站，如下
+
+ 
+
+http://192.168.1.xx:8080/webautotest/xxxxxxx
+
+ 
+
+同时在192.168.1.103上安装了nginx反向代理，想通过192.168.1.103的80端口来实现对两个站点的访问
+
+
+
+ 
+
+
+
+
+ 
+
+
+ 
+
+ 
+
+编辑nginx配置文件(例中为/usr/local/ngnix/conf/nginx.conf)，找到http结点，如下，添加带背景色部分的内容，
+
+http {
+
+    upstream myapp1 {
+
+        server 192.168.1.103:8080;
+
+        server 192.168.1.104:8080;
+
+    }
+
+    ……略
+
+   server {
+
+        listen 80;
+
+        server_name  localhost;
+
+ 
+
+        ……略
+
+        location /webautotest/ {
+
+            proxy_buffering off;
+
+            proxy_pass http://myapp1;
+
+        }
+
+    }
+
+}
+
+ 
+
+重新加载配置文件
+
+[root@localhost nginx-1.10.0]# /usr/local/ngnix/sbin/nginx -s reload
+
+ 
+
+访问测试url
+如下，访问相同的页面，展示来自不同服务器的页面

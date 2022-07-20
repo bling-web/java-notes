@@ -1,0 +1,6 @@
+1.下载gradle,构建环境变量,注意bin后面要加\
+   在cmd中输入gradle -v出现对应版本信息即可. 这里下载的6.8版本
+2.在github中下载spring-framework源码.注意这里下载的是5.1版本,不同版本差异很大,如果不确定的化可以直接下载5.1的压缩包解压即可.
+3.编译源码.
+   其实也就是这个网址https://blog.csdn.net/baomw/article/details/83956300
+

@@ -1,0 +1,34 @@
+一.Eureka的自我保护机制.
+   1.介绍
+     Eureka Client会定时向EurekaServer发送心跳包,在默认情况下,如果EurekaServer在90秒内没有接收到EurekaClient发送的心跳包,
+   便会直接将该实例从注册中心中剔除,但是如果在90秒内丢失大量的服务实例心跳(目前不清楚具体的比例数量),可能是由于网络不通导致的,此时如果直接剔除就出现了严重失误,
+   所以为了避免这种情况,EurekaServer会保护服务注册表中的信息,不会注销任何实例.
+   
+   2.设计理念
+     它的设计哲学就是宁可保留错误的服务注册信息,可不注销任何可能健康的实例.
+   
+     该设计理念其实就是符合CAP(一致性,可用性,分区容错性)理论中的AP理论.
+     问题
+	   为什么不满足一致性?
+   3.现象.
+     如果管理页面出现以下语句,则表明Eureka进入了自我保护模式
+	 EMERGENCY! EUREKA MAY BE INCORRECTLY CLAIMING INSTANCES ARE UP WHEN THEY'RE NOT. RENEWALS ARE LESSER THAN THRESHOLD AND HENCE THE INSTANCES ARE NOT BEING EXPIRED JUST TO BE SAFE.
+	
+二.关闭自我保护机制.	
+   1.在Eureka服务端yam中增加如下配置.
+	   server:
+		#关闭自动保护功能,默认是true
+		enable-self-preservation: false
+		#驱逐的间隔时间,默认是90
+		eviction-interval-timer-in-ms: 2000
+		
+    增加以上配置就可以关闭自我保护机制,但是默认发送心跳时间间隔和最后一次发送心跳等待时间是以各个客户端配置为主的,所以还需要修改客户配置.
+
+   2.在各个客户端增加如下配置.在Eureka.server下面
+     #Eureka客户端向服务端发送心跳的时间间隔,默认是30
+    lease-renewal-interval-in-seconds: 1
+    #Eureka在最后一次收到客户端心跳等待时间上限
+    lease-expiration-duration-in-seconds: 2   
+    
+   
+ 

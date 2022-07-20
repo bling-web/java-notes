@@ -1,0 +1,97 @@
+一.下载安装包.
+     可以去官网下载.
+     现在已经放在常用软件包里面.
+
+二.环境搭建.
+     1.解压安装包.
+        tar zxvf kafka_2.12-2.1.1.tgz -C /apps
+       然后将名字改为kafa.
+     2.打开confIg/server.properties文件
+         修改以下内容.
+         broker.id=0                          #这个id要修改成唯一
+         delete.topic.enable=true       #可以删除topic
+         log.dirs=/apps/kafka/data    #设置数据存储的地方,不是日志文件
+         zookeeper.connect=192.168.1.116:2181,192.168.1.117:2181,192.168.1.118:2181   #配置使用的zk集群.     
+          listeners=PLAINTEXT://192.168.1.116:9092       #以下两个配置是让kafka可以监听的到,能够消费消息.
+         advertised.listeners=PLAINTEXT://192.168.1.116:9092
+
+
+     3.配置环境变量.
+         编辑:sudo vim /etc/profile
+         export KAFKA_HOME=/apps/kafka
+         export PATH=.:$KAFKA_HOME/bin:$PATH
+         使当前环境变量生效:
+              source /etc/profile
+     4.修改bin/kafka-server.stop.sh
+        将	IDS=$(ps ax | grep -i 'kafka\.Kafka' | grep java | grep -v grep | awk '{print $1}')
+        修改为  PIDS=$(jps -lm | grep -i 'kafka.Kafka'| awk '{print $1}')
+        命令详解:
+                    通过jps -lm详细列出所有的java进程, 
+                          grep -i 'kafka.Kafka' 将kafka进程筛选出来.
+                          awk '{print $1}' 将进程号筛选出来.
+     5.三个都配置好后,先启动zk启动.
+     6.启动kafka.
+       (1)bin/kafka-server-start.sh config/server.properties
+          所有的命令都在bin这个目录下.
+          这种模式会有一些问题:
+              (1)默认以阻塞模式启动.启动之后都不能干其他事情.
+              (2)只能一台一台启动.
+        (2)所以可以用后台进程开启:daemon就是后台进程.
+             bin/kafka-server-start.sh -daemon config/server.properties
+             每台服务器都开启.
+        启动之后也可以用jps命令查看是否成功启动.
+     7.改进启动方式.每一次都要依次启动太浪费时间,所以我们可以写一个shell脚本,这里叫做kk.sh,去做这些事情.
+        #!/bin/bash
+
+        case $1 in                                                #本质上其实和if语句差不多,只不过写法更简便.
+        "start"){                                                   #如果$1位置变量为start,执行以下内容.
+	for i in 192.168.1.116 192.168.1.117 192.168.1.118
+               do 
+                    echo "*******************$i*********************"
+                    ssh $i "/apps/kafka/bin/kafka-server-start.sh -daemon /apps/kafka/config/server.properties"    #这里的$i就是192.168.1.116,轮询的这三个.
+               done
+        };;
+         "stop"){                                                  #如果$1位置变量为stop,执行以下内容.
+	for i in 192.168.1.116 192.168.1.117 192.168.1.118
+               do 
+                    echo "*******************$i*********************"
+                    ssh $i "/apps/kafka/bin/kafka-server-stop.sh"
+               done
+        };;
+        esac                                                          #case语句的结束标志.
+        传入的位置变量是start或者stop.
+
+     注意:
+       1.修改完文件记得改一下权限.chmod 777 kk.sh
+       2.如果服务器上没装ssh,要安装以下yum install openssh-server
+       3.第一次启动会报错.
+          Address 192.168.1.116 maps to localhost, but this does not map back to the address - POSSIBLE BREAK-IN ATTEMPT!
+          原因是免密连接设置原因.打开/etc/ssh下的ssh_config 	更改以下设置:GSSAPIAuthentication no                 //该设置可以减少登录时间
+                                                                    还有sshd_config    更改以下设置:GSSAPIAuthentication no               
+                                                                                                                       PermitRootLogin:yes                      //允许root登录
+      4.直接启动不会报错.但是用ssh远程命令启动就会报
+         not enough memory异常,暂时不知道什么原因.
+    
+     这个kk.sh暂时没有配置成功.报错.
+   
+
+    
+     
+
+
+
+
+
+
+
+
+
+
+
+
+       
+       
+
+   
+       
+ 

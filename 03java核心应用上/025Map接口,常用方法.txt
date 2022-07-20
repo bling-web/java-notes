@@ -13,6 +13,34 @@
   一.HashMap:存储数据采用的哈希表结构,不能保证存储顺序一致,因为要保证键的唯一性,所以需要重写hashcode和equals方法.
              (如果不重写hashcode方法就会默认返回内存地址的哈希值,肯定不一样,所以必须重写,重写会返回内容(自己理解))
   二.LinkedHashMap:(hashMap的子类)存储数据采用的哈希表+链表结构,链表结构可以保证元素的存储顺序一致,哈希表结构可以保证键的唯一性,需要重写hashcode和equals方法.
+  三.TreeMap:可以对输入的数据按键进行排序,但是存储效率低于hasnMap,我们可以在存入的时候使用hashmap,
+                     当需要有序输出时,再把元素全部放到treeSet中进行输出.
+       例:
+          public static void main(String[] args) {
+		HashMap<Integer, String> map = new HashMap<Integer, String>();
+		map.put(3,"张三");
+		map.put(10,"李四");
+		map.put(9,"王五");
+		map.put(6,"赵六");
+		map.put(1,"叶七");
+		map.put(5,"常八");
+		TreeMap<Integer,String> treeMap = new TreeMap<Integer, String>();
+		treeMap.putAll(map);
+		Set<Integer> keySet = treeMap.keySet();
+		Iterator<Integer> iterator = keySet.iterator();
+		while(iterator.hasNext()) {
+			Integer key = iterator.next();
+			System.out.println(key+":"+treeMap.get(key));
+		}
+	}
+         输出结果:
+               1:叶七
+               3:张三
+               5:常八
+               6:赵六
+               9:王五
+              10:李四 
+
 
 常用方法:(增删查改)
   1.public V put(K key,V put).将指定的键和值添加到集合中.(增,改)
@@ -21,7 +49,7 @@
   3.public V get(object key).返回指定的键所对应的值.(查)
   4.public Set<V> keySet().获取集合中所有的键,存储到set集合中.(通常遍历Map集合使用)
   5.public Set<Map.Entry<K,V>> entrySet().获取集合中所有的键值对对象,存储到set集合中.(通常遍历集合使用)
-  6.public int size.返回集合中元素的个数.
+  6.public int size.返回集合中元素的个数.	
   7.public collection<V> values.返回包含所有值的collection集合.(查)
   8.public boolean containsKey();查看是否包含当前key值.
 

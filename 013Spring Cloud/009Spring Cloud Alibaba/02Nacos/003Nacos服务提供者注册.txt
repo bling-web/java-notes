@@ -1,0 +1,96 @@
+1.新建Module cloudalibaba-provider-payment9001
+2.引入pom
+  父工程:
+	<!--spring cloud alibaba 2.1.0.RELEASE-->
+	<dependency>
+	  <groupId>com.alibaba.cloud</groupId>
+	  <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+	  <version>2.1.0.RELEASE</version>
+	  <type>pom</type>
+	  <scope>import</scope>
+	</dependency>
+	注意父工程这种方式其实并不引入jar包,只是控制版本.所以类型是<type>pom</type>,这样子工程在引入alibaba.cloud相关依赖时就不用写版本了.
+ 
+
+  本工程:
+    <dependencies>
+    <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <scope>runtime</scope>
+        <optional>true</optional>
+    </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+    </dependencies>
+	
+3.yml.
+   server:
+	  port: 9002
+	spring:
+	  application:
+		name: nacos-producer
+	  cloud:
+		nacos:
+		  discovery:
+			server-addr: 127.0.0.1:8848
+	management:
+	  endpoints:
+		web:
+		  exposure:
+			exclude: '*'
+			
+4.主启动.
+  @SpringBootApplication
+	@EnableDiscoveryClient
+	public class NacosCloudMain9002 {
+
+		public static void main(String[] args) {
+			SpringApplication.run(NacosCloudMain9002.class,args);
+		}
+
+
+
+	}
+5.业务类.
+  这里只有一个简单得controller类.
+   @RestController
+	public class TestController {
+
+		@Value("${server.port}")
+		private String severPort;
+
+		@GetMapping("/nacos/{string}")
+		public String getServerPort(@PathVariable String string){
+			return "serverPort:"+severPort+","+string;
+		}
+
+	}
+	
+	
+在启动服务后可以在nacos上看到服务已经注册上去了.
+
+然后为了演示集群效果,再建一个9002工程
+
+
+

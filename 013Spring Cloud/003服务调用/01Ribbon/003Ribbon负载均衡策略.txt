@@ -1,0 +1,42 @@
+1.Ribbon有以下负载均衡策略.
+  主要实现类是IRule.根据特定算法从服务列表中选取一个要访问的服务
+   (1)com.netflix.loadbalancer.RoundRobinRule   轮询
+   (2)com.netflix.loadbalancer.RandomRule  随机
+   (3)com.netflix.loadbalancer.RetryRule   先按照RoundRobinRule的策略获取服务，如果获取服务失败则在指定时间内会进行重试
+   (4)WeightedResponseTimeRule         对RoundRobinRule的扩展，响应速度越快的实例选择权重越大，越容易被选择
+   (5)BestAvailableRule     会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量最小的服务
+   (6)AvailabilityFilteringRule   先过滤掉故障实例，再选择并发较小的实例
+   (7)ZoneAvoidanceRule   默认规则，复合判断server所在区域的性能和server的可用性选择服务器
+   
+   默认是轮询
+   
+2.自己选择对应负载均衡策略.
+  (1)给定一个配置类.
+        @Configuration
+		public class DefineRule {
+
+			@Bean
+			public IRule getIrule(){
+				return  new WeightedResponseTimeRule();     //需要哪种策略直接返回对应对象即可.
+
+			}
+		}
+		
+	注意:这个配置类不能放到ComponentScan 这个注解扫描的路径下面,否则这个配置类就会被所有的Ribbon客户端所共享,达不到特殊定制的目的了.
+	     一般会新建一个包
+	
+  (2)在启动类上添加注解.
+     @RibbonClient(name = "CLOUD-PAYMENT-SERVICE",configuration = DefineRule.class)     //需要给定特定算法的微服务名称和对应配置类.
+	 
+	 例如:	
+	   @SpringBootApplication
+		@EnableEurekaClient
+		@RibbonClient(name = "CLOUD-PAYMENT-SERVICE",configuration = DefineRule.class)
+		public class OrderMain80 {
+
+			public static void main(String[] args) {
+				SpringApplication.run(OrderMain80.class,args);
+			}
+		}
+
+	 

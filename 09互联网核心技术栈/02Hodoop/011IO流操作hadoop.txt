@@ -1,0 +1,37 @@
+
+也就是一个输入输出的过程,从本地输入到hdfs,或从hdfs输入到本地.
+
+
+public static void copyFromLocal() throws  Exception{
+        //1.创建文件系统
+        Configuration conf = new Configuration();
+        FileSystem fs=FileSystem.get(new URI("hdfs://hadoop116:9000"),conf,"root");
+        //2创建输入流
+        FileInputStream fis = new FileInputStream(new File("E://test.txt"));
+        //3.创建输入流
+        FSDataOutputStream fos = fs.create(new Path("/user/test2.txt"));
+        //4.写入
+        IOUtils.copyBytes(fis, fos,conf);
+        //5.关闭资源
+        IOUtils.closeStream(fis);
+        IOUtils.closeStream(fos);
+        fs.close();
+}
+
+
+
+public static void copyToLocal() throws Exception{
+        //1.创建文件系统
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://hadoop116:9000"), conf, "root");
+        //2.创建输入流
+        FSDataInputStream fis = fs.open(new Path("/user/test2.txt"));
+        //3.创建输出流
+        FileOutputStream fos = new FileOutputStream(new File("F://T.txt"));
+        //4.写入
+        IOUtils.copyBytes(fis,fos,conf);
+        //5.关闭资源
+        IOUtils.closeStream(fis);
+        IOUtils.closeStream(fos);
+        fs.close();
+    }

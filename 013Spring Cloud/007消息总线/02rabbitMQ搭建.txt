@@ -1,0 +1,32 @@
+  
+  因为消息总线需要用到消息中间件,这里使用rabbitMQ.
+
+1.安装Erlang,因为rabbitmq是使用Erlang语言编写的,所以需要安装对应的运行环境.
+  打开官网右边有一个 downloads windows installer,点击下载即可.
+  https://www.erlang.org/downloads
+  下载之后一直下一步,选好目录进行安装即可.
+  
+  安装好之后记得配置一下环境变量 ERLANG_HOME 指向安装的目录.
+  
+  测试是否安装成功,cmd输入命令 erl ,出现对应的版本号即可.
+  
+2.下载rabbitmq.
+   打开 http://www.rabbitmq.com/download.html,点击下面的Windows installer
+   下载下来是一个exe文件,点击安装即可.
+   
+3.进入RabbitMQ安装目录下的sbin目录
+  打开cmd,输入以下命令启动管理功能
+  rabbitmq-plugins enable rabbitmq_management
+  这个目的是安装可视化插件.
+	
+4.查看是否安装成功.
+  点击开始键,找到RabbitMQ-server-start 点击,运行成功后
+  访问http://localhost:15672/
+  输入账号密码并登录: guest guest
+  
+  如果出来对应页面则表示rabbitmq安装成功.
+  
+  
+
+	
+	

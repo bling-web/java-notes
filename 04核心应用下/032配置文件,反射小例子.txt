@@ -22,7 +22,7 @@
            //Test.class获取本类的字节码对象,然后通过字节码对象调用getClassLoader方法,获取类加载器
            ClassLoader classLoader = Test.class.getClassLoader();
 
-           //调用getResourceAsStream方法获取,并发返回一个对象
+           //调用getResourceAsStream方法获取,并发返回一个对象,也就是将该文件加载到内存中.
            InputStream in = classLoader.getResourceAsStream("config.properties");
 
            // 将返回对象的内容加载到Properties容器中.

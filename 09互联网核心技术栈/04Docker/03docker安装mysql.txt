@@ -1,0 +1,59 @@
+一.声明:
+  所有的软件直接在镜像仓库中下载.
+  docker的镜像仓库:
+    https://hub.docker.com/
+	
+二.安装mysql
+   1.下载资源(在启动docker后)
+      docker pull mysql:5.7    这个是指定下载5.7版本	
+   2. 检查下载镜像.
+      docker images
+   3.创建实例并启动.
+     docker run -p 3306:3306 --name mysql \
+		-v /mydata/mysql/log:/var/log/mysql \
+		-v /mydata/mysql/data:/var/lib/mysql \
+		-v /mydata/mysql/conf:/etc/mysql \
+		-e MYSQL_ROOT_PASSWORD=root \
+		-d mysql:5.7
+		
+	 执行后出现一大串数字说明创建成功.
+	 说明:
+	    -p 3306:3306：每一个容器其实就是一个简易版的linux环境,所以我们创建实例启动的端口其实是简易版linux环境中的端口
+		              这里就需要映射到我们本linux环境的端口.
+		-v /mydata/mysql/conf:/etc/mysql：将配置文件夹挂载到主机,因为我们的mysql是在容器中启动的,所以需要把这个日志,
+		                                  配置文件挂载到本机上,方便查看和修改
+		-v /mydata/mysql/log:/var/log/mysql：将日志文件夹挂载到主机
+		-v /mydata/mysql/data:/var/lib/mysql/：将配置文件夹挂载到主机
+		-e MYSQL_ROOT_PASSWORD=root：初始化 root 用户的密码为root
+		
+	4.查看现有启动的docker容器实例.
+	  docker ps
+	  
+	5.进入到以docker启动的mysql容器也就是简易版linux环境中. 可以看到确实是linux环境
+	  docker exec -it mysql /bin/bash
+	  
+	6.修改mysql字符集.
+	  先执行命令:vi /mydata/mysql/conf/my.cnf
+	  将下面内容放进去,保存即可:
+		[client]
+		default-character-set=utf8
+		[mysql]
+		default-character-set=utf8
+		[mysqld]
+		init_connect='SET collation_connection = utf8_unicode_ci'
+		init_connect='SET NAMES utf8'
+		character-set-server=utf8
+		collation-server=utf8_unicode_ci
+		skip-character-set-client-handshake
+		skip-name-resolve
+		
+	7.重启mysql. 
+	   docker restart mysql
+	   
+	8.windows本机测试链接mysql.
+	   使用sqlyal直接链接即可。这里是192.168.247.128
+	   
+	9.设置mysql自启动.
+	  docker update mysql --restart=always
+	
+	  

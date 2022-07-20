@@ -14,8 +14,8 @@
 
 四.SpringMVC的优势.
    1.清晰的角色划分.
-     a.前端控制器(DispatcherServlet):根据请求url,找到请求处理的映射器.
-     b.请求到处理器映射(Hander Mapping):根据映射关系找到具体的类,真正的类.
+     a.前端控制器DispacherSevlet:解析url,找到请求处理的映射器.
+     b.映射处理器(Hander Mapping):根据映射关系找到具体的类,真正的类.
      c.处理器适配器(Hander Adater):电脑上的USB接口匹配不同的硬件.
      d.视图解析器(View Resolver):页面结果显示.
      e.处理器或页面控制器(Controller):

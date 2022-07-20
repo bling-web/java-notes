@@ -20,6 +20,8 @@
    3.清理:mvn clean(清理上次的产出文件)
    4.测试:mvn test
    5.安装jar包到本地仓库:mvn install
+
+      install和package的区别是 install会把打好的jar包安装到本地仓库,package不会,只是达成jar包.
   
   
   

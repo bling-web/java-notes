@@ -1,0 +1,112 @@
+前言,目前做得小功能就是
+                 调用
+     order订单--------------> payment微服务.
+	 
+	 
+	 
+一.创建子模块主要步骤.
+  建module
+  改pom
+  写yam
+  主启动
+  业务类
+  
+  
+二.
+1.建module
+  在cloud工程右键点击module
+  输入artifactId即可.此时会天然继承cloud工程。
+  此时回到父工程得pom会看到多了一个
+  <modules>
+    <module>Cloud-provider-payment8001</module>
+  </modules>
+  
+2.改pom
+  在子工程中pom加上对应依赖.
+  <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.10</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+	
+	注意:如果报unkown异常,那就是没有指定版本号
+3.改yml.
+  在resources下面新建一个application.yml得文件,加上
+  
+  server:
+  port: 8001
+
+
+	spring:
+	  application:
+		name: cloud-payment-service
+	  datasource:
+		type: com.alibaba.druid.pool.DruidDataSource
+		driver-class-name: org.gjt.mm.mysql.Driver
+		url: jdbc:mysql://localhost:3306/db2019?useUnicode=true&characterEncoding=utf-8&useSSL=false
+		username: root
+		password: root
+
+	mybatis:
+	  mapperLocations: classpath:mapper/*.xml
+	  type-aliases-package: com.atguigu.springcloud.entities
+	  
+4.主启动.
+  在java下面新建包com.atguigu.springcloud.
+  在该包下新建一个主启动类.

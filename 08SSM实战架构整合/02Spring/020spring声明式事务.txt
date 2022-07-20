@@ -23,7 +23,8 @@
      spring-test(测试) 
      junit(测试)
    2.改造类(dao层)继承JdbcDaoSupport(继承该类就不用注入JdbcTemplete了,直接调用getJdbcTemplete方法即可).
-   3.配置xml文件.
+   ---------xml配置--------------------
+  3.配置xml文件.
      <bean id="AcoountService" class="com.cc.spring.tx.service.Impl.AccountServiceImpl">
         <property name="accountDao" ref="accountDao"/>
     </bean>
@@ -55,7 +56,7 @@
              d.timeout:事务的超时行为.默认为-1.永不超时,数值以秒为单位.
              e.rollback-for:指定一个异常,当发生这个异常时,事务回滚,发生其他异常,事务不回滚,默认是任何异常都回滚.
              f.no-rollback-for:指定一个异常,当发生这个异常时,事务不回滚,发生其他异常事务回滚.
-           理解说明:
+           理解说明: 
              a.这里面配置的就相当于invoke方法中一样,attribute-method 暂时自己理解为切点执行失败时回滚的方法.
         3.把DataSourceTransctionManager加到spring容器中.
            注意里面要加上DataSource.
@@ -66,18 +67,14 @@
     </aop:config>
     <tx:advice id="txAdvice" transaction-manager="transctionManager">
         <tx:attributes>
-            <tx:method name="transfer" propagation="REQUIRED" read-only="false"/>     //注意,这个method必须是切入点中的方法,否则事务是不起作用的.
+            <tx:method name="transfer" propagation="REQUIRED" read-only="false"/>
         </tx:attributes>
     </tx:advice>
     <bean id="transctionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
-    
-    注意:
-        1.想要对某个方法进行声明式事务控制.
-          a.切入点中包含该方法.
-          b.method中包含该方法.
-          c.单独运行该方法.
-          也就是说我们想对a方法进行事务控制,当运行a方法时,a方法必须在切入点中,切入后,就会去<tx:attributes>找该方法,找到方法和对应的事务属性时才会进行事务控制.
-        
+
+   --------------------------------注解配置-------------------------------
+   1.也是在xml中配置transctionManager.
+   2.方法上配置注解@Transactional(propagation = Propagation.REQUIRED)即可,超级简单.
 

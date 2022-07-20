@@ -1,0 +1,102 @@
+
+一. Hbase基本操作其实就是shell命令行的操作,首先要进入到客户端命令行
+     bin/hbase shell
+     注意:进入到命令行中,不能直接按backspce,delete删除键,需要按ctrl+backspace.
+
+     提示:1.help可以查看所有命令. 
+             2.当我们不会写一个命令.比如create,不知道后面怎么写,可以直接create,然后回车.会有示例.
+             3.这里的一张表其实也是程序,通过表操作里面的数据	
+     
+
+二.表的操作.
+    1.list.
+       列出所有的表名	.
+       注意:list后面不要加特殊符号,否则就会进去一种模式中,想要退出的话->按 ' 按一下回车,再按 ' 再按一下回车
+    2.create '表名' '列族'
+       创建表.
+       (1) create 'student','info'      #只有一个列族.
+       (2) create 'stu','info1','info2'  #两个列族.
+    3.describe   '表名'
+        查看一张表的详细信息,里面有VERSIONS => '1'信息,这个代表你存储数据的个数,就是version=1,你put了三次
+      最后只保留一条数据,其他的删除.并且这个版本数可以改.
+    4.修改version版本数.
+       修改表student中info列族的version数为3.
+       alter 'student',{NAME=>'info',VERSIONS=>3}
+    5.删除表.
+       删除表分为两步.
+       1.将表下线.
+          disable 'student'  
+       2.删除表.
+          drop 'student'	
+       不下线的表是不能删除的.
+
+     以上操作的表没有指定命名空间,使用默认的default命名空间.
+
+三.命名空间的操作.
+    相对于表的操作命名后面加上_namespace即可.
+    1.list_namespace
+       查看所有的命名空间
+    2.创建命名空间
+       create_namespace 'bigdata'
+    3.删除命名空间.(注意仅仅空的命名空间能够被移除)
+       drop_namespace 'bigdata'
+     4.使用命名空间.
+        create 'bigdata:student','info'
+        此时新建的表student就在bigdata这个命名空间下.
+
+       在删除某个命名空间的表时也要加上.
+         disable 'bigdata:student'
+
+
+四.数据的操作.
+    1.新增数据.
+       put '命名空间:表名',rowkey,'列族:列名',value
+       例:
+          put 'stu',1001,'info1:name','zhangsan'           #没有指定命名空间的使用default空间.
+       用法很多种,我们可以直接在后面指定时间戳.例:  
+          put 'stu',1001,'info1:name','zhangsansan',134343403343
+
+    2.查询数据.
+       (1)scan 
+           扫描全表: scan 'stu'
+           扫描范围:  scan 'stu',{STARTROW=>'1001',STOPROW=>'1002'}    #这个是左闭右开的区间,扫描rowkey在[1001,1002)范围的数据.
+                           scan 'stu',{STARTROW=>'1001'}              #也可以这样写,1001到正无穷.
+           scan还有个特殊功能:查看所有的历史版本的数据,就是当我们对原有数据进行覆盖的时候,还可以查看旧的数据.
+                  scan 'stu', {RAW => true, VERSIONS => 10}   #查看十个版本以内的数据
+                  这个与表所存储的版本数无关,直接返回所有的历史版本,要与 get 'stu2',1001,{COLUMN=>'info:name',VERSIONS=>3}区分开
+       (2)get 
+           具体到rowkey:   get  '表名',rowkey
+           具体到列族:  get '表名',rowkey,'列族' 
+           具体到列名:  get '表名',rowkey,'列族:列名'
+           get可以查看历史版本,但是只能查看该表允许的版本数,也就是该表最终存储,保留的版本数,使用describe命令可以查看
+               举例:
+                   比如stu2表的info列族的version=1.现在列名name总共有两个版本.
+                   get 'stu2',1001,{COLUMN=>'info:name',VERSIONS=>2}  使用该命令查看两个版本,结果只能看到一个.
+                   可以修改stu2表的info列族的version=3,再次查看即可看到.
+               
+         
+    3.删除数据.
+       (1)delete,只能删除具体的一个数据
+            delete '表名',rowkey,'列名' 
+            例:
+               delete 'stu',1001,'info1:name'   
+            这样会只把最新版本的删除,我们也可以指定删除某个时间戳版本的数据,后面再跟上时间戳即可.
+
+       (2)deleteall,可以删除某一个rowkey
+            例:
+                deleteall 'stu',1002       #这个可以一次性把数据全部删掉.
+       (3)直接清空表.
+            truncate '表名'
+
+    4.修改数据.
+       和新增一样一样得,覆盖掉原来的数据.注意时间戳一定是大的.
+      
+    注意:
+        1.相同的roekey代表一条数据(逻辑结构上).所以在想象的时候还要以表格的方式理解.
+
+
+      
+
+       
+       
+    

@@ -1,0 +1,62 @@
+
+一.介绍.
+    kafka是一个高吞吐量的分布式的基于发布/订阅模式的消息队列.内部使用zookeeper进行分布式协调.
+    为什么要使用zookeeper进行分布式协调?
+        因为kafka是集群分布,便于leader选举啊这些,同时,consumer可以利用zk对kafka集群进行监听,知道哪一个broker是否挂掉,是否可用.
+    发布/订阅模式:
+        一对多,一个生产者,多个消费者,生产者将消息发布到topic中,同时被多个消费者消费.消费者主动从队列中拉取消息.
+       消费者主动拉去消息: 
+          优点:消费者可以根据自己处理消息的速度取按需拉取消息.
+          缺点:选要轮询去查看是否有新消息,比较浪费资源.
+
+二.基本概念.
+    broker:一个服务器实例.
+    topic:一个主题.可以看作数据库中的一张表.可以有很多的topic.消息的类别.
+            一个topic可以分成多个partition.因为在实际中,会有很多系统同时调用kafka,必须要加以分类.
+    partition:分区,每个topic可以按特定的分区逻辑分区,类似Mysql的分表.
+                   为什么要分区?
+                        1.充分利用资源,减小力度.kafka可以进行消息的持久化,那么分区后的文件要比分区前的文件要小的多(决定某个分区是否持久化).
+                        2.增强消息的并行处理.
+                             如果不进行分区,就默认只有一个分区,而kafka中规定一个分区的消息只会由组内的一个consumer消费(就是每个组都可以消费某个分区的消息,同时在组内只会有一个消费者去消费一个分区的消息).
+                         那么如果有多个分区,这个消费者组就可以同时对所有分区消息进行消费,从而增强并行处理消息的能力.
+                      
+    producer:生产者
+    consumer:消费者
+    consumer group: 一个消费者组对应一个topic,如果一个组的消费者数目大于分区数目,就会浪费资源,完全没有必要.因为一个分区的消息只能由组内的一个消费者消费.
+                                消费者组,相同的groupid组成一个组.kafka独特的逻辑. 
+                               每一个消费者都有一个groupid,相同groupid的消费者会在一个组里面,当一个组消费一个分区消息的时候,会在这个组里面做一次负载均衡,也就是组里面负载少的去消费,处理这些消息.
+                               
+    offset:一个消息在消息流中的偏移量.
+              类似Mysql中的自增id.以此来保证有序.
+
+     说明:topic是逻辑上的概念,partition是物理上的概念,每一个partition对应一个log文件,该log存储的就是producer生产的数据.
+
+
+
+三.消息的生产和消费.
+    1.分区是在producer端进行的.生产者指定分区函数,这样不同的消息就到了不同的分区上去.
+        如果不指定key,那么消息会自动到当前topic的某个partition中,指定了key之后,就会到匹配的partition中.
+   
+    2.只能保证一个分区内的数据是有序的.如果必须要做到整体有序,就不能分区.分区根据你的场景去决定.
+
+    3.写入到kafka的消息是不能被更改,只能再发送一遍,这个时候offset就会被变化.
+
+    4. 一个broker可以有多个topic,一个topic可以指定多个partition.那么在不同broker中的同一个topic,partition中,会选举出一个leader,其他的作为follower.
+       leader进行数据的读写,follower仅仅备份数据,也就是说一个broker可以在一个分区内作为leader,也可以在另一个分区作为follwer.(如果不理解可以看一下kafka核心组成那个图)
+       这样的原因是什么?即使一个broker挡掉之后,一个topic,甚至一个分区都仍旧可用.
+   
+       说明:一个broker有多个分区,同一个分区指在多个broker中有相同主题,相同名称的分区集合.
+      举例:
+           broker0:
+              topicA->partition0,            topicA->partation1
+
+          
+           broker1:
+              topicA->partition0,            topicA->partation1
+    
+         那么在 topicA->partition0中,broker0作为leader,broker1作为follower,    在 topicA->partition1中,broker0作为follower,broker1作为leader.,
+
+    5. kafka的消息是存在磁盘上的,默认可以存储七天. 
+
+          
+ 

@@ -1,0 +1,47 @@
+1.目前问题.
+   在一个大型得分布式微服务项目中,会有很多微服务子项目,而这些子项目又有自己得开发,测试,生产环境配置,怎么样对其进行管理呢?
+   
+
+2.Nacos得解决方案.
+  在nacos中,有NameSpace+GroupID+DataID 三个层级来确定唯一一个配置信息,就像Java里面得项目名+包名+类名.
+  这样做有什么好处?
+      可以很清楚得确定唯一一个配置文件
+	  层级关系清楚方便管理,就像一个公司要分成不同得部门,部门中又分为不同得组一样.
+	  
+  默认情况:
+     NameSpace=public,Group=DEFAULT_GROUP,
+	 所以在我们之前没有配置NameSpace和Group得情况下也能够正常进行访问.
+	 
+	 
+3.举例.
+  这里我们假设是一个电商分布式项目,那么将NameSpace设为taobao,Group设置为购物车部门,也就是Shopping,DataID就是具体得项目名,这里是nacos-config-client-info.yaml
+  
+  具体步骤:
+    (1)首先在Nacos中设置对应得NameSpace和Group
+	(2)bootStrap.yml中配置.
+	   server:
+		  port: 3377
+
+		spring:
+		  application:
+			name: nacos-config-client
+		  cloud:
+			nacos:
+			  discovery:
+				server-addr: localhost:8848 #服务注册中心地址
+			  config:
+				server-addr: localhost:8848 #配置中心地址
+				file-extension: yaml #指定yaml格式的配置
+				namespace: 0fb89d41-836b-40a6-98a8-7577f6d5c32c
+				group: Shopping
+				
+	(3)application.yml中配置.
+	   spring:
+		  profiles:
+			active: info
+			
+	然后在应用中就可以nacos-config-client-info.yaml中对应得文件.
+
+
+
+	 

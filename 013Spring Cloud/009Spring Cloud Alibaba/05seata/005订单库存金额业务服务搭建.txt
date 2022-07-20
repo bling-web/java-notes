@@ -1,0 +1,213 @@
+一.订单微服务.
+   1.服务名称seata-order-service2001
+   2.pom
+    <dependencies>
+        <!--nacos-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!--seata-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>seata-all</artifactId>
+                    <groupId>io.seata</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-all</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+        <!--feign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!--web-actuator-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--mysql-druid-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.37</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+    3.yml.
+	  server:
+		  port: 2001
+
+		spring:
+		  application:
+			name: seata-order-service
+		  cloud:
+			alibaba:
+			  seata:
+				#自定义事务组名称需要与seata-server中的对应
+				tx-service-group: tx_group
+			nacos:
+			  discovery:
+				server-addr: localhost:8848
+		  datasource:
+			driver-class-name: com.mysql.jdbc.Driver
+			url: jdbc:mysql://localhost:3306/seata_order
+			username: root
+			password: root
+
+		#关闭feign中的hystrix支持
+		feign:
+		  hystrix:
+			enabled: false
+
+		logging:
+		  level:
+			io:
+			  seata: info
+
+		mybatis:
+		  mapperLocations: classpath:mapper/*.xml
+		  
+	4.启动类.
+	  @SpringBootApplication(exclude = DataSourceAutoConfiguration.class) //排除springboot对数据源的自动创建
+		@EnableFeignClients
+		@EnableDiscoveryClient
+		public class SeataOrderApplication {
+			public static void main(String[] args) {
+				SpringApplication.run(SeataOrderApplication.class, args);
+			}
+		}
+	5.业务类.
+	  这里只写比较生疏的,具体的业务逻辑就不写了.
+	  配置类:
+			  
+		/**
+		 * 整合seata进行数据源指定配置
+		 */
+		@Configuration
+		//一定要加这个注解,让spring帮忙去创建对应类的代理对象,spring会将该路径下加了Mapper注解的类都创建一个代理对象
+		@MapperScan("com.atguige.springcloud.dao")
+		public class DataSourceConfig {
+
+			@Value("${mybatis.mapperLocations}")
+			private String mapperAddr;
+
+			/**
+			 * 不适用springboot自动创建的dataSource
+			 * 使用自己的,以便后面和seata整合,其实主要是为了满足事务的需要
+			 * @return
+			 */
+			@Bean
+			//这里会自动去寻找对应前缀的配置信息,注入到对象中,原理其实和依赖注入一样的
+			@ConfigurationProperties(prefix = "spring.datasource")
+			public DataSource duildDataSource(){
+				return new DruidDataSource();
+			}
+			/**
+			 * 注入代理类,因为SqlSessionFactory需要使用
+			 * @param dataSource
+			 * @return
+			 */
+			@Bean
+			public DataSourceProxy dataSourceProxy(DataSource dataSource){
+				return  new DataSourceProxy(dataSource);
+			}
+
+			@Bean
+			public SqlSessionFactory sqlSessionFactory(DataSourceProxy dataSourceProxy) throws Exception {
+				SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+				//使用自定义的代理数据源
+				sqlSessionFactoryBean.setDataSource(dataSourceProxy);
+				//指定解析mapper的文件
+				sqlSessionFactoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(mapperAddr));
+				//指定事务工厂
+				sqlSessionFactoryBean.setTransactionFactory(new SpringManagedTransactionFactory());
+				return sqlSessionFactoryBean.getObject();
+			}
+		}
+	  最主要的业务逻辑类:
+	    @Service
+		@Slf4j
+		/**
+		 * 创建订单
+		 * 扣减库存 单独的微服务
+		 * 扣除金额 单独的微服务
+		 * 修改订单状态
+		 */
+		public class OrderServiceImpl implements OrderService {
+
+			@Resource
+			private OrderDao orderDao;
+
+			@Resource
+			private StorageService storageService;
+
+			@Resource
+			private AccountService accountService;
+
+			@Override
+			/**
+			 * name 全局事务名称,保证唯一
+			 * rollbackFor 发生什么类型的异常进行回滚
+			 
+			 */
+			@GlobalTransactional(name = "create-order",rollbackFor = Exception.class)    #需要分布式事务加上该注解即可.
+			public void dealOrder(Order order) {
+				//创建订单
+				log.info("开始创建订单..."+order.getUserId());
+				orderDao.create(order);
+
+				//扣减库存
+				log.info("开始扣减库存..."+order.getProductId());
+				storageService.decrease(order.getProductId(),order.getCount());
+
+
+		//        //扣减金额
+				log.info("开始扣减金额..."+order.getUserId());
+				accountService.decreaseAmount(order.getUserId(),order.getMoney());
+
+				//修改订单状态
+				log.info("开始修改订单状态..."+order.getUserId());
+				orderDao.update(order.getUserId(),0);
+
+				log.info("订单处理完毕");
+			}
+		}
+		
+
+    seata-order-service2001 只是订单微服务,还有库存微服务seata-storage-service2002,金额微服务seata-account-service2003
+	
+总结:
+   如果要实现分布式事务,直选要加个注解即可@GlobalTransactional,当然只支持ACID 事务的关系型数据库。
+
+

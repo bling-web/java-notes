@@ -12,6 +12,8 @@
         问:这个人查询到的是100还是200?
      答:是200;在某一时刻查询的就是该时刻数据库的状态.也就是一致性.
         原理好像是有个buffer,存储旧的数值.
+
+        
         
        
    3.隔离性
@@ -23,18 +25,27 @@
 二.事务的隔离级别:
    1.事务在操作时的理想状态是:所有的事务之间保持距离,互补影响.但是因为并发操作,多个用户同时访问同一个数据.可能引发以下问题:
       1.脏读:一个事务读取了另一个事务尚未提交的数据.
-      2.不可重复读:一个事务中两次读取的数据内容不一致.这是update引发的问题.(要求多次读取时内容一致)  
-      3.幻读:一个事务中两次读取的数据的数量不一致.这是insert或delete引发的问题.(要求多次读取数量一致)
+      2.不可重复读:一个事务中两次读取的数据内容不一致.这是update和delete引发的问题.(要求多次读取时内容一致)  
+      3.幻读:一个事务中两次读取的数据的数量不一致.这是insert引发的问题.(要求多次读取数量一致)
+
+      事务的隔离级别都是针对于读来说明的.
 
    2.四种隔离级别:
-          名称                隔离级别                脏读                  不可重复读            幻读
-        读未提交         1.read uncommitted           是                       是                 是
-        读已提交         2.read committed             否                       是                 是
-        可重复读         3.repeatable read            否                       否                 是
-        串行话           4.serializable               否                       否                 否
+          名称                隔离级别                        脏读                  不可重复读            幻读
+        读未提交         read uncommitted           是                       是                        是
+        读已提交         read committed               否                       是                        是
+        可重复读         repeatable read               否                       否                         是
+        串行化            serializable                       否                       否                         否
   
      说明:1.四种隔离状态从上到下级别依次提高.安全性越高,但是级别越高,数据库性能越低.
           2.mysql的默认隔离级别是可重复读.(有可能发生幻读的情况,不可能发生脏读和不可重复读的问题)
 
    3.查询隔离级别:select @@tx_isolation;
      设置隔离级别:set global transaction isolation level 级别字符串.(一般不要去改)
+  
+    set global transaction isolation level REPEATABLE READ;
+    set global transaction isolation level  READ COMMITTED;
+    set global transaction isolation level READ UNCOMMITTED;
+    set global transaction isolation level SERIALIZABLE;
+
+    注意:设置隔离级别需要通过命令行的方式才可以,并且设置后重启客户端才能看到

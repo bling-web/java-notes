@@ -1,0 +1,29 @@
+一.服务配置自启动.
+    窗口执行:
+           sc create SVNService binpath= "C:\Program Files\VisualSVN Server\bin\svnserve.exe --service -r E:\javaPrograming\SvnRepo\app" start=auto
+    可能会拒绝访问:根据如下步骤解决:
+          运行-->输入regedit-->依次找到HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA
+          将EnableLUA的值改为0，最后重启电脑，再次操作，即可。
+          对EnableLUA、UAC简单了解了些：
+             EnableLUA 指定当程序尝试对计算机进行更改时是否将 Windows 用户帐户控制 (UAC) 通知用户。
+              值：
+                  true：当程序尝试对计算机进行更改时，Windows 会通知用户。这是默认值。
+                  false：当程序尝试安装软件或对计算机进行更改时，Windows 不会通知用户。
+                  用户帐户控制（User Account Control，简写作UAC)是微软公司在其Windows Vista及更高版本操作系统中采用的一种控制机制。其原理是通知用户是否对应用程序使用硬盘驱动器和系统文件授权，以达到帮助阻止恶意程序（有时也称为“恶意软件”）损坏系统的效果。
+                  很明显将EnableLUA的值设置为0，是关闭了UAC，只是在当程序尝试安装软件或对计算机进行更改时，Windows 不会通知用户了。（那些文章说将EnableLUA的值改为0，这样才是真正的管理员？？？不懂为什么这样才是真正的管理员，但是的确不用管理员身份运行也可以操作了）
+           关闭UAC功能，如果是以管理员登录,则所有操作都将直接运行而不会有任何通知,包括病毒或木马对系统进行的修改。所以为了系统安全，操作成功后，我们一定要再次将EnableLUA的值改为1，最后重启电脑！！！
+      查看是否启动成功:
+          任务管理器-->服务-->SVNService
+
+
+二.批处理文件.
+     在实际工作中,我们可以将命令封装到.bat文件中,去控制服务的开启与关闭.封装之后直接双击即可.
+     比如将SVNService的开启与关闭封装:
+        1.开启服务.
+           创建.bat文件,里面写入net start SVNService
+        2.关闭服务.
+           创建.bat文件,里面写入net stop SVNService
+        3.删除服务.
+           创建.bat文件,里面写入sc delete SVNService
+     如果不能执行成功,大概率还是拒绝访问的问题.
+         

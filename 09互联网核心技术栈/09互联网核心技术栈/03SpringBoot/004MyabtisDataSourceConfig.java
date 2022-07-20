@@ -16,10 +16,11 @@ import javax.annotation.Resource;
 @Configuration
 public class MyabtisDataSourceConfig {
     @Resource
-     private DruidDataSource dataSource;
-     private SqlSessionTemplate sqlSessionTemplate;
+    private DruidDataSource dataSource;
+    private SqlSessionTemplate sqlSessionTemplate;
+
     @Bean(name = "sqlSessionFactory")
-    public SqlSessionFactory sqlSessionFactory(){
+    public SqlSessionFactory sqlSessionFactory() {
         //这个类可产生SqlSessionFactory对象
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         //把设置好的数据库连接池传进去
@@ -31,9 +32,9 @@ public class MyabtisDataSourceConfig {
         //这个配置其实也可以在application.properties中配置.
         sqlSessionFactoryBean.setMapperLocations(patternResolver.getResources("classpath:com/bfxy/springboot/mapping/*.xml"));
 
-        SqlSessionFactory factory=null;
+        SqlSessionFactory factory = null;
         try {
-             factory= sqlSessionFactoryBean.getObject();
+            factory = sqlSessionFactoryBean.getObject();
             //设置sqlSessionFactory开启缓存.
             factory.getConfiguration().setCacheEnabled(true);
             sqlSessionTemplate = new SqlSessionTemplate(factory);
@@ -46,7 +47,7 @@ public class MyabtisDataSourceConfig {
 
     @Bean
     //返回SqlSession的一个模板对象.
-    public SqlSessionTemplate sqlSessionTemplate(){
+    public SqlSessionTemplate sqlSessionTemplate() {
         return sqlSessionTemplate;
     }
 }

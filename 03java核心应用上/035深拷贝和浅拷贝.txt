@@ -1,0 +1,101 @@
+一.浅拷贝.
+   1.含义.
+         对某个对象实现全部变量的拷贝.对于基本类型不会相互影响,对于引用类型则仅仅拷贝的是地址.
+         换一句话说,就是如果改变引用类型的值,那么原有对象和拷贝对象该值都会变,会相互影响.
+   2.实现方式.
+        要拷贝的对象实现Cloneable接口,重写clone()方法.
+   3.示例
+
+public class School implements Cloneable{
+    private Student student;     //该类就是一个普通的student类,含有name属性
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        //实现父类的clone方法
+        School school = (School) super.clone();
+        return school;
+    }
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+        School School = new School();
+        Student student = new Student();
+        School.setStudent(student);
+        School clone = (School) School.clone();
+
+
+        student.setName("来静");         //此时改变原有对象的值,则原有对象和拷贝对象都发生改变.
+        System.out.println(School.getStudent().getName());   
+        System.out.println(clone.getStudent().getName());
+
+    }
+
+
+二.深拷贝.
+    1.含义.
+      对某个对象实现全部变量的拷贝.原有对象和拷贝对象不会相互影响,因为对于引用变量复制的是值,而不仅仅是地址.
+    2.实现方式.
+       (1).要拷贝的对象实现Cloneable接口,重写clone()方法.
+       (2).同时,该对象所有的的引用类型均实现Cloneable接口,重写clone()方法.
+       (3).在要拷贝的对象中的clone方法中,依次执行主对象和引用对象的方法并进行赋值.
+    3.示例.
+
+public class School implements Cloneable{
+    private Student student;
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        //实现父类的clone方法
+        School school = (School) super.clone();
+        //以此实现自类的克隆方法并进行赋值,从而实现深拷贝
+        school.student=(Student)student.clone();
+        return school;
+    }
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+        School School = new School();
+        Student student = new Student();
+        School.setStudent(student);
+        School clone = (School) School.clone();
+
+
+        student.setName("来静");      //此时改变值,则只有原因对象发生改变.
+        System.out.println(School.getStudent().getName());
+        System.out.println(clone.getStudent().getName());
+
+    }
+
+拷贝对象内部引用.
+public class Student implements Cloneable{
+    
+        private String name="王亮亮";
+    
+        public String getName() {
+            return name;
+        }
+    
+        public void setName(String name) {
+            this.name = name;
+        }
+    
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
+    }
+ 

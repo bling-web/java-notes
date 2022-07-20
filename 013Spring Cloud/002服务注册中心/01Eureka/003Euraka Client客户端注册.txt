@@ -1,0 +1,27 @@
+
+  在Euraka中,所有的消费者和服务者都是Euraka Client端,所以,我们需要将以前的payment80001和order80都改造成Euraka Client端.
+  
+  
+一.先将payment80001改造成客户端.
+   1.改pom,增加依赖.
+      <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+   2.改yml.增加配置.
+		eureka:
+		  client:
+			register-with-eureka: true         //是否将该服务注册到注册中心.
+			fetchRegistry: true
+			service-url:
+			  defaultZone: http://localhost:7001/eureka
+   3.增加启动注解,在启动类上增加以下注解即可.
+     @EnableEurekaClient
+   
+
+
+二.将order80该造成客户端的步骤是一样的.
+   yml中需要增加应用名称,payment80001 也需要,只不过以前已经加过了
+spring:
+  application:
+    name: cloud-order-service   //这个其实就是注册到注册中心的服务的别名.

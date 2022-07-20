@@ -71,6 +71,10 @@
       3.筛选出总成绩之和大于260的组, HAVING SUM(SUM)>260.
       4.按总成绩之和进行降序排序.    ORDER BY SUM('总成绩') DESC.
       5.只显示排名前2的分组.         LIMIT 0,2
+
+
+
+注意.limit一般是最后的,比如order就必须写在limit前面.
      
       
    

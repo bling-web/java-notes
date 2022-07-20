@@ -1,0 +1,5 @@
+1.编译项目可以按blibli上的视频一起跟着来.
+2.如果要将某个jar包换成自己项目中的jar包.可以这样做.
+   (1)打开External Libraries找到需要替换的jar包.
+   (2)右键打开Open Library Setting 
+   (3)将Classes下的jar包替换成对应的jar包,同时将Sources指向该模块的根目录(这样才能在点进方法时,进入的时自己的方法).

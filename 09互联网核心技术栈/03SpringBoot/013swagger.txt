@@ -1,0 +1,35 @@
+一.简介.
+    利用swagger可以直接在线测试,访问localhost:8080/swagger-ui.html就可以在线测试我们的项目,他可以在界面上显示我们有哪些方法,请求方式是什么.
+    还可以利用swagger衍生出来的工具直接生成接口文档.
+
+
+二.使用步骤.
+    1.maven中引入依赖.
+       <dependency>
+	<groupId>io.springfox</groupId>
+	<artifactId>springfox-swagger2</artifactId>
+	<version>2.9.2</version>
+      </dependency>
+     <dependency>
+	<groupId>io.springfox</groupId>
+	<artifactId>springfox-swagger-ui</artifactId>
+	<version>2.9.2</version>
+     </dependency>
+  
+   2.新建一个config配置类,写如下内容.
+     @Configuration
+     @EnableSwagger2
+     public class SwaggerConfig {
+	@Bean
+	public Docket ccaApi() {
+		return new Docket(DocumentationType.SWAGGER_2)//
+				.genericModelSubstitutes(DeferredResult.class)//
+				.useDefaultResponseMessages(false)//
+				.forCodeGeneration(true)//
+				.pathMapping("/")//
+				.select()//
+				.paths(PathSelectors.any())// 过滤的接口
+				.build();
+	}
+     }
+    3.然后启动项目即可,访问localhost:8080/swagger-ui.html页面即可进行测试.

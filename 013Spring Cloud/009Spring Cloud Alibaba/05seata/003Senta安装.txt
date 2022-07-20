@@ -1,0 +1,30 @@
+1.下载http://seata.io/zh-cn/
+   这里下载的是0.9.0版本seata-server-0.9.0.zip
+2.解压到指定目录并修改conf目录下的file.conf文件.
+  (1)修改的时候注意先备份一下
+  (2)修改测试组名称
+	vgroup_mapping.my_test_tx_group = "tx_group"
+  (3)修改存储模式
+	 mode = "db"
+     然后修改数据库连接配置
+	 url = "jdbc:mysql://127.0.0.1:3306/seata"
+	 user = "root"
+     password = "root"
+3.在自己的数据库建立seata库.
+4.在seata库中建立相关的表.
+  建表db_store.sql在\seata-server-0.9.0\seata\conf目录里面
+5.修改conf目录下registry.conf文件(注意先备份).  
+  (1)指明注册中心为nacos.
+     type = "nacos"
+  (2)修改nacos的连接信息
+	nacos {
+     serverAddr = "localhost:8848"
+     namespace = ""
+     cluster = "default"
+    }
+6.修改seata启动参数
+  默认的太大了2g,改成1g
+  -server -Xmx1024m -Xms1024m -Xmn512m
+6.启动测试.
+  (1)先启动nacos
+  (2)再启动senta

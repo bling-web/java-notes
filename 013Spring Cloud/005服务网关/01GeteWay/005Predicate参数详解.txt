@@ -1,0 +1,86 @@
+一.Pedicate断言也就是进行匹配,匹配到则转到对应的服务.
+二.在之前我们之使用过path功能,也就是匹配路径.其实还有很多参数.可以指定多个参数,多个参数之间的逻辑为and.
+   1.Afetr
+     在某个时间之后访问才可以.
+	 样例:
+	  routes:
+        - id: payment_routh #路由的ID，没有固定规则但要求唯一，建议配合服务名
+          uri: lb://CLOUD-PAYMENT-SERVICE   #匹配后提供服务的路由地址
+          predicates:
+            - Path=/payment/get/**   #断言,路径相匹配的进行路由
+            - After=2021-10-30T17:32:15.574+08:00[Asia/Shanghai]    在当前时间后访问才可以,否则就是Not Found
+     测试:
+	    curl localhost:9527/payment/get/01
+		
+    此外,还有Bofore,Between也是类似的用法和功能.
+	
+	
+	2.Cookie
+	  访问的请求Cookie中必须包含指定的key,value.
+	  样例:
+	  routes:
+        - id: payment_routh #路由的ID，没有固定规则但要求唯一，建议配合服务名
+          uri: lb://CLOUD-PAYMENT-SERVICE   #匹配后提供服务的路由地址
+          predicates:
+            - Path=/payment/get/**   #断言,路径相匹配的进行路由
+            - After=2021-10-30T17:32:15.574+08:00[Asia/Shanghai]
+            - Cookie=username,wll     
+		
+		上面指定的规则就是cookie中必须包含username=wll.
+		
+	  测试:
+	    curl localhost:9527/payment/get/01 --cookie "username=wll"
+		
+	3.Header
+	  访问的请求头中必须包含指定的信息
+	  样例:
+	   routes:
+        - id: payment_routh #路由的ID，没有固定规则但要求唯一，建议配合服务名
+          uri: lb://CLOUD-PAYMENT-SERVICE   #匹配后提供服务的路由地址
+          predicates:
+            - Path=/payment/get/**   #断言,路径相匹配的进行路由
+            - After=2021-10-30T17:32:15.574+08:00[Asia/Shanghai]
+            - Header=Request,\d+
+			
+		上面指定的规则就是请求头中必须包含Request,且Request对应的数字必须为全数字.
+		
+	   测试:
+	      curl localhost:9527/payment/get/01 -H "Request:13"
+		  
+	4.Host
+	  访问的请求头如果包含Host,则host必须匹配某些规则.
+	  样例:
+	   routes:
+        - id: payment_routh #路由的ID，没有固定规则但要求唯一，建议配合服务名
+          uri: lb://CLOUD-PAYMENT-SERVICE   #匹配后提供服务的路由地址
+          predicates:
+            - Path=/payment/get/**   #断言,路径相匹配的进行路由
+            - After=2021-10-30T17:32:15.574+08:00[Asia/Shanghai]
+            - Host=*.somehost.*,*.otherhost.*
+	  
+	    host后面可以加一系列的域名匹配,用逗号分隔.只有加进来的域名才可以访问.
+		
+	测试:
+	    curl localhost:9527/payment/get/01 -H "Host:www.somehost.com"
+		
+	5.Method.
+	  限制请求方法
+	  样例:
+	      routes:
+			- id: payment_routh #路由的ID，没有固定规则但要求唯一，建议配合服务名
+			  uri: lb://CLOUD-PAYMENT-SERVICE   #匹配后提供服务的路由地址
+			  predicates:
+				- Path=/payment/get/**   #断言,路径相匹配的进行路由
+				- After=2021-10-30T17:32:15.574+08:00[Asia/Shanghai]
+				- Method=GET
+				
+	测试:
+	    curl localhost:9527/payment/get/01  
+		默认请求方式就是Get
+		
+	如果是post方式,为 - Method=Post
+	
+	后面还有query等参数,这里不再叙述需要的话看脑图中笔记
+	- Query=username, \d+ #要有参数名称并且是正整数才能路由
+		
+		

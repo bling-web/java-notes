@@ -8,6 +8,10 @@
    其实,以上也可以通过document方法获取.但是选择器可以在方法参数里写一些直接的结点包含关系.更方便.
 
        例:document.select("#001 age")     //获取id是001的元素下的age大小.
+           这个方法可以用绝对路径直接获取,获取某个网页的一个元素.
+                Document document = Jsoup.connect("http://10.202.32.15/medicine/medicine/webNewsList.do").get();
+	System.out.println(document.select("body > table > tbody > tr:nth-child(2) > td:nth-child(1)").text());
+           获取一个元素的选择器直接copy  elector即可.
 
    说明:E F: E元素中的所有F子元素.  
         E>F:E元素中的直接F子元素.

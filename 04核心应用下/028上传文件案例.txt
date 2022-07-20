@@ -89,7 +89,7 @@ public class Client {
             printWriter= new PrintWriter(socket.getOutputStream());
             String temp=null;
             while((temp=bufferedReader.readLine())!=null){
-                printWriter.println(temp);                   //该语句就是发送数据到服务器端
+                printWriter.println(temp);
                 printWriter.flush();
             }
 
@@ -129,10 +129,4 @@ public class Client {
         }
     }
 }
-
-
-总结:
-   1.服务端new ServerSorket对象,然后用accept()得到倾听sorket对象.开启等待接受数据.
-   2.客户端new Socket对象,然后将从本地读出来的数据,利用printWriter对象发送给服务端.
-   3.服务端接受数据后,再写到本地另一个文件中,完成文件上传.注意资源的关闭.
 

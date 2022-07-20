@@ -1,0 +1,32 @@
+1.Feign提供了日志打印功能,我们可以通过配置来控制日志级别,从而了解Feign中调用http的细节.
+2.Feign的日志级别.
+  (1)NONE:默认的,不显示任何日志
+  (2)BASIC:仅记录请求方法,URL,响应状态码及时间
+  (3)HEADERS:除了BASIC中的信息外,还包含了请求和响应的头信息.
+  (4)FULL:除了HEADERS中的信息外,还定义了请求和响应的正文和元数据.
+3.配置开启日志.
+  (1)yam文件中开启日志.
+     logging:
+	   level:
+		 com.atguigu.springcloud.service.PaymentFeignService: debug     //这个就是需要监控的接口类,真正调用微服务的接口.
+  (2)注入配置类到spring中.
+     package com.atguigu.springcloud.config;
+
+	import feign.Logger;
+	import org.springframework.context.annotation.Bean;
+	import org.springframework.context.annotation.Configuration;
+
+	@Configuration
+	public class FeignConfig {
+
+		@Bean
+		Logger.Level feignLoggerLevel(){
+			return Logger.Level.FULL;
+		}
+	}
+	 
+	 
+
+
+	 
+

@@ -1,0 +1,212 @@
+一.数据结构.
+    redis有五种数据结构(对外),string,hash,list,set,zset
+    但其实每一种数据结构都有两种或两种以上的内部编码,根据存储内容的不同,选择不同的编码.
+    例:
+        当string存储的是一个数字是,会用int编码,当存储的是一个小字符串时,用embstr编码.
+     可以使用命令查看内部编码: object encoding [key名称]
+                  查看外部数据结构: type [key名称 ]
+     那这样设计的优点是什么?
+        a.当开发出更优秀的内部编码时,可以立即进行更新,但是对外结构还可以保持不变.我们的操作命令也可以保持不变.
+        b.根据不同的数据特点,使用不同的内部编码,更好提高效率.在不同的场景下发挥不同的优势.
+ 一.string
+     String是二进制的,可以存储序列化对象,图片,字符串,数值等
+     String内部编码可以自由,自动进行转换.
+     1.分类:
+         a.raw :长的字符串, 存储长度大于44个字节.
+         b.int :数值,这里的int是8个字节
+         c.emstr:短的字符串
+      2.设置和获取.
+         a.set和get方法.
+            设置值:set key value   获取值:get key    删除值:del key
+         b.setnx(not exists)
+            如果不存在对应的key,则进行设置,否则不设置.
+         c.setex(expired过期的,设置过期时间)
+            setex key 10  value //设置设个key的有效期为10秒,10秒后自动过期.
+         d.setrange
+            setrange key index value (index代表从第几位开始替换)
+            如果之前没有设置过这个值,直接进行替换,那它前面的空值会是\x00,每一位都是这个.暂时不知道为什么.
+         e.mset,mget一次性设置和获取多个值的方法.
+            mset key1 value1 key2 value2...
+            mget key1 key2
+         f. getset
+            获取之前的值并设置新值,针对某一个key
+            set key oldValue
+            getset key newValue  
+         g.各种方法.
+             incr [key] 和decr [key] ,对某一个值进行递增和递减
+             incrby [key] [num]和 decrby [key] [num]:对某个值进行指定长度的增加和减少
+             append [key] [name]:对某一个字符串进行追加
+             strlen [key] :获取某个字符串的长度
+二.hash
+    1.介绍:
+       Hash类型是String类型的field和value的映射表,或者说一个String集合,一个field和value相当于一个entry,.一个key可以对应很多个entry,它特别适合存储对象,相比较而言,将一个对象类型存储在hash类型里要比在String类型里
+       占用更少的内存空间,并方便存取整个对象.这里的key代表一个哈希表.
+       ziplist方式可以自动转换成hashtable,如果转成了hashtable,就不能再转回来.
+    2.分类
+       a.hashtable
+          当哈希元素无法满足使用ziplist的条件时,会使用hashtable内部编码.读写效率会下降.但是读写时间复杂度仍为O(1).
+       b.ziplist
+          当哈希字段field个数小于配置文件中的hash-max-ziplist-entries 的个数,默认是512个,并且单个entries的value都小于hash-max-ziplist-value(默认64字节)时,选用ziplist内部编码. 
+          ziplist将每一项存放在地址连续的存储空间内,整个ziplist存放在一块内存中,比较节省内存.不会有内存碎片.
+    3.常用命令.
+       a.hset和hget
+          hset key field value 存储一个哈希元素
+          hget key field          获取一个哈希元素(一个key可以对应很多个field) 
+       b.hmset和hmget
+          hmset key field value field value  一次存储多个键值对.
+          hmget key field1 field2                一次获取多个值.
+       c.hsetnx.
+          如果不存在则设置.存在与否针对field而言.
+       d.hincrby.
+          hincrby key  field  num  增加某一个值.(新版本中没有hdecrby命令,好像是因为底层更改为quickList)
+       e.hexists
+         是否存在某一个user field,不存在返回0,存在返回1.
+       f.hlen
+          hlen key 返回该键对应的所有entries的数目.
+       g.hdel 
+          hdel key field 删除指定的hash中的field.
+       h.hkeys
+          hkeys key 返回该hash中field.
+       i.hvals
+         hvals key  返回该hash所有的value
+       g.hgetall
+          hgetall 返回该hash中所有的key和value.
+         
+          
+三.list
+    1.介绍.
+       list类型是一个链表结构的集合,其主要功能有push,pop.获取元素等.更详细的说,list类型是一个双向链表的结构,我们可以通过相关操作进行集合的头部或者尾部添加删除元素.
+       list的设计非常简单精巧,既可以作为栈,又可以作为队列.满足绝大多数需求.这里的key代表一个链表或者栈.
+    2.分类.
+       a.linkedlist
+          其他不满足使用ziplist的条件时,使用linkedlist.
+       b.ziplist
+          当链表的value个数小于配置文件中的hash-max-ziplist-entries 的个数,默认是512个,并且单个value都小于hash-max-ziplist-value(默认64字节)时,选用ziplist内部编码. 
+       说明:其实在新版本中ziplist和linkedlist已经被quickList代替.
+    3.常用命令.
+       a.lpush和rpush(l可以看成左,r可以看成右)
+          lpush key value1 value2 ...  从头部加入元素.
+          rpush key value1 value2 ... 从尾部加入元素.
+       b.lpop和rpop
+          lpop key 从头部弹出并返回元素
+          rpop key 从尾部弹出并返回元素
+          说明:从左边进,从右边出就可以实现队列的功能,先进先出.
+                  从一边进,再从同一边出,就可以实现栈的功能,先进后出.
+       b.lrange(查)
+          lrange key start end 输出链表key的从startd,end的元素, 如果是0 ,-1表示全部输出.
+       c.linsert
+          linsert key before element newelement  在某个元素前插入新元素.
+       d.lset
+          lset key index value 设置index位置的list元素的值为value.
+       e.lrem(删)
+          lrem key count value 从key的列表里移除前count次出现值为value的元素.
+          前count有下面含义:
+              count>0:从头部开始计数.
+              count<0:从尾部开始计数.
+              count=0:删除全部值为value的元素.
+       f.ltrim(trim:修剪)
+         ltrim key start stop 就像裁照片一样,留下你想要的部分.start和stop都是从1开始计数.
+       g.rpoplpush(右边出左边进)
+          rpoplpush source destination 原子性的将source队列末尾(最右边)的元素移出,并加入到destination队列的头部(最左边)
+       h.lindex 
+          lindex key index 返回队列的第index位置上的值.
+       i,len
+         llen key 返回队列的长度.
+
+四.set(集合)
+    1.介绍
+       set集合是string类型的无序集合,set是通过inset或者hashtable实现的,对集合我们可以取并集,交集,差集.
+       内部编码只能由intset转换成hashtable,不能进行逆转换.
+    2.分类.  
+       a.hashtable
+          当不满足inset使用条件时,使用hashtable编码方式.
+       b.inset
+          当元素的类型都是整数的时候,并且元素个数小于512(默认配置)时,使用inset内部编码方式.
+    3.常用命令.
+       a.sadd
+          sadd key element1 element2 ...   增加若干个元素.
+          set集合中不允许重复元素,如果有重复元素则自动忽略.
+       b.smenbers
+          smembers key 查看该集合所有的元素.
+       c.srem
+          srem key element1 element2 ... 移除指定的元素.
+          如果指定的元素不是该集合中,则忽略该元素,或者该集合不存在,则被视为一个空的元素.均返回0.
+       d.spop
+          spop key [count]  随机删除并返回count个元素.(count>0),通常该命令被用于抽奖.
+       e.sdiff(差集)
+          sdiff key [key...]  返回一个集合与给定集合的差集的元素.,如果某一个集合不存在,则视为一个空的集合.可以连续求差集.
+         sdiffstore
+         sdiffstore destination key [key..] 类似于sdiff,不同的是不返回结果集,而是将结果集存放在destination集合中,如果destination已经存在,会覆盖原有的内容.
+       f.sinter(交集,interior:n内部)
+          sinter key [key...] 返回第一个集合在指定集合的交集.
+          sinterstore destination key [key...]  类似于sinterstore,不同的是不返回结果集,而是将结果集存放在destination集合中,如果destination已经存在,会覆盖原有的内容.
+
+         注意:两个集合做集合操作,则必须在一个槽点内,
+
+       g.sunion(并集,union:并集)
+          sunion key [key...] 返回指定集合的并集.
+          sunionstore destination key [key...] 将指定集合的并集存储在destination集合中,如果destination存在,会覆盖原有内容.
+       h.smove 
+          smove source destination member 将source集合中member元素移动到destination集合中,(每次只能移动一个)
+          在其他的客户端,在特定的时间这些元素将会作为source或者destination集合的成员出现.(暂时不理解这句话)
+       i.scard(返回集合的个数)
+         scard key 返回集合的个数.
+       g.srandmember(随机数)
+           srandmember key [count] 返回某个集合中指定个数的随机数.(返回的个数小于等于集合的元素个数)
+       k.sismember 
+         sismember key member 判断member是否是key集合中的元素,是返回1,不是返回0.
+     
+          
+五.zset(有序集合) 
+    1.介绍.
+       zset也是对string类型的一个集合,也不允许有重复的元素.不同的是,每个成员都会关联一个double类型的分数,用来排序(通过这个分数进行排序).
+       有序集合的成员是唯一的,但分数可以重复.也可以通过哈希表实现.所以查找,删除元素复杂度都是O(1)
+       集合中最大的一个成员数就是2的32次方-1,大概四十多亿个成员.同样内部编码也只能从ziplist转换成skiplist,不能逆转.
+    2.内部编码.
+       a.skiplist
+          当不满足ziplist使用条件时,使用skiplist.这时读写效率会下降.
+       b.ziplist
+         当集合个数小于128(默认配置)并且每个元素的大小小于64字节时,使用ziplist内部编码.
+   3.常见命令.
+       a.zadd(增加和更改)
+          zadd key [NX] [XX] [CH] [INCR] score member [score memeber...]
+          将多个值和与该值绑定的分数添加到有序集合中.如果添加的值已经是存在的值,则会更新原有的分数.
+          XX:仅仅更新存在的成员分数,不添加新成员,如果命令中有新成员,则直接无视.
+          ZX:不更新存在的成员分数,只添加新成员.有更新的会直接无视.
+          CH:添加成员,更新成员,并返回变化的成员总数.
+          INCR:当指定INCR这个选项时,对成员的操作就等于ZINCRBY命令.对成员的分数进行增加操作.
+       b.删除
+          zrem key member [member..]  删除指定的成员.
+          zremrangebyrank key start stop 移除集合中,分数排名从第start位到第stop位的元素.注意start和stop都是从0开始.
+          zremrangebyscore key start stop 移除集合中分数在start到stop之间的元素(包括start和stop)
+       c.查看 
+          zrange key start stop [withscores]    
+          查看集合中元素本身在某个范围(按下标算)的值,(0,-1)表示全部元素,加上withscores会同时显示分数.
+          zrangebyscore key min max [withscores] [limit offset count]
+          查看集合元素对应的分数在某个范围的元素. limit 这个参数用来分页.
+       d.返回排名.
+          zrank key member 返回member元素的在集合中的排名(分数从小到大)
+          zrevrank key member 和上面一样,只不过返回从大到小的排名(按分数)
+       e.返回个数.
+          zcount key min max 返回分数在min到max之间的元素个数.	
+          zcard key 返回该key的全部元素.
+
+       修改就直接再加一次即可.
+
+
+二.redisObject实例讲解.
+    当我们使用redis存储数据时,存储的所有元素,实际底层存储的是redisObject对象,
+    redisObject对象包含以下几部分:
+    1.数据类型. 对外
+     2.编码方式
+     3.数据指针
+       这个数据指针指向真正存储我们数据的SDS对象.
+       SDS对象包含以下几部分:
+       a.len:整个字符串的长度
+       b.free:空闲空间的长度
+       c.buf[]: 真正存储数据的char数组(字符串被分成一个一个字符)
+     4.虚拟内存
+
+
+
+说明:详细的命令说明还需要看文档.https://redis.io/commands	

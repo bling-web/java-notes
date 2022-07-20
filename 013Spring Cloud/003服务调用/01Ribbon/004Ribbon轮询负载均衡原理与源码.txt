@@ -1,0 +1,28 @@
+1.轮询负载均衡原理.
+   主要就是从注册中心获取服务列表,依次获取对应的服务器.而关键就在于怎样依次获取对应的服务器.
+  (1)如果自己设计,会怎么做?
+     给一个变量值记录当前访问下标的位置,每次+1,如果大于等于当前服务数,则归0.
+	 每次调用服务根据该下标值获取对应服务即可.
+	 
+	 其实感觉这种做法也可以.但是写法相对琐碎.
+	 
+  (2)源码是怎样做的.
+     给一个公共变量值,根据余数循环获取下标.   
+	private int incrementAndGetModulo(int modulo) {                           //这个modulo就是当前服务器数量
+        for (;;) {
+            int current = nextServerCyclicCounter.get();                      //nextServerCyclicCounter就是公共变量,是一个AtomicInteger
+            int next = (current + 1) % modulo;
+            if (nextServerCyclicCounter.compareAndSet(current, next))         //这里运用的CAS 自旋锁, 设置成功后直接将下标赋值给公共变量,循环进行,妙啊
+                return next;
+        }
+    }
+	这一块代码很值得学习.
+	
+	还有这一块也值得学习.
+	if (server == null) {     //server就是获取的服务器对象
+		/* Transient. */
+		Thread.yield();       //这里如果我们自己写就会用Thread.sleep(5000),但是这里直接用了线程的礼让,妙啊.
+		continue;             //继续循环获取server
+	}
+
+   

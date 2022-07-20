@@ -1,0 +1,22 @@
+1.Nacos是什么?
+  一个更易于构建云原生应用得动态服务发现,配置管理和和服务管理中心.
+  简单来说就是注册中心+配置中心得组合.可以代理Eureka和Spring Cloud Config
+  
+2.官方文档
+    https://github.com/alibaba/Nacos
+   我们怎么去找官方文档呢?
+      一般来说首先去GitHub上找对应项目,打开REDAME.md文件,里面会有对应官网,点击进去即可.
+	  
+	  https://nacos.io/zh-cn/docs/what-is-nacos.html
+	  
+	  
+3.各种注册中心比较.
+  名称       CAP模型     控制台管理     社区活跃度
+  Euraka      AP          支持           低
+  zookeeper   CP          不支持         中
+  Consul      CP          支持           高
+  Nacos       AP          支持           高
+  
+  
+  
+  

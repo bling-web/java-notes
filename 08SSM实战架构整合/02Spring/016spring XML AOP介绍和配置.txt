@@ -48,8 +48,8 @@
            
      例:
           <aop:config>
-           <aop:aspect id="serviceAop" ref="logUtil">       //这个ref就是为了注入前置通知这个方法所在类的对象
-               <aop:before method="printLog" pointcut="execution(public void com.cc.spring.aop.Service.impl.UserServiceImpl.savUser               ())"></aop:before>
+           <aop:aspect id="serviceAop" ref="logUtil">
+               <aop:before method="printLog" pointcut="execution(public void com.cc.spring.aop.Service.impl.UserServiceImpl.savUser())"></aop:before>
            </aop:aspect>
        </aop:config>
 
@@ -81,5 +81,7 @@
 补充:* *..*.*()执行过程中,出现BeanNotOfRequiredTypeException异常,好像是因为有些没有继承接口的类使用了动态代理,而这些类会被默认转成     cglib代理模式,就会出现错误.
 解决方法:
     在aop:config标签中加上proxy-target-class="true"即可.
+
+ 
 
      

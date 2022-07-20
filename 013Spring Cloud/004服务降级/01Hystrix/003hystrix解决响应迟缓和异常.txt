@@ -1,0 +1,190 @@
+一.结论.
+   在之前的演示中,我们主要有两种问题,超时和服务异常,那么怎样解决呢?
+   超时(程序变慢)-->超时不再等待
+   出错(宕机或运行出错)-->出错要有兜底
+   
+二.先新建一个hystrix客户端端调用工程.
+   1.建工程cloud-consumer-feign-hystrix-order80
+   2.引入pom.
+     <dependencies>
+        <!--新增hystrix-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+	
+	3.改yam.
+	  server:
+		  port: 80
+		eureka:
+		  client:
+			register-with-eureka: false
+			service-url:
+			  defaultZone: http://eureka7001.com:7001/eureka
+	4.启动类.
+	   @SpringBootApplication
+		@EnableFeignClients
+		public class OrderHystrixMain80 {
+
+
+			public static void main(String[] args) {
+				SpringApplication.run(OrderHystrixMain80.class,args);
+			}
+		}
+		
+	5.业务类.
+	  service:
+	  @FeignClient("CLOUD-PROVIDER-HYSTRIX-PAYMENT") //针对哪个微服务进行调用.
+		@Component
+		public interface PaymentService {
+
+			@GetMapping(value = "/payment/get/ok/{id}")
+			String getPaymentId_OK(@PathVariable(value = "id") Integer id);
+
+			@GetMapping(value = "/payment/get/timeout/{id}")
+			String getPaymentId_timeout(@PathVariable(value = "id") Integer id);   这里注意,一定要@PathVariable(value = "id")指定,否则会报错.
+		}
+	   controller:
+	   @RestController
+		public class OrderController {
+			@Resource
+			private PaymentService paymentService;
+
+			@GetMapping("/consumer/payment/get/ok/{id}")
+			public String getPaymentId_OK(@PathVariable Integer id){
+				return paymentService.getPaymentId_OK(id);
+			}
+
+
+			@GetMapping("consumer/payment/get/timeout/{id}")
+			public String getPaymentId_timeout(@PathVariable Integer id){
+				return paymentService.getPaymentId_timeout(id);
+			}
+		}
+		
+三.服务端使用Hystrix进行服务降级.
+   1.引入pom,之前已经引入,这里只是提示以下.
+   
+   2.开启熔断器功能.在启动类上增加该注解
+     @EnableCircuitBreaker
+   2.在对应方法上使用注解HystrixCommand.
+   
+    @HystrixCommand(fallbackMethod="getPaymentId_timeoutFallbak",commandProperties = {    //指定降级方法
+            //这个name是threadPoolKey,配置超时时间,默认值为1s.
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",value = "1000")
+    })
+    public String getPaymentId_timeout(Integer id){
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "Thread:"+Thread.currentThread().getName()+", getPaymentId_timeout,id: "+ id;
+    }
+
+    public String getPaymentId_timeoutFallbak(Integer id){
+
+        return "Thread:"+Thread.currentThread().getName()+",执行降级方法";
+    }
+   
+    注意,该样例不止超时会执行降级方法,报异常程序出错时也会走到降级方法
+	
+	以上时服务端处理降级的方法,但是一般来说处理降级会在客户端做.
+	
+四.客户端处理服务降级.
+   1.引入pom.
+   2.增加yam配置(其实如果我们只是使用hystrix处理超时和异常的话不需要增加该配置也完全可以)
+     feign:
+	  hystrix:
+		enabled: true #这个配置是开启feign中hystrix的功能,因为feign中开启了此功能,会有一个默认的超时时间处理,如果对方服务超时或有异常会去找对应的fallback方法.
+		                此时如果在工程中没有配置对应fallback方法就会报错.
+   3.开启Hystrix功能.
+      @EnableHystrix  启动类上增加这个注解
+	  之前在服务端开启的是@EnableCircuitBreaker这个注解,其实EnableHystrix 继承于 EnableCircuitBreaker,比EnableCircuitBreaker功能更多.
+   4.业务类.
+    @GetMapping("/consumer/payment/get/timeout/{id}")
+    @HystrixCommand(fallbackMethod="getPaymentId_timeoutFallbak",commandProperties = {
+            //这个name是threadPoolKey,指定使用超时线程
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",value = "5000")
+    })
+    public String getPaymentId_timeout(@PathVariable("id") Integer id){
+       return paymentService.getPaymentId_timeout(id);
+    }
+
+    public String getPaymentId_timeoutFallbak(@PathVariable("id") Integer id){
+        return "对方服务出现异常,执行降级方法";
+    }
+	
+	测试:
+	    当我们在网页上访问http://localhost/consumer/payment/get/timeout/01时,发现会走降级方法,但是我们调用的方法明明没有超过5s,仅仅为3s,那为什么会执行降级方法?还有一种可能就是
+	方法报错了,那为什么会报错呢?于是就把方法上的@HystrixCommand注解注释掉,再次访问,发现报了Hystrix的timed-out and no fallback available 错误,原因是我们开启了feign的hystrix
+    功能,它里面会有一个默认的超时时间,所以报错,那我们需要修改它的超时时间,同时,因为feign底层其实用了ribbon,所以还需要修改ribbon默认的超时时间.
+	   所以yam文件中的正确配置为:
+	   feign:
+		  hystrix:
+			enabled: true #如果处理自身的容错就开启。比如超时会进行重试,开启方式与生产端不一样。
+
+		hystrix:
+		  command:
+			default:
+			  execution:
+				isolation:
+				  thread:
+					timeoutInMilliseconds: 5000  #熔断超时时间
+		ribbon:
+		  #  #建立客户端和服务端连接所等待的时间,单位毫秒
+		#  ConnectTimeout: 5000
+		  #  #建立连接后从服务端读取到可用资源所需要的时间
+		  ReadTimeout:  5000
+
+						
+	
+	
+	
+		   

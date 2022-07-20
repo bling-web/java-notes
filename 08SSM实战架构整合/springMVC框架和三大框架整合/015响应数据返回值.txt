@@ -14,8 +14,8 @@
      a.通过MolelAddView对象
        例:
         public ModelAndView test2() {
-            ModelAndView modelAndView = new ModelAndView();              //也可以直接在方法上传递这个对象,让DistcherServlet创建,这个和直接返回字符串的区别是可以
-            //添加属性,传递数据                                            添加属性
+            ModelAndView modelAndView = new ModelAndView();              //也可以直接在方法上传递这个对象,让DistcherServlet创建
+            //添加属性,传递数据
             modelAndView.addObject("symbol","王");
             //调加视图完成转发
             modelAndView.setViewName(Content.FILENAME);

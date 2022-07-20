@@ -1,0 +1,27 @@
+1.目前的问题.
+   默认nacos是采用一个内嵌的数据库实现数据存储,所以,当启动多个节点时,数据的一致性就会存在问题(如果保证了强一致性可能就会失去高可用性).
+   为了解决这个问题,nacos采用了集中化存储的方式去进行解决,也就是将信息存储在mysql中(目前也只支持mysql)
+   
+2.nacos集群的架构
+  
+  开始--> nginx集群   -->nacos集群  --> mysql数据库.
+  
+  
+3.nacos支持三种部署模式.
+  单机模式->用于测试和单机适用
+  集群模式->用于生产环境,确保高可用
+  多集群模式->用于多数据中心场景
+  
+  
+4.单机模式切换mysql
+  在0.7版本之后增加了支持mysql的功能,	具体的操作步骤
+  (1)mysql版本要求在5.6.5之上
+  (2)在mysql中执行conf目录下的nacos-mysql.sql中的sql
+  (3)修改conf/application.ptoperties文件,添加mysql数据源的url,	用户名和密码.
+     spring.datasource.platform=mysql
+ 
+	db.num=1
+	db.url.0=jdbc:mysql://localhost:3306/nacos_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true
+	db.user=root
+	db.password=root
+  

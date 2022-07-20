@@ -1,0 +1,27 @@
+ArrayList<String> list = new ArrayList<String>();
+		list.add("1");
+		list.add("2");
+		list.add("3");
+
+		ArrayList<String> list2 = new ArrayList<String>();
+		list2.add("4");
+		list2.add("2");
+		list2.add("3");
+		
+		HashSet<String> set = new HashSet<String>(list);
+		HashSet<String> set2 = new HashSet<String>(list2);
+		HashSet<String> res = new HashSet<String>();
+		//求set中set2没有的元素
+		res.addAll(set);
+		res.removeAll(set2);                  //移除原有set集合中的也存在于set2中的元素
+		System.out.println(res.toString());   //输出1
+		res.clear();
+		//求set2中set没有的元素
+		res.addAll(set2);
+		res.removeAll(set);
+		System.out.println(res.toString());    //输出4
+		res.clear();
+		//求交集
+		res.addAll(set);
+		res.retainAll(set2);
+		System.out.println(res.toString());    //输出2,3

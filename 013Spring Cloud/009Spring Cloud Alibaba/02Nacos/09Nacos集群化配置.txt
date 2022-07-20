@@ -1,0 +1,149 @@
+
+  按上一章所讲的linux集群架构进行配置.
+  这里主要讲的是nacos配置,所以只给了一个nacos集群配置,nginx和mysql都是单机版的.
+  
+  
+一.mysql配置
+   1.使用support-files/mysql.server start 启动服务端
+   2.使用 mysql -uroot -proot 连接服务端
+   3.创建nacos专属数据库并使用
+     CREATE DATABASE nacos_config;
+     USE nacos_config;
+   4.打开nacos下的conf中的nacos-mysql.sql,复制其中的sql语句,全部执行即可.
+   5.执行show tables; 查看数据表是否创建成功.
+   
+   
+   查看所有数据库的方式show databases;
+   使用某个数据库 use 数据库名称
+   查看该数据库所有表:show tables;	
+   
+   
+二.修改nacos中的application.properties配置
+   在配置中加上支持mysql中的配置
+    
+	spring.datasource.platform=mysql
+	 
+	db.num=1
+	db.url.0=jdbc:mysql://127.0.0.1:3306/nacos_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true
+	db.user=root
+	db.password=root
+	
+	
+	一般在修改软件默认配置时要将原有配置备份一下.以便进行恢复.
+	
+三.修改nacos,使其能够按集群方式启动.
+   1.修改linux服务器上nacos的conf中集群配置cluster.conf   
+	 (1).复制出cluster.conf
+		 cp cluster.conf.example cluster.conf
+	 (2).将cluster.conf文件中原有的ip完全删除,只留下以下内容,这里指定三个端口分别是3333,4444,5555
+		 192.168.31.116:3333
+		 192.168.31.116:4444
+		 192.168.31.116:5555
+		 
+		 这个IP不能固定的,其实就是自己本机的ip,必须是Linux命令hostname -i能够识别的IP,这里没有输出任何内容,暂时没有探究
+		 
+		 在自己测试中,一定要使用实际得本机ip才可以
+	 
+    2.编辑nacos中bin下面的启动脚本startup.sh,
+	  首先要思考一下,我们怎么才可以启动多个实例,每个实例一定会占用一个端口,所以我们要修改配置,每次指定对应得端口进行启动
+	  需要修改两处地方
+	  (1)加了一个p选项
+	    while getopts ":m:f:s:p:" opt
+		do
+			case $opt in
+				m)
+					MODE=$OPTARG;;
+				f)
+					FUNCTION_MODE=$OPTARG;;
+				s)
+					SERVER=$OPTARG;;
+				p)
+					PORT=$OPTARG;;
+				?)
+				echo "Unknown parameter"
+				exit 1;;
+			esac
+		done
+	   (2) 加了-Dserver.port=${PORT} 选项
+	   nohup $JAVA -Dserver.port=${PORT} ${JAVA_OPT} nacos.nacos >> ${BASE_DIR}/logs/start.out 2>&1 &	
+     
+四.修改nginx配置.
+   1.修改nginx/conf中得nginx.cnonf文件
+     需要修改两个地方.
+	 (1)server配置
+		 server {
+			listen       1111;    #指定nginx得端口为1111
+			server_name  localhost;
+
+			#charset koi8-r;
+
+			#access_log  logs/host.access.log  main;
+
+			#指定ip后以nacos开始得访问地址都会映射到cluster中得ip和端口
+			location /nacos/ {
+				#root   html;
+				#index  index.html index.htm;
+				proxy_pass  http://cluster;
+			}
+		}
+	(2)新增cluster配置.
+	    记得要和上面得server统一层级.
+		upstream cluster{
+			server 127.0.0.1:3333;
+			server 127.0.0.1:4444;
+			server 127.0.0.1:5555;
+		}
+	 
+	 
+五.启动所有服务进行测试.
+   现在我们得服务有一个mysql,三个nacos,一个nginx,启动服务应该按从后往前得步骤,依次启动mysql,nacos,nginx
+   1.启动mysql
+     到mysql目录下:   support-files/mysql.server start
+   2.启动nacos
+     到nacos/bin下:依次执行
+	 startup.sh -p 3333
+	 startup.sh -p 4444
+	 startup.sh -p 5555
+	 
+	 这个nacos可能启动有点慢,如果没有访问成功,一定要先看日志
+	 
+   3.启动nginx
+     到/usr/local/nginx/sbin下:
+	 nginx -c /apps/nginx/nginx-1.10.2/conf/nginx.conf
+	 这里是指定配置文件进行启动
+	 
+	 
+	然后可以先直接访问http://192.168.31.116:3333/nacos/看nacos是否启动成功
+	再访问http://192.168.31.116:1111/nacos/
+	
+	4.启动一个服务在nacos上进行注册,这里的配置如下
+	   spring:
+		  application:
+			name: nacos-producer
+		  cloud:
+			nacos:
+			  discovery:
+		#        server-addr: 127.0.0.1:8848
+				server-addr: 192.168.31.116:1111       #写上nginx的端口即可
+	 
+	 
+一些错误情况:
+   /opt/nginx/html/favicon.ico” failed (2: No such file or directory)
+   在nginx/conf下得nginx.conf中加上以下配置
+   location = /favicon.ico {
+     log_not_found off;
+     access_log off;
+   }
+   
+   在启动服务进行注册时报错
+   code:503 msg: server is STARTING now, please try again later!
+	1.修改hosts，在hosts文件中添加yourip hostname，例如这里是：192.168.31.116 lars
+    2.修改cluster.conf,修改集群配置文件，全部用实际ip+端口的方式，而非127.0.0.1
+   
+   
+	 
+	  
+     
+   
+   
+     

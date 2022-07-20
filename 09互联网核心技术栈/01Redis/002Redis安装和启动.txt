@@ -1,0 +1,59 @@
+一.Redis安装
+   a.下载wget http://download.redis.io/releases/redis-3.2.12.tar.gz.
+      在XShell输入以上命令即可.注意,在你想安装的那个目录下输入这个命令,他会默认下载到这个目录下.
+   b.解压.
+     tar -zxvf 文件名
+   c.编译:make MALLOC=libc
+      a.这时会出现错误cc: command not found
+      b.redis是c语言编写的,除了要有make环境之外,也得有g++,gcc,等一些环境,需要装一下.
+      c.装软件需要跟root相近的账户才可以安装,可以exit,就可以到root账户.
+      d.安装软件,运行命令 yum install g++ gcc
+      e.然后再到解压后的目录,再次运行make MALLOC=libc.
+      f.这时候还是不成功,有报错,找不到文件,需要到源码中deps目录下,执行make geohash-int hiredis jemalloc linenoise lua
+      g.然后再次运行make MALLOC=libc即可.
+         这时候redis/src会产生几个可执行的文件,如redis-server(最重要),redis-cli(redis命令行的客户端),redis-benchmark(redis性能测试的工具)
+           redis-check-aof,redis-check-rdb(aof和rdb的修复工具),redis-sentinel(sendinel服务器启动的可执行的文件,哨兵模式),redis-trib.rb(redis集群的可执行文件,3.2版本之后)
+   d.安装.
+      1.在这里直接安装的话,会默认安装到usr/local下,所以在这里在当前用户的server目录下新建一个redis-3.2.12文件.
+      2.然后在把上面那七个文件复制到redis-3.2.12下面去.
+      3.新建bin目录,再把这七个文件移到bin下. 输入mv redis-* bin 即可
+      4.新建conf目录.把源目录中的redis.conf复制进去.  cp ~/soft/redis-3.2.12/redis.conf  ./即可.
+      做完上面几步操作,就相当于安装好了.
+   e.一般会做一个软连接,直接在redis3.2.12同级目录下建一个软连接即可.
+
+二.服务器管理.
+   1.不允许root远程登录.只能通过其他用户登录,切换到root用户.
+   2.在生产环境中包括三种账户,
+     运维账户,权限和root很接近
+     运用账户,专门给应用程序使用的,单独的账户,互不影响.一旦有问题,影响的也只是当前的home目录.不会对系统造成很大影响.
+     开发账户.开发人员使用户,权限小很多.
+   3.目录说明:
+      课上的目录包含五个部分:
+       a.apps:应用程序存放目录.
+       b.logs:存放日志文件
+       c.servers:放一些可运行的服务.tomcat,redis.
+       d.shell:放一些shell脚本.
+       e.soft:一些软件,比如一些jdk	
+
+三.redis启动.
+    有三种启动方式.(其实也就是一种,只不过有无参数和参数位置不一样)
+    1.直接执行redis-server就启动了.
+       redis-server
+      然后ctrl+c就停止了.
+      当然也可以让其在后台执行.成为后台程序.
+    2.动态参数方式启动.
+      redis-server --port 6666    //指定运行端口
+      redis所有的参数都可以通过这种方式指定.
+    3.配置文件启动.(执行配置文件中的参数)
+      redis-server ../conf/redis.conf      //后面是执行配置文件.
+     
+     客户端连接服务端:
+        当启动成功后,在shell双击左上角那个名称,添加一个会话(就是客户端),然后在新添加的会话中,运行redis-cli,就可以连接到刚刚开的redis服务上.
+        a.然后输入info,就会出现对应的信息.
+        b.ping一下,就会回pong,证明客户端和服务端是连通的.
+        c.然后可以set key value,get key 就可以获取响应的value.
+        说明:如果服务器更改端口,那么客户端连接也许要更改端口,redis-cli -p [端口号]
+     客户端断开连接:exit或quit即可.
+     客户端使用固定ip连接:redis-cli -h [ip地址] -p [端口号]
+     客户端关闭:shutdown
+     客户端关闭远程:redis-cli -h [ip地址] -p [端口号] shutdown

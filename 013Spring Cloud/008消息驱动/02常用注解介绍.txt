@@ -1,0 +1,12 @@
+1.@Input
+  标识输入通道,通过该输入通达接收的消息进入应用程序
+2.@Output
+  标识输出通道,发布的消息将通过该通道离开应用程序
+3.@StreamListener
+  监听队列,用于消费者队列的消息接收
+4.EnableBingding
+  将信道和exChange(topic)绑定在一起,指定是和输入topic还是和输出topic绑定在一起
+  
+  
+  
+  

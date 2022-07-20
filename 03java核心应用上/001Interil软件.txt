@@ -1,4 +1,6 @@
 1.从课件中下载上,解压,安装,路径自己选
+  安装步骤可以看一下一起下载的那个文件，在这个文件夹的没有命名的两个文件。
+ 
 2.按readme步骤一步一步实现,(注意那个文件要保存自己电脑上的路径)
 设置:
    主题,字体->file->setting->Appearance(这里面的字体是设置里面的)
@@ -24,14 +26,6 @@ ctrl+Shift+Alt+s打开Project structure
 
 关闭重复代码检查:
    setting->inspections->general->Duplicated code
-
-
-
-在现有安装包上安装idea软件：
-    1.运行idea程序。
-    2.选择Executer,进入到一个项目中。
-    3.help-edit Custom VM option，然后创建文件，在最后一行加上
-      -javaagent:D:/java.software/Intellij/Helper/jetbrains-agent.jar  就是jetbrains-agent.jar所在的绝对路径
   
 
 

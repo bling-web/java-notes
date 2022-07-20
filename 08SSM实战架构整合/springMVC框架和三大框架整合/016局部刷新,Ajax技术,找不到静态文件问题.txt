@@ -38,9 +38,7 @@
                url:"Ajax/ajax",                                        //去哪,这个请求需要告诉DispactherRequest不要通过Controller
                type:"post",                                            //怎么去
                data:'{"username":"wang","password":"123","age":"23"}', //带什么
-               contentType:"application/json;charset=UTF-8",           //怎么带,后面就是服务器返回的
-
-
+               contentType:"application/json;charset=UTF-8",           //怎么带
                dataType:"json",                                        //服务器返回的数据类型
                success:function(data) {                                //这里返回的data是一个对象.
                    $("#username").val(data.username);                  //jQuery中不用value,直接val方法就好了

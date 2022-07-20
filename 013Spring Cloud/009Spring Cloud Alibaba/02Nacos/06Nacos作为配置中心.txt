@@ -1,0 +1,109 @@
+ 
+  Nacos作为配置中心更加得方便,因为它得配置信息直接存储在Nacos服务端中,不需要另起一个配置服务,也天然支持热更新.
+  
+  
+1.新建Module cloudalibaba-config-nacos-client3377
+2.pom.
+  这些依赖的版般控制在父工程中,需要的可以点进去看一下
+  <dependencies>
+        <!--nacos-config-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!--nacos-discovery-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!--web + actuator-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--一般基础配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+3.bootstrap.yml
+  server:
+	  port: 3377
+
+	spring:
+	  application:
+		name: nacos-config-client
+	  cloud:
+		nacos:
+		  discovery:
+			server-addr: localhost:8848 #服务注册中心地址
+		  config:
+			server-addr: localhost:8848 #配置中心地址
+			file-extension: yaml #指定yaml格式的配置
+4.application.yml
+  spring:
+	  profiles:
+		active: dev
+
+5.启动类.
+  @EnableDiscoveryClient
+	@SpringBootApplication
+	public class NacosConfigClientMain3377
+	{
+		public static void main(String[] args) {
+			SpringApplication.run(NacosConfigClientMain3377.class, args);
+		}
+	}
+	
+6.业务类.
+  @RestController
+	@RefreshScope  //支持动态刷新注解
+	public class TestController {
+
+		@Value("${config.info}")
+		private String configInfo;
+
+		@GetMapping("/nacos/config")
+		public String getConfigInfo(){
+			return configInfo;
+		}
+	}
+	
+7.建好项目然后就是在Nacos上新建配置文件了.在Nacos服务网站得配置管理下面得配置列表右边点+号,新建
+ 这里最关键得就是Data ID,也就配置文件得文件名称,这里有约定得规范,规范如下:
+
+  ${spring.application.name}-${spring.profile.active}.${spring.cloud.nacos.config.file-extension}  这个也是在官网找的,https://nacos.io/zh-cn/docs/quick-start-spring-cloud.html
+  具体说明:
+	spring.application.name的值,是我们在boostrap.yml文件中配置得
+	spring.profile.active既为当前环境对应的profile,可以通过配置项spring.profile.active 来配置,是我们在application.yml文件中配置得
+	file-exetension为配置内容的数据格式，可以通过配置项spring.cloud.nacos.config.file-extension配置,也是我们在boostrap.yml文件中配置得
+	
+  所以合起来Data ID就是:nacos-config-client-dev.yaml
+  
+  然后Group可以为默认值,选好配置格式,填好配置内容发布即可.
+  
+  
+  
+  然后进行测试就可以直接读取到配置中心中配置文件得配置,也可以动态更新,原理和Spring Cloud Config也是一样得,更改配置后发一个post请求,服务收到之后重新执行对象得赋值操作.  
+
+
+
+
+

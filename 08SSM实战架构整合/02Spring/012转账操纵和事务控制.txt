@@ -117,5 +117,3 @@
             //释放资源
             tm.release();
         }
-   ThreadLocal中保存的是key.value数据,key就是当前线程,value就是我们要存储的值.
-   所以set()要把自己保存的值存进去,get()则可以直接调用,因为默认key是当前线程.

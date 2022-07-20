@@ -1,0 +1,40 @@
+一.
+  springboot的项目框架和spring其实差不多,都有web,service,dao层,不同的是springBoot把两个核心的配置类Application和AppConfig提出,放在主目录下,给了一个主入口.增加了一些自动化的设置.
+  注意点:
+    1.如果我们想扫描我们自己定义的包的话(默认只会自动扫描配置了@Configuration和@SpringBootApplication的两个类.)
+       可以在配置了Configuration注解的AppConfig类上加一个注解@ComponentScan()   //里面加上扫描包的路径.
+    2.在实际开发中,我们一般不把自定义的配置写在application.properties中,而会在同级目录下新建一个xml文件.一般叫做myApplication.properties.
+      那么怎么去读取这个配置文件:
+         a.在AppConfig类上配置@PropertySource("classpath:myApplication.properties")
+         b.然后使用value注解注入即可.
+
+
+二.动态打包.
+    在实际工作中,一个spring工程可能有几套配置,比如生产环境一套,测试环境一套,线上环境一套.那么在我们打包的时候就需要用不同的配置,所以我们要修改pom去达到我们想要的效果.
+    具体解释在该文件夹下的pom中.
+    1.springboot对配置文件的命令有规范,应遵循application-dev.properties, application-prod.properties.
+       然后在对应的文件中写对应的配置.
+     
+    2.在application.properties中.使用spring.profiles.active来配置以哪个配置文件来启动.
+       不好的做法:spring.profiles.active=dev                                   //使用application-dev.properties中的配置,但是不会管pom中的配置,也就不会运行build中的内容.
+       正确的做法:spring.profiles.active=$spring.profiles.active$    
+       说明:这个配置会使用pom中配置,当然在我们的pom文件中,有好几个spring.profiles.active,
+              那具体要执行哪一个配置呢?这就要看我们指定了.当然会有一个默认的配置,如果不指定的话,
+             所以要需要使用mvn clean install -P dev,直接在terminal,相当于cmd ,运行该命令即可.
+          
+              $$不仅可以在application.properties文件中使用,还可以在自己的配置文件中使用.
+
+3.springboot start
+   实现ApplicationRunner接口,在run方法中执行.所有的解析参数都在ApplicationArguments
+   这里面只传一个接口而已.然后具体实现类实现这个接口.	
+
+             
+      
+      
+       
+
+    
+
+
+
+    

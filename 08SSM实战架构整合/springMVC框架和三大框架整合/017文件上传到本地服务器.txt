@@ -4,7 +4,6 @@
    2.method属性必须是post.
    3.要提供一个文件选择域,(input type="file")(会有一个文件选择的按钮)
      注意加上name.
-  
 
 二.使用com.io来帮助文件上传.
    1.需要添加依赖.(解析时用的servletFileUpload是依赖里的)
@@ -29,17 +28,16 @@
     Controller层中.
     @PostMapping("/file")
     public String test5(HttpServletRequest request)  {
-        //创建文件进行下载,这个uploads文件夹的路径就是本项目的target文件下的路径
-        String uploads = request.getSession().getServletContext().getRealPath("uploads");  //创建一个文件夹,这是一种写法,这样第二次过来就不会再创建文件夹了.
+        //创建文件进行下载
+        String uploads = request.getSession().getServletContext().getRealPath("uploads");
         File file = new File(uploads);
         if(!file.exists()){
             file.mkdir();
         }
-        //new一个servletFileUpload对象,用来解析request中的文件
+        //解析请求头
         ServletFileUpload servletFileUpload = new ServletFileUpload(new DiskFileItemFactory());
         List<FileItem> fileItems = null;
         try {
-            //返回一个文件对象的list集合.
             fileItems = servletFileUpload.parseRequest( request);
             for (FileItem fileItem : fileItems) {
                 //判断是否是文件上传类型
@@ -47,7 +45,7 @@
                     String name = fileItem.getName();
                     String s = UUID.randomUUID().toString().replace("-"," ");  //这的目的是生成一个id,使文件名字不一样,可以多次上传
                     name=s+name;
-                    //将request中的文件写到本地磁盘中.
+                    //文件上传
                     fileItem.write(new File(uploads,name));
                     //删除临时文件
                     fileItem.delete();                                         //临时文件的存在会占用内存.
@@ -95,22 +93,42 @@
         String uploads = request.getSession().getServletContext().getRealPath("uploads");
         File file = new File(uploads);
         if(!file.exists()){
-            file.mkdir();   //创建这个文件夹
+            file.mkdir();
         }
-        //给文件名添加点内容,防止名称一样.
+        //转移文件
         String originalFilename = Myfile1.getOriginalFilename();//相当于com.io中的getName()
         String id = UUID.randomUUID().toString().replace("-", " ");
         String name=id+originalFilename;
-        //这里的transferTo(转移)就相当于上面的write.把request中的文件转移到本地中来.
+        //这里的transferTo(转移)就相当于上面的write.
         Myfile1.transferTo(new File(uploads,name));//这里不用删除临时文件,springMVC会帮我们做
         return Content.FILENAME;
     }
 
+四.使用springboot上传文件.
+     1.引入依赖.
+        <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-core</artifactId>
+                <version>1.18.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>1.18.1</version>
+            </dependency>
+    2.
+    
 
-其实也很简单.当前端页面设置好后(action,name,enctype),点击之后浏览器会创建一个临时文件夹,上传的东西会放到里面,
-
-文件上传原理:
-  其实最跟本的本质就是原先一个普通的请求变成了文件的请求,那么我们一定要修改类型,修改请求的类型,enctype=multipart/form-data.
 
 
 

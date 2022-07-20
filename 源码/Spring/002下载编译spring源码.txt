@@ -1,0 +1,8 @@
+首先注意保持各个版本一致,这里使用的是idea2020.1 jdk1.8    gradle 6.3  spring源码 5.1
+
+
+1.源码下载之后直接将源码用idea2020打开,注意在还没有打开项目的时候就要设置gradle为本地下载的.
+2.之后会开始下载包,如果下载不了保超时异常或者找不到可以增加仓库地址.如.
+   maven { url "https://repo.spring.io/plugins-release" }
+   maven { url "http://repo.springsource.org/plugins-release" }
+3.之后就完全根据bilibili 上的源码编译走了

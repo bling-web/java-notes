@@ -1,0 +1,81 @@
+1.在GitHub上新建一个远程库,这里是SpringCloudConfig.
+  在master分支上,新建了三个文件Config-dev.yml,Config-test.yml,Config-prod.yml,里面内容自己定义.
+  
+2.新建Module  
+   cloud-config-center-3344
+   
+3.pom.	
+  <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+	
+4.yml
+  server:
+	  port: 3344
+	spring:
+	  application:
+		name: cloud-config-center
+	  cloud:
+		config:
+		  server:
+			git:
+			  uri:  https://github.com/bling-web/SpringCloudConfig.git  #远程仓库地址
+			  search-paths:
+				- SpringCloudConfig    #在GitHub中定义的项目名称
+		  label: master                #默认哪个分支
+	eureka:
+	  client:
+		service-url:
+		  defaultZone:  http://localhost:7001/eureka
+
+5.启动类.
+  @SpringBootApplication
+	@EnableConfigServer
+	public class SpringCloudConfigMain3344 {
+		public static void main(String[] args) {
+			SpringApplication.run(SpringCloudConfigMain3344.class,args);
+		}
+	}
+
+6.测试.
+   在浏览器中输入 http://localhost:3344/master/Config-dev.yml  ,看到Config-dev.yml中的文件信息,说明服务端SpringCloud Config搭建成功.
+     

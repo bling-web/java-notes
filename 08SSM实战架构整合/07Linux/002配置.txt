@@ -1,0 +1,50 @@
+c一.配置网络.
+     1.点击右上角的连接网络的图标,
+     2.Edit,选中Connect automatacally和Available to all users
+     3.选IPV4,method选Manual(手动)
+     4.Add,
+        Address:IP地址,这个ip地址前三段必须和本机保持一致,最后一段可以自己定义.例本机是192.168.43.241, 那么241可以变,其他不可以,本次设置为192.168.43.111
+       netmask:255.255.255.0(网络掩码)
+       Gateway(网关):这个一定要和你本机上的默认网关配置一样,默认就是IP地址的最后一段变成1, 也就是192.168.43.1,否则不能上网.cmd->ipconfig->即可查看本机的默认网关
+       DNS:也选定和你的默认网关一样.192.168.43.1
+    5.点右下角的apply.
+
+
+二.测试虚拟机和本机是否连通.
+     1.在本机cmd中输入命令:ping 192.168.43.111 看是否连通,这个ip就是你虚拟机设置的ip.
+     2.在虚拟机中输入:ping 192.169.43.241.linux会一直ping下去,按ctrl+c停止.
+        如果虚拟机ping本地不能接通,可能是本地防火墙关着.控制面板中开启.本地网络中的专用网络.目前理解就是一个子网中的网络.
+
+二,常用命令.
+    1.ifconfig.
+       查看网络配置.
+    2.service network restart
+      重启网卡
+    3.service iptables status
+      查看防火墙设置
+   4.service iptables stop
+      这一次关闭防火墙，但是下一次关机又会重启，在实际生产环境中，防火墙需要关闭，但是在学习过程中，需要关闭防火墙，因为集群之间的通信会被防火墙阻止。
+   5.chkconfig iptables off
+      关闭防火墙的自动运行，永久关闭防火墙。
+   6.chkconfig --list | grep iptables
+     检查防火墙是否关闭。出现6个off 证明全部关闭.
+   7.service network restart
+     重置网卡.
+	 
+
+	linux命令模式下修改ip地址和网关
+	   1.vim/etc/sysconfig/network-scripts/ifcfg-eth0
+		 修改三项即可.
+		IPADDR=192.168.75.106
+		GATEWAY=192.168.75.2
+		DNS1=192.168.75.2
+		
+	   2.重启网卡
+		 service network restart
+
+ 
+
+
+
+      
+  

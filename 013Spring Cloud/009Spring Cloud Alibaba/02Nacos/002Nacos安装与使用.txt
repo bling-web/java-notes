@@ -1,0 +1,18 @@
+1.下载.
+  https://github.com/alibaba/nacos/releases/tag/1.1.4
+  选择nacos-server-1.1.4.zip
+  下载zip包即可.
+  
+2.安装
+  解压安装包,直接运行bin目录下得startup.cmd
+  
+	命令运行成功后直接访问http://localhost:8848/nacos
+	默认账号密码都是nacos
+  
+  
+  
+  
+  
+  
+  
+如何下载	

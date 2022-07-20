@@ -4,7 +4,7 @@
 抽象方法:使用abstract关键字修饰方法,该方法就成了抽象方法,该方法没有方法体,只有一个方法名
 
          定义格式: 修饰符 abstract 返回值 方法名();   (注意:没有大括号)
-抽象类:类中必须含有一个抽象方法,且类也用abstract修饰.
+抽象类:类中必须含有一个抽象方法(不是必须),且类也用abstract修饰.
        例:
          public abstrsct class Animal{
 		public abstract void run();

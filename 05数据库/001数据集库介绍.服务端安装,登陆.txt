@@ -63,7 +63,7 @@
   1.先暂停该服务.我的电脑->管理
   2.应用程序卸载.
   3.删除安装目录下的所有文件.
-  4.删除C盘下的programDate中素所有关于MySQL的文件.
+  4.删除C盘下的programDate中素所有关于MySQL的文件. 这个文件是个隐藏文件,要显示后才能看见
 
 MySQL启动
   1.我的电脑->管理->找到MySQL->启动 
@@ -77,6 +77,74 @@ MySQL启动
       mysql -u用户名 -p密码
 退出:
   quit或者exit 
+  
+  
+  
+  
+  
+
+升级mysql版本.
+  1.首先进行数备份,这里直接使用sqlYoung进行数据备份,点击数据库双击右键->备份数据->忽略直接点击下一步得步骤->选择所有得数据库->选择一个.sql文件(上面有个压缩成zip可以去除)->执行即可
+    还进行了另外一种备份,就是复制mysql下得data文件夹
+  2.删除原有mysql
+    参考上面卸载MySQL服务
+  3.下载安装新版本.
+     https://dev.mysql.com/downloads/mysql/	
+     下载后按照此步骤进行安装  https://blog.csdn.net/qq_40194498/article/details/78984353
+	 注意:在启动之前要把之前备份得data文件夹直接替换到新mysql下面得data文件.
+	 在启动服务得时候可能会报错,可以用以下方法解决.https://blog.csdn.net/qq807237096/article/details/60580891
+	 登录得时候登录不上去,用以下方法解决.https://www.cnblogs.com/dreamsqin/p/6605977.html
+	 
+	 然后使用SQLyog重新连接打开即可.
+	 
+	 
+	 
+
+
+
+安装步骤:
+	下载安装mysql linux版本,如果直接打开官网,在最下面得community server	，https://downloads.mysql.com/archives/community/
+	下载步骤可以参考这个网址 https://www.cnblogs.com/apolloren/p/9955103.html
+
+	注意:新版mysql得默认安装地址是 /usr/local/mysql  所以安装软件要放到这个目录下
+
+	安装步骤参考这个网址，补充:按这个步骤来不需要执行初始化数据库命令,因为版本不同
+	https://www.cnblogs.com/xxoome/p/5864912.html
+	初始化命令按这个来，在bin目录下
+	mysqld --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data/ --initialize
+	执行成功后,会给一个临时密码，这里是：
+	A temporary password is generated for root@localhost: Zce(5tx>L0oc
+	
+	再第一次连接到mysql时,系统会提示你进行更改密码,使用该密码:
+	alter user user() identified by "XXXXXX"; 
+	上面XXX代表你需要设置的密码是多少。
+
+
+
+重启mysql命令:
+support-files/mysql.server start
+
+可能遇到的错误:
+	在执行初始化得时候缺失libstdc++.so.6
+	https://www.cnblogs.com/jinwenb/p/9324804.html
+
+	error while loading shared libraries: libnuma.so.1: cannot open shared object file: No such file or directory
+	执行yum install libnuma.so.1
+
+
+	如果使用service mysql start启动mysql失败，可以在bin目录下执行mysqld,就可以看到错误日志，然后进行解决即可。
+
+
+	Could not create unix socket lock file /var/run/mysql/mysql.sock.lock
+	需要修改文件的所属者和所属者的目录权限
+	chown -R mysql:mysql /var/lib/mysql   修改目录的所属者
+	chmod 761 /var/lib/mysql         修改目录权限
+
+	 
+	 
+	 
+	 
+	 
 
       
   

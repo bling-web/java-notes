@@ -1,0 +1,351 @@
+
+  之前我们使用Euraka结合Ribbon实现负载均衡,现在使用sentinel结合ribbon使用,其实使用方式都一样,只不过引用jar有区别而已.
+  
+  这里新建三个工程去实现负载均衡调用.
+
+一.两个提供服务端,只是端口不一样,这里只展示一个工程
+   1.新建工程
+     cloudalibaba-provider-payment9003 和 cloudalibaba-provider-payment9004   
+	2.引入pom
+	   <dependencies>
+        <!--SpringCloud ailibaba nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <dependency><!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- SpringBoot整合Web组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--日常通用jar包配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+	
+	3.引入yml.
+	   server:
+		  port: 9003
+
+		spring:
+		  application:
+			name: nacos-payment-provider
+		  cloud:
+			nacos:
+			  discovery:
+				server-addr: localhost:8848 #配置Nacos地址
+
+		management:
+		  endpoints:
+			web:
+			  exposure:
+				include: '*'
+
+    4.启动类.
+	  @SpringBootApplication
+		@EnableDiscoveryClient
+		public class PaymentApplication9003 {
+
+			public static void main(String[] args) {
+				SpringApplication.run(PaymentApplication9003.class,args);
+			}
+		}
+
+    5.业务类.
+	  就只有一个controller类.
+	  @RestController
+		public class PaymentController {
+
+			@Value("${server.port}")
+			private String serverPort;
+
+			private static Map<String, Payment> hashMap=new HashMap<>();
+			static {
+				hashMap.put("1",new Payment((long) 1,"sdgsadjgadgasda"));
+				hashMap.put("2",new Payment((long) 2,"FJSDHAKSDAIUDADJ"));
+				hashMap.put("3",new Payment((long) 3,"NASHDAKDAWFUAMFA"));
+			}
+
+			@GetMapping("/paymentSQL/{id}")
+			public CommonResult doPayment(@PathVariable("id") String id){
+				Payment payment = hashMap.get(id);
+				return new CommonResult(200,"serverPort:"+serverPort,payment);
+			}
+
+		}
+		
+		
+		
+二.一个消费端.
+   1.新建工程
+     cloudalibaba-consumer-nacos-order84
+   2.引入pom.
+      <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!--SpringCloud ailibaba nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <dependency><!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- SpringBoot整合Web组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--日常通用jar包配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+	
+	3.引入yml
+	server:
+	  port: 84
+
+	spring:
+	  application:
+		name: nacos-consumer-provider
+	  cloud:
+		nacos:
+		  discovery:
+			server-addr: localhost:8848 #配置Nacos地址
+		sentinel:
+		  transport:
+			#\u6307\u5B9A\u524D\u53F0\u7684\u670D\u52A1ip
+			dashboard: localhost:8080
+			#sentinel\u540E\u53F0\u670D\u52A1\u542F\u52A8\u7AEF\u53E3
+			port: 8719  #\u9ED8\u8BA48719\uFF0C\u5047\u5982\u88AB\u5360\u7528\u4E86\u4F1A\u81EA\u52A8\u4ECE8719\u5F00\u59CB\u4F9D\u6B21+1\u626B\u63CF\u3002\u76F4\u81F3\u627E\u5230\u672A\u88AB\u5360\u7528\u7684\u7AEF\u53E3
+
+
+	management:
+	  endpoints:
+		web:
+		  exposure:
+			include: '*'
+
+	#自定义配置
+	service-url:
+	  nacos-user-service: http://nacos-payment-provider
+	  
+	4.启动类
+	  @SpringBootApplication
+		@EnableDiscoveryClient
+		public class ConsumerOrder84 {
+			public static void main(String[] args) {
+				SpringApplication.run(ConsumerOrder84.class,args);
+			}
+		}
+
+    5.业务类.
+	  一个配置类.
+	   @Configuration
+		public class ApplicationConfig {
+
+			@Bean
+			@LoadBalanced
+			public RestTemplate restTemplate(){
+				return new RestTemplate();
+			}
+		}
+
+
+     一个访问类
+	 @RestController
+	public class OrderContrller {
+
+		@Value("${service-url.nacos-user-service}")
+		private String paymentUrl;
+
+		@Resource
+		private RestTemplate restTemplate;
+
+		@GetMapping("/consumer/fallback/{id}")
+		@SentinelResource("fallback")
+		public CommonResult test(@PathVariable("id") String id){
+			CommonResult result=null;
+			if(id.equals("1") || id.equals("2") || id.equals("3")){
+				 result = restTemplate.getForObject(paymentUrl + "/paymentSQL/" + id, CommonResult.class, id);
+			}else if(id.equals("4")){
+				throw new IllegalArgumentException("非法参数异常");
+			}else{
+
+				throw new NullPointerException("空指针异常");
+			}
+
+			return result;
+		}
+
+	}
+	
+	
+	
+
+三.然后进行测试.
+   访问 http://localhost:84/consumer/fallback/1  可以看到会对9003,9004进行轮询访问.
+   
+   
+   
+   
+   
+四.验证sentinelResource配置.
+   在之前我们说过sentinelResource中的block管配置违规,fallback管程序本身异常.现在进行验证
+   1.什么也不配置
+     访问http://localhost:84/consumer/fallback/4,会发现直接返回异常到前台,非常不友好
+	2. 只配置fallback
+	   @GetMapping("/consumer/fallback/{id}")
+		@SentinelResource(value = "fallback",fallback = "testFallback")
+		public CommonResult test(@PathVariable("id") String id){
+			CommonResult result=null;
+			if(id.equals("1") || id.equals("2") || id.equals("3")){
+				 result = restTemplate.getForObject(paymentUrl + "/paymentSQL/" + id, CommonResult.class, id);
+			}else if(id.equals("4")){
+				throw new IllegalArgumentException("非法参数异常");
+			}else{
+
+				throw new NullPointerException("空指针异常");
+			}
+
+			return result;
+		}
+
+		public CommonResult testFallback(@PathVariable("id") String id){
+			return new CommonResult(200,"执行异常兜底方法");
+		}
+		
+		再次访问发现可以执行兜底方法.
+		
+	3.只配置block
+	   @GetMapping("/consumer/fallback/{id}")
+		@SentinelResource(value = "fallback",blockHandler ="testBlockback")
+		public CommonResult test(@PathVariable("id") String id){
+			CommonResult result=null;
+			if(id.equals("1") || id.equals("2") || id.equals("3")){
+				 result = restTemplate.getForObject(paymentUrl + "/paymentSQL/" + id, CommonResult.class, id);
+			}else if(id.equals("4")){
+				throw new IllegalArgumentException("非法参数异常");
+			}else{
+
+				throw new NullPointerException("空指针异常");
+			}
+
+			return result;
+		}
+
+	  
+
+		public CommonResult testBlockback(@PathVariable("id") String id, BlockException exception){
+			return new CommonResult(200,"执行异常兜底方法,blackHander");
+		}
+		
+		然后增加流控或者降级规则,当不符合降级规则时就会执行testBlockback方法.
+		
+		
+	4.block和fallback都配置.
+	  在都配置的情况下,其实会有两种都不满足的情况,比如异常,即是方法本身出现异常,同时也不满足降级规则,那这个时候会走block还是fallback?
+	  其实会优先black,因为其实校验是否满足配置规则会在外层校验,当不符合之间走block,这个时候都不会执行本身方法.
+	  
+	  样例:
+	     @GetMapping("/consumer/fallback/{id}")
+			@SentinelResource(value = "fallback",blockHandler ="testBlockback",fallback = "testFallback")
+			public CommonResult test(@PathVariable("id") String id){
+				CommonResult result=null;
+				if(id.equals("1") || id.equals("2") || id.equals("3")){
+					 result = restTemplate.getForObject(paymentUrl + "/paymentSQL/" + id, CommonResult.class, id);
+				}else if(id.equals("4")){
+					throw new IllegalArgumentException("非法参数异常");
+				}else{
+
+					throw new NullPointerException("空指针异常");
+				}
+
+				return result;
+			}
+
+			public CommonResult testFallback(@PathVariable("id") String id){
+				return new CommonResult(200,"执行异常兜底方法,fallBack");
+			}
+
+			public CommonResult testBlockback(@PathVariable("id") String id, BlockException exception){
+				return new CommonResult(200,"执行异常兜底方法,blackHander");
+			}
+	  
+	    然后配置一个流控规则,QPS不能超过1,否则快速失败
+		
+		
+	  访问http://localhost:84/consumer/fallback/5  QPS超过1,发现还是走的black方法.
+	  
+	  
+五.其他配置。
+   在sentinelResource中有一个这个属性exceptionsToIgnore,我们可以通过该属性指定忽略的异常类，指定之后即使出现这个异常，也不会走fallback方法。
+	   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	 

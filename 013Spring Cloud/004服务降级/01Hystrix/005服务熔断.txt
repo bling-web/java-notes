@@ -1,0 +1,48 @@
+一.熔断机制概念。
+   熔断机制是应对雪崩效应的一个微服务链路保护机制，当扇出链路的某个服务不可用时，会进行服务的降级，当一定范围时间内的失败率过高时，就会进行服务熔断。
+   这个时候当有请求过来时，会直接走降级方法不进行服务调用，
+   当检测到该服务恢复后，会自动恢复调用链路。
+   
+    在Spring Cloud中，主要通过Hystrix实现，默认5秒内失败20次，就会启动熔断机制。
+	
+	
+	
+二.使用Hystrix服务熔断步骤.
+   1.还是和服务降级一样开启Hystrix注解.
+     @EnableCircuitBreaker
+   2.在方法上进行熔断注解属性配置.
+      @HystrixCommand(fallbackMethod="getPaymentId_timeoutFallbak",commandProperties = {
+            //这个name是threadPoolKey,指定使用超时线程
+            @HystrixProperty(name = "circuitBreaker.enabled",value = "true"), //是否开启断路器
+            @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold",value = "10"), //请求次数满足的阈值
+            @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage",value = "60")  //错误的阈值所占的百分比
+            @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds",value = "10000"),  //睡眠窗口期,也就是由关闭状态转为半开状态的时间
+    })
+    public String getPaymentId_timeout_(Integer id){
+       if(id>0)
+           return "Thread:"+Thread.currentThread().getName()+", getPaymentId_timeout,id: "+ id;
+       throw new RuntimeException("id不能为复数");
+    }
+
+
+    public String getPaymentId_timeoutFallbak(Integer id){
+
+        return "Thread:"+Thread.currentThread().getName()+",执行降级方法";
+    }
+	
+	上述所配置的意思当请求10次后,错误数据达到60%,也就是达到6次失败,则进行服务熔断.
+	那这些参数是怎么来的呢?对应官网上有说明,在HystrixCommandProperties类中.
+	
+
+三.Hystrix服务熔断流程.
+   首先熔断器有开放,关闭,半开三种状态.
+   1.当服务请求满足一定次数,也就是circuitBreaker.requestVolumeThreshold所配置的数值.
+   2.并且服务失败率达到一定比例,就是circuitBreaker.errorThresholdPercentage所配置的数值.
+   3.那么熔断器将由关闭转为开放状态.
+   4.在开放状态的时候,所有请求会直接走降级方法.
+   5.在经过一段时间后,就是circuitBreaker.sleepWindowInMilliseconds所配置的数值.
+     熔断器将会转为半开状态,此时将会放过下一个单个请求,如果这个请求失败了,则继续转为开放状态.循环第四步和第五步,如果成功了,则直接转为关闭状态.
+	 
+	另外,这个统计次数与失败率会有一个时间限制,默认是10秒,这个暂时不知道哪个参数可以修改.
+    
+	

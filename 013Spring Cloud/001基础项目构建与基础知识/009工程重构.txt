@@ -1,0 +1,17 @@
+1.目前我们有两个子module,但是这两个工程有一些重复得类,在两个工程中都有,这对以后得维护会带来问题.
+  所以我们需要对工程进行重构,就是新构建一个专门放公共类,公共包得工程cloud-api-commons
+  
+  
+2.同样得步骤,只不过这个工程不需要启动类,不需要yml,只是存放这个公共类而已.
+
+3.在工程建好,把公共类挪过去之后,就执行mvn clean->install,将该工程发布到本地仓库中.
+  如果不确定groupId,artifactID这些,可以取本地仓库中看一下.
+
+4.然后将原先两个重复得类删除,然后引入maven.
+  <dependency>
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>         //这里直接取工程得版本
+    </dependency>
+
+5.测试即可

@@ -17,6 +17,12 @@
 ### 原理 
 
 * Session的实现是基于Cookie来实现的。
+    也就是在获取session对象时,首先看cookie中带的有没有JSESSIONID,如果有,拿着这个id去获取对应的session对象,没有则新创建一个
+ session对象,把对应的JSESSIONID放在cookie中.
+ 
+
+   3）第二次访问的时候，浏览器带着JSESSIONID的cookie访问服务器
+ 
 
 ### 问题
 

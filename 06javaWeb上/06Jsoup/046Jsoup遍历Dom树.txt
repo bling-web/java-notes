@@ -1,0 +1,22 @@
+    
+一.广度优先遍历.
+            public static void test(){
+		try {
+			Document document = Jsoup.connect("http://10.202.32.15/medicine/medicine/webNewsList.do").get();
+                                                //获取当前元素的子节点
+			Elements elements = document.children();
+			recursion(elements);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void recursion(Elements elements){
+		//如果传入的元素size为0,则结束递归
+		for (Element element : elements) {
+			System.out.println(element.tagName());
+			System.out.println(element.text());
+			System.out.println(element.ownText());
+			Elements help = element.children();
+			recursion(help);
+		}
+	}

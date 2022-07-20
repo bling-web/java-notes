@@ -1,0 +1,21 @@
+	
+
+通过jsoup发送json数据并且返回
+
+
+              public static void TestJsoup() throws IOException {
+		Document document = Jsoup.connect("http://10.200.126.163:6667/code").
+				//在请求的请求体中加数据
+				requestBody("{\"content\":\"北京 南京\"}").
+             				  //添加请求头
+				header("Content-Type", "application/json").
+               				 //不在url中添加参数
+				ignoreContentType(true).
+				//发送post请求
+				post();
+		//body()是获取返回体里的数据
+		Element element = document.body();
+		System.out.println(element.text());
+
+
+	}

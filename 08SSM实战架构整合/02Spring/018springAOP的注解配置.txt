@@ -7,21 +7,15 @@
   
 
 二.其实以上都是通常配置.针对aop的配置主要由三步.
-   1.在对应的Config类上加上注解,就是为了告诉spring,我要使用aop了.
+   1.在对应的Config类上加上注解
      @EnableAspectJAutoProxy. 
      相当于aop:Config.   里面有proxyTargetClass属性
-     @Configuration
-     @ComponentScan("com.cc.spring.anaop")
-     @EnableAspectJAutoProxy                    //这个注解就是为了告诉spring,我要使用aop了.
-     public class SpringConfiguration {
-     }
-
 
    2.在代理类上(就是要给切入点添加附加操作的类)
      @Aspect.                  
      相当于aop:Aspect
 
-   3.在对应的方法上添加通知类型.
+   3.在对应的方法上添加通知类型.(一般在代理类中得方法上)
      @Before("execution(* *..UserServiceImpl.saveUser())")  
       注意切点配置在里面.
 
@@ -31,7 +25,7 @@
 @Aspect
 public class LogUtil {
     @Pointcut("execution(* *..UserServiceImpl.saveUser())")
-    public void pt(){}                                          //这个方法里面的方法体即使有也并不会执行.只是承托这个注解的一个载体,因为切面就有切点加通知.
+    public void pt(){}
 
 
     public void printLog(){
@@ -56,6 +50,85 @@ public class LogUtil {
         System.out.println("执行printAfterThrowingLog");
     }
 }
+
+
+
+注意:在配置通知方法时,如果有参数,一定要加上,不然会报0 formal unbound in pointcut错误.
+例:
+@Component
+@Aspect
+public class SecurityAspect {
+
+    private static final String LOGINADDRE="/admin/login";
+
+    @Pointcut("execution(* com.tim.mall.admin.Controller.*.*(..))")
+    public void configuration(){
+    }
+    @Around("configuration()&&args(request)")                                                       //注意这里加上了参数request,环绕通知本身的ProceedingJoinPoint参数不需要加,而对于其他通知,都需要加上参数,要一一匹配.
+    public Object around(ProceedingJoinPoint pjp, HttpServletRequest request) throws Throwable {
+        HttpSession session = request.getSession();
+        //首先应该排除登录页面,否则会造成无限循环
+        String requestURI = request.getRequestURI();
+        if(requestURI.contains("/admin/login")){
+            return pjp.proceed();
+        }else{
+            //判断该用户是否已经登录
+            if(session.getAttribute("Context.CURRENT_USER")==null||session.getAttribute("Context.PERMISSION_ATTRIBUTES")==null){
+                return "login";
+            }else{
+                //判断该用户是否有该页面的权限
+                List url=(List<String>)session.getAttribute("Context.PERMISSION_ATTRIBUTES");
+                if(!url.contains(requestURI)){
+                    return pjp.proceed();
+                }else{
+                    return "noPermission";
+                }
+            }
+        }
+
+    }
+}
+
+以上虽然不报错,但是却进不去这个around方法中,不知道为什么,以下方法是正确的.
+
+
+@Component
+@Aspect
+public class SecurityAspect {
+
+    private static final String LOGINADDRE="/admin/login";
+
+    @Pointcut("execution(public * com.tim.mall.admin.Controller.*.*(..))")
+    public void configuration(){
+    }
+    @Around("configuration()")
+    public Object around(ProceedingJoinPoint pjp) throws Throwable {
+        ServletRequestAttributes attributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        HttpSession session = request.getSession();
+        //首先应该排除登录页面,否则会造成无限循环
+        String requestURI = request.getRequestURI();
+        if(requestURI.contains("/admin/login")){
+            return pjp.proceed();
+        }else{
+            //判断该用户是否已经登录
+            if(session.getAttribute(Context.CURRENT_USER)==null||session.getAttribute(Context.PERMISSION_ATTRIBUTES)==null){
+                return "login";
+            }else{
+                //判断该用户是否有该页面的权限
+                List url=(List<String>)session.getAttribute(Context.PERMISSION_ATTRIBUTES);
+                if(url.contains(requestURI)){
+                    return pjp.proceed();
+                }else{
+                    return "noPermission";
+                }
+            }
+        }
+
+    }
+
+}
+
 
 
     

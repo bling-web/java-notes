@@ -1,0 +1,42 @@
+1.消息发送流程.
+      Kafka的producer发送消息采用的是异步发送的方式,在消息发送的过程中,涉及到了两个线程-main线程和Sender线程,
+   调用Send()方法发送消息即开启Sender线程,以及一个共享变量-RecordAccumulator(记录积累),main线程将消息发送给RecordAccumulator,
+  Sender线程不断从RecordAccumulator中拉取消息发送到Kafka broker.
+     Send()方法相关参数:batch.size:只有数据达到batch.size之后,sender才会发送数据.
+                                    linger.ms:如果数据迟迟未达到batch.size,sender等待linger.timr之后才会发送数据.
+
+    
+
+2.实际代码.
+   1.导入依赖. 
+      <dependency>
+           <groupId>org.apache.kafka</groupId>
+           <artifactId>kafka-clients</artifactId>
+           <version>0.11.0.0</version>
+       </dependency>
+    2.
+
+
+
+
+
+
+一.生产者需要注意的东西.
+    1.分区.
+      如果发送数据时指定分区号,就会发送到固定的分区.
+      如果指定key,按照key进行hash然后分区,这个规则应该是自己可以定的.
+      如果什么都没有指定,就是轮询.
+    2.acks应答级别.
+       0:不等待任何的返回值
+       1:leader能接收到即可.返回ack 
+       -1或all:所有副本(包括leader)接收到才行.
+      
+      0和1都可能丢数据.-
+      1可能性很小,但是有数据重复的问题.就是当leader给follower同步数据的时候挂掉了,此时follwer正在写数据,可能写了一半,那此时并没有进行响应,所以生产者会重复发送数据,那此时就造成数据的重复.
+
+二.消费者需要注意的东西.
+     1.一个消费者组只能消费一个分区中的数据.
+        组+主题+分区 唯一确定一个offset.
+
+
+    数据量小,使用同步场景,数据量大,使用异步.

@@ -1,0 +1,69 @@
+
+  在之前其实已经初步使用了这个注解,这里更加深入一下.
+  
+
+一.资源名配置为路径和sentinelResourced的value值的区别
+   如下:
+      @GetMapping("/byResource")
+	  @SentinelResource("byResource")
+		public CommonResult test1(){
+			return new CommonResult(200,"访问成功",new Payment(2000L,"serial001"));
+		}
+	  
+    我们可以对 /byResource 资源加流控,也可以对 byResource  加流控,这两个的区别是:
+	  当对/byResource加流控时,超过阈值会走sentinel默认的方法,返回blockend by sentinel,不能指定自定义默认方法.
+	  当byResource加流控时,可以指定自定义默认方法,且必须要加,否则会抛出异常到页面上
+	  
+	  
+
+二.之前面临的问题及解决.
+   我们可以通过SentinelResource注解指定默认的处理方法,但是会有如下问题:
+   1.功能代码与业务代码耦合,没有单独抽出来
+   2.代码膨胀,需要指定很多个默认处理方法
+   3.全局处理的方法没有体现
+   
+   解决:
+     大体流程就是指定一个自定义处理类,所有的处理方法都在该类中.
+	 举例:
+	   (1)定义一个customerBlockHandler全局处理类,这个类的位置随便,但是一般会handle的处理包,放在里面.
+	   (2)在这个类里定义一个共用的兜底处理方法(注意:这个方法必须使static方法,否则不会生效)
+	   (3)在需要的sentinel注解上指定处理类和处理方法,这样就能使降级方法和业务方法进行剥离.达到共用代码的目的
+	   
+	举例:
+	   公共处理类:
+	    @Component
+		public class CustomerBlockHandler {
+
+			public static CommonResult handleMethod(BlockException exception){
+				return new CommonResult(200,"自定义兜底方法");
+			}
+		}
+		
+		controller类:
+		
+		@RestController
+		public class RateLimitController {
+
+
+			@GetMapping("/byResource")
+			@SentinelResource(value = "byResource",blockHandlerClass= CustomerBlockHandler.class,blockHandler = "handleMethod")
+			public CommonResult test1(){
+				return new CommonResult(200,"访问成功",new Payment(2000L,"serial001"));
+			}
+
+		}
+		
+		然后对byResource加流控规则,如果不符合规则就会走到handleMethod 这个方法中.
+		
+
+    
+	注意: 在sentinelResource这个注解中,block管的是配置违规,fallback管的是方法本身调用超时等异常
+		  此外,sentinelResource本身不支持加在private方法上.
+		
+		
+	 
+	   
+	   
+	
+ 
+ 

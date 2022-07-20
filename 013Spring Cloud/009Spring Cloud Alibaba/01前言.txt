@@ -1,0 +1,30 @@
+1.为什么要有Spring Cloud Alibaba
+  (1)Spring Cloud 自己已经停更.
+  (2)alibaba为了扩大自己得影响力对Spring Cloud进行了再一层得封装,使之使用更加方便,功能更加强大.现在已经再很大程度上替代了Spring Cloud.
+  
+2.Spring Cloud Alibaba能做什么?
+  官网: https://github.com/alibaba/spring-cloud-alibaba/blob/master/README-zh.md
+  基本能支持Spring Cloud之前得所有功能.
+  并且能完美得支持分布式事务,分布式任务调度,优化了服务注册中心,配置中心消息总线这些.
+  
+3.我们主要学习什么部分?
+  Sentinel：把流量作为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性。
+ 
+  Nacos：一个更易于构建云原生应用的动态服务发现、配置管理和服务管理平台。
+ 
+  RocketMQ：一款开源的分布式消息系统，基于高可用分布式集群技术，提供低延时的、高可靠的消息发布与订阅服务。
+ 
+  Dubbo：Apache Dubbo™ 是一款高性能 Java RPC 框架。
+ 
+  Seata：阿里巴巴开源产品，一个易于使用的高性能微服务分布式事务解决方案。
+  
+  
+4.学习资料获取.
+  总览:
+   官网:https://spring.io/projects/spring-cloud-alibaba#overview
+   
+  具体学习:https://spring-cloud-alibaba-group.github.io/github-pages/greenwich/spring-cloud-alibaba.html
+  
+  
+   
+  

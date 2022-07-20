@@ -1,0 +1,31 @@
+1.如何重新消费一个主题的数据.
+  换一个组同时开启offset自动重置功能.如果只是开启重置offset方法是不行的.
+
+2.offset.
+   (1)当我们设置了自动提交的时候,更新的offset会不断写入内存,会持续消费下一条数据.
+   (2)当我们没有设置,并且没有提交时:
+      第一次消费数据的时候会从初始值,也就是你当前消费者保存的offset开始消费,并且会持续消费
+   下一条数据,因为虽然我们没有提交offset,但是内存中还维护了一个offset,但是一旦我们关闭了消费者,
+    再下一次启动时,又会从当前消费者保存的offset开始消费,那也就会造成重复消费.
+   (3)因为自动提交可能发生丢数据的情况,所以我们一律要手动提交offset.
+       手动提交有两种方式:
+                   //同步提交,线程会阻塞到当前offset提交成功.
+                    messageConsumer.commitSync();
+                    //异步提交,推荐,效率比较高,其他的线程去执行提交操作
+                    messageConsumer.commitAsync(new OffsetCommitCallback() {
+                        @Override
+                        public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
+                            if(e!=null){
+                                System.out.println("Commit failed for"+offsets);
+                            }
+                        }
+                    });
+
+
+3.手动提交和自动提交可能出现的问题.
+   (1).手动提交,时间比较短,比如1秒.
+         可能出现丢数据的情况,就是当我们的数据处理失败,但此时已经提交了offset,就会出现消费者丢数据的情况.
+   (2).手动提交,时间比较长,比如10秒.
+         可能出现重复数据,当我们提交offset的时候,,kafka集群挂了,那么此次offset没有提交上去,再一次启动就会消费重复数据
+   (3).自动提交
+         也是重复数据的情况,当我们处理完毕提交的时候,kafka集群挂了,此次offset没有提交上去,再一次启动就会消费重复数据

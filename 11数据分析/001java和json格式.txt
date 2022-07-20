@@ -1,0 +1,48 @@
+一.用org.json这个包.
+
+    主要用到了json这个包.
+     <dependency>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+          <version>20160212</version>
+    </dependency>
+
+  1.构造json格式.
+    (1).直接构造一个json对象,往里面加数据
+      JSONObject jsonObject = new JSONObject();
+       直接加字符串{"1","张三"},或者value加一个list数组{"1",["张飞","关羽"]}
+      jsonObject.put(key,Object);         
+       将value默认为一个数组,即使一个元素也是数组格式{"1",["张飞"]}
+      jsonObject.append(key,Object);  
+                                                        
+
+    (2).构建json数组对象.往里面加数据
+       JSONArray jsonArray = new JSONArray()
+       就是这种格式得:   [{},{},""]
+       jsonArray.add(element)    或者  jsonArray.add(index,element)
+        
+
+  2.解析json格式.
+    (1).将json字符串转为json对象
+       JSONObject jsonObject = new JSONObject("json字符串");
+      然后通过getString(key) 即可获取对应得value.
+
+
+
+
+
+
+二.用net.json的包
+    <!-- https://mvnrepository.com/artifact/net.sf.json-lib/json-lib -->
+    <dependency>
+        <groupId>net.sf.json-lib</groupId>
+        <artifactId>json-lib</artifactId>
+        <version>2.2.3</version>
+    </dependency>
+    1.构建json格式
+    
+
+    
+     
+   
+       

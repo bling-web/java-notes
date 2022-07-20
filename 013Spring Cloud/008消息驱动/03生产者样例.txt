@@ -1,0 +1,160 @@
+一.新建生产者模块
+   1.新建Module cloud-stream-rabbitmq-provider8801
+   2.增加pom.
+      <dependencies>
+
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-eureka-server -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+     
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+
+    </dependencies>
+
+    3.配置yml
+	  server:
+		  port: 8801
+
+		spring:
+		  application:
+			name: cloud-stream-provider
+		  cloud:
+			stream:
+			  binders: # 在此处配置要绑定的rabbitmq的服务信息；
+				defaultRabbit: # 表示定义的名称，用于于binding整合
+				  type: rabbit # 消息组件类型
+				  environment: # 设置rabbitmq的相关的环境配置
+					spring:
+					  rabbitmq:
+						host: localhost
+						port: 5672
+						username: guest
+						password: guest
+			  bindings: # 服务的整合处理
+				output: # 这个名字是一个通道的名称
+				  destination: studyExchangeForBling # 表示要使用的Exchange名称定义,这个topic可以直接定义,如果没有会直接新建一个
+				  content-type: application/json # 设置消息类型，本次为json，文本则设置“text/plain”
+				  binder: defaultRabbit  # 设置要绑定的消息服务的具体设置
+
+		eureka:
+		  client: # 客户端进行Eureka注册的配置
+			service-url:
+			  defaultZone: http://localhost:7001/eureka
+		  instance:
+			lease-renewal-interval-in-seconds: 2 # 设置心跳的时间间隔（默认是30秒）
+			lease-expiration-duration-in-seconds: 5 # 如果现在超过了5秒的间隔（默认是90秒）
+			instance-id: send-8801.com  # 在信息列表时显示主机名称
+			prefer-ip-address: true     # 访问的路径变为IP地址
+			
+	4.主启动类.
+	   @SpringBootApplication
+		@EnableEurekaClient
+		public class StreamCloudMain8801 {
+			public static void main(String[] args) {
+				SpringApplication.run(StreamCloudMain8801.class,args);
+			}
+
+		}
+
+    5.业务类.
+	  (1)发送消息接口.
+	     public interface MessageProdue {
+			void send();
+		}
+	  (2)发送消息实现类.
+	     //引入这个注解的作用是标识此类是配置类,因为里面加了@Configration注解
+		//同时引入Binding的一些基础类,如BindingBeansRegistrar
+		@EnableBinding(Source.class)  //source就是标识和输出类进行绑定
+		public class MessageProduceImpl implements MessageProdue {
+
+			@Resource
+			private MessageChannel output;   //输出消息对象
+
+			@Override
+			public void send() {
+				String id = UUID.randomUUID().toString();
+				//创建消息对象
+				Message<String> message = MessageBuilder.withPayload(id).build();
+				output.send(message);
+				System.out.println("发送消息:"+message);
+			}
+		}
+	  (3)发送消息controller类.
+		@RestController
+		public class SendController {
+
+			@Resource
+			private MessageProdue messageProdue;
+
+			@GetMapping("/send")
+			public void sendMessage(){
+				messageProdue.send();
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      

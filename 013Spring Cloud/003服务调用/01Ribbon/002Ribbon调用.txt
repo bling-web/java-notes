@@ -1,0 +1,33 @@
+1.ribbon负载均衡使用条件.
+  (1)引入pom
+      <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+      <version>2.2.0.RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
+  (2)给使用的restTemplate增加负载均衡功能,也就是加上注解
+     @LoadBalanced
+   注意:ribbon一般是结合注册中心使用的.
+ 
+2.Ribbon其实就是负载均衡+RestTemplate.
+   在之前我们其实已经用到了Ribbon的负载均衡功能,在Eureka集群调用的时候,可以很明显的知道了已经使用了负载均衡.
+   但是我们并没有专门引入对应的pom,却可以使用,为什么呢?
+     因为在引入eureka的时候已经集成了ribbon,内部已经引入了对应pom,同样,在zk中也是.
+	 
+3.补充RestTemplate用法.
+  get方法:
+    getForObject   返回对象为响应数据转化成的对象,json格式
+	getForEntity   返回对象为ResponseEntity,包含了响应体中的重要信息,如响应头,响应体,状态码等等.
+	  例:
+	      @GetMapping("/consumer/payment/getEntity/{id}")
+			public CommonResult getOrderById2(@PathVariable("id") Long id){
+				ResponseEntity<CommonResult> entity = restTemplate.getForEntity(SERVICE_PATH + "payment/get/" + id, CommonResult.class);
+				if(entity.getStatusCode().is2xxSuccessful()){
+					return entity.getBody();
+				}
+				return new CommonResult(entity.getStatusCode().value(),"请求失败");
+			}
+  post方法	
+    postForObject   返回对象为响应数据转化成的对象,json格式
+	postForEntity   返回对象为ResponseEntity,包含了响应体中的重要信息,如响应头,响应体,状态码等等.

@@ -1,0 +1,24 @@
+1.为什么要有消息驱动,需要解决什么问题?
+  目前我们的系统主要分为三块
+  前端     后端        数据平台
+    这个时候后端可能采用的消息中间件是rabbitmq,而数据平台因为数据分析数据,数据量很大,可能采用的是kafka,那么后端和数据平台交互的时候就需要涉及到切换,维护,开发,工作量变大,
+  所以就需要有一个中间媒介,能屏蔽底层细节,使之对于开发者都一样的进行配置和使用. 也就是消息驱动。
+  
+2.Spring Cloud Stream是什么？
+  Spring Cloud Stream是一个构建消息驱动的微服务框架，能够屏蔽底层消息中间件的差异，统一消息的编程模型，目前仅支持rabbitmq和kafka两种消息中间件。
+  官网：https://spring.io/projects/spring-cloud-stream#overview
+  中文指导手册：https://m.wang1314.com/doc/webapp/topic/20971999.html
+  
+  
+3.Spring Cloud Stream为什么可以统一底层差异？
+   由于各自构建的消息中间件初始目的不一样，其底层实现会有较大差异，Spring Cloud Stream通过定义绑定器(builder)作为中间层，从而实现了应用程序和消息中间件之间的隔离。进行了解耦。
+   
+   INPUT对应于消费者，OUTPUT对于生产者，并且遵循了发布订阅模式。
+   
+   
+4.常见名词介绍
+  Binder:构建的中间层,可以屏蔽底层差异
+  Channel:通道,就是队列Queue的一种抽象
+  Source:消息的发送对象
+  Sink:消息的接收对象
+  

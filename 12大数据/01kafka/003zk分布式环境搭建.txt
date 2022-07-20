@@ -1,0 +1,91 @@
+一.首先清楚自己在哪几台机器上部署集群.
+    三台集群: hadoop116,  hadoop117,    hadoop118.
+     对应编号       1                     2                     3
+
+
+二.配置.
+    1.三台服务器首先都按单机模式修改一下.
+    2.配置服务器的编号.
+       (1)在每个服务器中 zkData文件夹下创建一个myid的文件.
+           touch myid
+       (2)然后进行编辑.
+            直接输入对应的编号即可.
+            比如hadoop116,  myid文件中直接写1
+                   hadoop117,  myid文件中直接写2
+                   hadoop118,  myid文件中直接写3
+       (3)配置zoo.cfg文件.
+           在每个服务器上新增以下配置.
+            ###cluster###
+            server.1=192.168.1.116:2888:3888
+            server.2=192.168.1.117:2888:3888
+            server.3=192.168.1.118:2888:3888
+            说明:
+                  server.A=B.C.D
+                  这里的A就是myid里配置的编号.B是对应的ip地址.C是leader与follower交换数据的端口.D是leader选举交换信息的端口.
+    3.启动集群.
+       现在我们部署了三台机器.启动半数以上才能正常工作.
+        三台机器依次执行:bin/zkServer.sh start
+       启动完之后可以查看jps. zkServer status 会标识哪一个是leader,哪一个是follower.
+  
+      zkData中的version2就是存储zk数据的地方,如果需要恢复zk到初始状态,可以直接删除这个文件.
+
+三.客户端命令行操作.
+        命令基本语法                             功能描述
+            help                                显示所有操作命令
+            ls path                            查看当前znode所包含的内容
+            Is2 path                          查看当前znode包含的详细内容
+            create                             创建节点,-s 有序节点, -e 临时节点.
+           get path                           获得节点的值
+              set                                 设置节点的具体值
+              stat                               查看节点状态
+            delete                             删除节点
+            rmr                                 递归删除节点.
+      具体演示.要理解每一个唯一的路径就代表一个节点.
+      1.创建普通节点.
+        create /sanguo  "shuguo"-----> create   路径  值
+           注意: (1).如果不加值就会创建失败.也就是必须存储数据.
+                   (2).路径只能一级一级创建,不能一次创建多级
+      2.创建临时节点.
+        create -e /sanguo/wuguo "zhouyu"
+         临时节点在客户端断开之后就会被删除.
+      3.创建有序节点.
+        create -s /sanguo/weiguo 'caocao'  
+        结果:  Created /sanguo/weiguo0000000002
+        create -s /sanguo/weiguo 'caocao'
+        结果:  Created /sanguo/weiguo0000000003
+        create -s /sanguo/weiguo 'caocao'
+        结果:  Created /sanguo/weiguo0000000004
+       
+        可以看到有序节点,即使路径一样,也可以多次创建,因为系统会在后面自动加上路径,创建的节点路径实际上是加上序号的.
+        在获取节点值的时候,也要加上序号.
+             get /sanguo/weiguo
+             结果 : Node does not exist: /sanguo/weiguo
+             get /sanguo/weiguo0000000003
+             结果 : caocao
+      4.获取节点值.
+         get /sanguo----->get 路径
+      5.设置修改节点值.
+         set /sanguo   "zhangfei"----->set 路径  值
+      6.监听节点值得变化.
+         (1)在hadoop116上注册监听/sanguo 节点值得变化.
+             get /sanguo watch
+         (2)在hadoop117上改变/sanguo节点得值.
+             set /sanguo "weiguo"
+         (3)观察hadoop116客户端是否收到通知.
+       
+         注意:一次监听只能收到一次通知.直接删掉监听节点,也会通知
+
+      7.监听子节点得路径变化.
+         (1)在hadoop116上注册监听/sanguo 节点值得变化.
+             ls /sanguo watch
+         (2)在hadoop117上增加或者删除/sanguo得子节点
+             set /sanguo "weiguo"
+         (3)观察hadoop116客户端是否收到通知.
+    
+         注意:一次监听只能收到一次通知.直接删掉监听节点,也会通知         
+         
+       8.查看节点状态.
+          stat /sanguo
+
+                  
+                    

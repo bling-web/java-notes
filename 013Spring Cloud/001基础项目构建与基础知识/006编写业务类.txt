@@ -1,0 +1,84 @@
+1.编写dao层.
+
+	类
+	//该注解和Repository类似,但是更加人性化,不容易报错,针对dao层
+	//Mybatis会根据该注解自动生成一个实体类
+	@Mapper
+	public interface PaymentDao {
+
+	public int create(Payment payment);
+
+	public Payment getPaymentById(@Param("id") Long id);
+	}
+	
+	mapper映射文件
+	
+	<!--    id就是方法名称
+       parameterType 参数类型
+       useGeneratedKeys 是否返回新增生成得id
+       keyProperty 指定主键
+	-->
+    <insert id="create" parameterType="Payment" useGeneratedKeys="true" keyProperty="id">
+        insert into payment(serial) values (#{serial});
+    </insert>
+
+	<!--    这里得type指得就是我们对应的实体类
+        column是数据库字段名,property是实体类字段
+	-->
+    <resultMap id="BaseResultMap" type="com.atguigu.springcloud.entities.Payment">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="serial" property="serial" jdbcType="VARCHAR"/>
+    </resultMap>
+	<!--    resultMap就是会对我们得结果集做一个映射,将数据库中得各个字段映射到我们实体类得属性上,通常我们这样写得原因是数据库字段名可能和-->
+	<!--    我们得属性名称不一致,比如说order_type对应orderType,所以需要手动映射,如果不需要手动映射,直接返回resultType也可以-->
+    <select id="getPaymentById" parameterType="Long" resultMap="BaseResultMap">
+        select * from payment where id = #{id};
+    </select>
+	
+2.编写service层.
+  @Service
+	public class PaymentServiceImpl implements PaymentService {
+
+		@Resource
+		private PaymentDao paymentDao;
+
+		@Override
+		public int create(Payment payment) {
+			return paymentDao.create(payment);
+		}
+
+		@Override
+		public Payment getPaymentById(Long id) {
+			return paymentDao.getPaymentById(id);
+		}
+	}
+
+3.编写Controller层.
+  @RestController
+	public class PaymentController {
+
+		@Resource
+		private PaymentService paymentService;
+
+		@PostMapping(value = "/payment/create")
+		//RequestBody用于绑定请求体中得数据
+		public CommonResult create(@RequestBody Payment payment) {
+			int result = paymentService.create(payment);
+			if(result>0){
+				return new CommonResult<Integer>(200,"创建数据成功",result);
+			}
+			return new CommonResult<Integer>(404,"创建数据失败",result);
+		}
+
+		@GetMapping(value = "/payment/get/{id}")
+		//PathVariable 用于绑定参数中得占位符
+		public CommonResult getPaymentById(@PathVariable("id") Long id) {
+			Payment payment = paymentService.getPaymentById(id);
+			if(payment != null){
+				return new CommonResult<>(200,"查询数据成功",payment);
+			}
+			return new CommonResult<>(404,"没有对应记录,id: "+id,null);
+		}
+	}
+
+

@@ -1,0 +1,145 @@
+
+  之前我们启动的是Sentinel控制台,那其实Sentinel分为前台和后台, 暂时不清楚前台和后台通过什么进行交互的.
+    想到了,在后台程序启动的时候,会配置一个前台启动的ip和端口号,这样想要什么信息就可以通过端口调用传递过去,从而实现交互.
+  现在开始引入后台,其实就是一个maven包,引入到我们自己的工程里即可.
+  
+一.启动nacos8848成功.
+   因为我们的服务需要注册到nacos中,这里就直接使用本地单机版的nacos了.
+   
+二.新建微服务cloudalibaba-sentinel-service8401.
+   1.新建Module cloudalibaba-sentinel-service8401
+   2.POM
+     <dependencies>
+    <dependency>
+        <groupId>com.atguigu.springcloud</groupId>
+        <artifactId>cloud-api-commons</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>com.alibaba.csp</groupId>
+        <artifactId>sentinel-datasource-nacos</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <scope>runtime</scope>
+        <optional>true</optional>
+    </dependency>
+    <dependency>
+        <groupId>cn.hutool</groupId>
+        <artifactId>hutool-all</artifactId>
+        <version>4.6.3</version>
+    </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+    </dependencies>
+    3.yml
+	  server:
+		  port: 8401
+
+		spring:
+		  application:
+			name: cloudalibaba-sentinel-service
+		  cloud:
+			#注册服务
+			nacos:
+			  discovery:
+				server-addr: localhost:8848
+			#流量控制
+			sentinel:
+			  transport:
+				#指定前台的服务ip
+				dashboard: localhost:8080
+				#sentinel后台服务启动端口
+				port: 8719  #默认8719，假如被占用了会自动从8719开始依次+1扫描。直至找到未被占用的端口
+
+		management:
+		  endpoints:
+			web:
+			  exposure:
+				include: '*'
+				
+    4.启动类.
+	  
+		@EnableDiscoveryClient
+		@SpringBootApplication
+		public class SentinelApplication8401 {
+			public static void main(String[] args) {
+				SpringApplication.run(SentinelApplication8401.class, args);
+			}
+		}
+		
+
+
+    5.一个简单的controller类.
+	  @RestController
+		public class FlowLimitController {
+
+
+			@GetMapping("/testA")
+			public String getTest(){
+				return "testA";
+			}
+
+			@GetMapping("/testB")
+			public String getTest2(){
+				return "testB";
+			}
+		}
+		
+	6.启动该微服务
+
+三.启动Sentinel控制台.
+   java -jar sentinel-dashboard-1.7.0
+   
+   
+   
+   
+   
+   然后查看sentinel控制台.发现什么也没有.
+   因为sentinel是懒加载的,只有当你真正访问呢哪个请求时,才会去监控这个地址.所有这个时候我们访问http://localhost:8401/testA,再次查看sentinel,就会发现对应的监控信息.
+   包括你每分钟多少请求,多少通过了,多少没有通过.
+   
+   问题:
+      它作为一个外部的maven组件,怎么知道你有哪些请求,怎么进行监控?
+	     目前想的是可以获取所有GetMapping或者PostMapping注解,注解中有配置的路径可以获取到,同时还可以获取到该注解的位置(哪个类下),再利用aop就可以进行监控.
+   
+   
+   
+   
+
+

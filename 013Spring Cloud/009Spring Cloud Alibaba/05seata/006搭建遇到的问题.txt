@@ -1,0 +1,67 @@
+1.当开启seata后,多开启几个服务去连接seata,出现连不上的情况,seata端报错,强制关掉某个连接.
+    猜想可能是内存不够,于是调大seata的启动内存,但是报错,服务直接起不来,说不能保留足够的内存
+  但是我的电脑应该由足够的内存,于是百度发现,jdk安装是32位的也会出现这种情况,将jdk重新安装64位即可(原来的不需要卸载直接安装即可).
+  
+
+2.为什么不使用springboot自带的dataSource.
+  猜测是需要用到DataSourceProxy,也就是需要定制化一些东西
+  
+
+3.在写完代码后,使用Feign调用一个远程服务时出现超时,但是查看对应的服务并没有报错,甚至没有接收到这个请求.
+   是因为在Feign接口上多加了一个Service注解,这样在使用resource注入的就不是代理类,调用了方法却没有请求发出,导致超时异常.
+
+4.在项目启动时一致连不上seata,找不到对应的事务名称.
+  首先项目中的file.conf和seata服务中的配置文件file.conf是不一样的.
+  项目中的file.conf:
+
+  #这个和seata服务中的配置文件file.conf不一样,那里面是vgroup_mapping.my_test_tx_group = "tx_group"
+  vgroup_mapping.tx_group = "default"
+  
+  
+  在application.yml中对应的配置的是tx-service-group: tx_group 而不是 tx-service-group: default
+  
+  
+5.在调用扣减金额服务时,出现以下异常
+	Error updating database.  Cause: java.sql.SQLException: Failed to report branch status false
+	### The error may exist in file [E:\javaPrograming\cloud2020\seata-account-service2003\target\classes\mapper\AccountMapper.xml]
+	### The error may involve defaultParameterMap
+	### The error occurred while setting parameters
+   
+   此时AccountMapper.xml中的配置是:
+	<mapper namespace="com.atguige.springcloud.dao.AccountDao">
+
+		<update id="decreate">
+			update t_account set used=used + #{money},residue=residue - #{money}
+			where user_id=#{userId}
+		</update>
+
+	</mapper>
+	   
+	猜想used 和 money转换类型出现了问题,所以加了映射之后就可以解决,后续配置如下:
+   
+   <mapper namespace="com.atguige.springcloud.dao.AccountDao">
+
+		<resultMap id="BaseResultMap" type="com.atguigu.springcloud.alibaba.domain.Account">
+			<id column="id" property="id" jdbcType="BIGINT"/>
+			<result column="user_id" property="userId" jdbcType="BIGINT"/>
+			<result column="total" property="total" jdbcType="DECIMAL"/>
+			<result column="used" property="used" jdbcType="DECIMAL"/>
+			<result column="residue" property="residue" jdbcType="DECIMAL"/>
+		</resultMap>
+
+		<update id="decreate">
+			update t_account set used=used + #{money},residue=residue - #{money}
+			where user_id=#{userId}
+		</update>
+
+	</mapper>
+	
+	
+6.为什么需要加Mapper和MapperScan注解?
+  因为对于程序源来说,dao层就只需要定义一个接口就可以使用,为什么?接口可能是不可能掉方法的,哪我们自己不做,就只有框架帮我们做了,
+  框架自己去实现代理类
+  
+  那框架怎么知道要进行哪些类的dao层代理呢?
+      通过MapperScan:指定一个路径,框架会扫描这个路径下的所有接口,如果加了Mapper就会创建代理类.
+  
+  

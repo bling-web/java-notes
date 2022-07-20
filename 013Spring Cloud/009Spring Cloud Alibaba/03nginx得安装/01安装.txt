@@ -1,0 +1,84 @@
+1.linux得安装需要一些依赖,所以我们需要在开始前先把这些依赖安装好.
+   这里用得是116机器
+  (1)pcre 
+     https://sourceforge.net/projects/pcre/files/pcre/8.40/pcre-8.40.tar.gz/download
+	 zlib
+	 http://zlib.net/zlib-1.2.11.tar.gz
+	 openssl
+	 http://www.openssl.org/source/openssl-fips-2.0.10.tar.gz
+	 nginx
+	 http://nginx.org/download/nginx-1.10.2.tar.gz
+	 可以都下载好tar包然后移到linux中
+  (2)进行安装.
+        openssl安装
+
+		[root@localhost src]# tar zxvf openssl-fips-2.0.10.tar.gz
+		省略安装内容...
+		[root@localhost src]# cd openssl-fips-2.0.10
+		[root@localhost openssl-fips-2.0.10]# ./config && make && make install
+		省略安装内容...
+		pcre安装
+
+		[root@localhost src]# tar zxvf pcre-8.40.tar.gz
+		省略安装内容...
+		[root@localhost src]# cd pcre-8.40
+		[root@localhost pcre-8.40]# ./configure && make && make install
+		省略安装内容...
+		zlib安装
+
+		[root@localhost src]# tar zxvf zlib-1.2.11.tar.gz
+		省略安装内容...
+		[root@localhost src]# cd zlib-1.2.11
+		[root@localhost zlib-1.2.11]# ./configure && make && make install
+		省略安装内容...
+		nginx安装
+
+		[root@localhost src]# tar zxvf nginx-1.10.2.tar.gz
+		省略安装内容...
+		[root@localhost src]# cd nginx-1.10.2
+		[root@localhost nginx-1.10.2]# ./configure && make && make install
+		省略安装内容...
+		3、启动Nginx
+
+		先找一下nginx安装到什么位置上了
+
+		 
+
+		进入nginx目录并启动
+
+
+
+		报错了，error while loading shared libraries: libpcre.so.1: cannot open shared object file: No such file or directory，按照下面方式解决
+
+		复制代码
+		1.用whereis libpcre.so.1命令找到libpcre.so.1在哪里
+		2.用ln -s /usr/local/lib/libpcre.so.1 /lib64命令做个软连接就可以了
+		3.用sbin/nginx启动Nginx
+		4.用ps -aux | grep nginx查看状态
+		[root@localhost nginx]# whereis libpcre.so.1
+		[root@localhost nginx]# ln -s /usr/local/lib/libpcre.so.1 /lib64
+		[root@localhost nginx]# sbin/nginx
+		[root@localhost nginx]# ps -aux | grep nginx 
+		
+		启动完成之后可以直接在linux访问localhost或者在网络联通得情况下,在本机windows中访问对应nginx配置得ip即可.会出现对应得页面,也就是这个网址
+		https://www.cnblogs.com/taiyonghai/p/6728707.html
+  
+  
+  基本操作:
+    nginx的基本操作
+	  启动
+		[root@localhost ~]# /usr/local/nginx/sbin/nginx
+		停止/重启
+		[root@localhost ~]# /usr/local/nginx/sbin/nginx -s stop(quit、reload)
+		命令帮助
+		[root@localhost ~]# /usr/local/nginx/sbin/nginx -h
+		验证配置文件
+		[root@localhost ~]# /usr/local/nginx/sbin/nginx -t
+		配置文件
+		[root@localhost ~]# vim /usr/local/nginx/conf/nginx.conf
+		
+		
+		
+		其他操作可以查看该网址:	https://www.cnblogs.com/taiyonghai/p/6728707.html
+  
+  

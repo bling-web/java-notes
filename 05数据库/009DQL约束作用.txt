@@ -72,7 +72,7 @@
   1.理论知识.
    为什么要引入外键?  ->  减少数据冗余,更改麻烦的缺点.
      例:一张表中有很多员工,这些表中有几个部门,还有部门的地址,如果该地址变动,不容易更改.解决办法-->分成两张表,  
-        表employee:id,name,age,dep_id(部门id).    表department:id,depart,address
+        从表employee:id,name,age,dep_id(部门id).   主表department:id,depart,address
         即两个表中有一种对应的关系,通过这种对应关系可以找到属于哪个部门.
 
      员工(多)-->部门(一):是一种多对一的关系.   注意:一般在多的一边添加外键.

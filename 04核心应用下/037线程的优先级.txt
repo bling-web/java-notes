@@ -1,0 +1,26 @@
+
+一.概念理解.
+      每个线程都具有各自的优先级,线程的优先级可以表示该线程在程序中的重要性,如果有很多线程处于就绪状态,
+   系统会根据优先级来决定那个线程进入运行状态,但这并不意味着优先级低的线程得不到运行,而只是它运行的几率小
+   如垃圾回收线程的优先级就比较低.
+      在多任务操作系统中,每个线程都会得到一小段CPU时间运行,在时间片结束后,另一个同优先级的线程会开始运行,
+   也就是说系统会始终选择就绪状态下优先级较高的线程进入运行状态.
+      举例:
+              优先级5: 线程A,线程B.
+              优先级4: 线程C
+              优先级3: 线程D
+       当线程A时间片运行完后,会优先选择线程B运行,然后线程C,最后线程D.
+
+       
+
+二.优先级使用.
+     1.线程优先级的指定可以使用setPriority()方法.
+        指定的优先级应是1-10之间,越大优先级越高.
+     2.如果不指定,会有默认的优先级.
+        默认是Thread.NORM_PRIPORITY(常数5)
+    
+    public final static int MIN_PRIORITY = 1;   //The minimum priority that a thread can have.
+
+    public final static int NORM_PRIORITY = 5;   //The default priority that is assigned to a thread.
+
+    public final static int MAX_PRIORITY = 10;  //The maximum priority that a thread can have.

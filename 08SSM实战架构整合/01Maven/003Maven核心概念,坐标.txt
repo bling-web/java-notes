@@ -30,7 +30,7 @@
       版本号约定:
         SNAPSHOT:快照版本(开发版本/不稳定版本)              例:0.0.1SNAPSHOT.
         RELEASE或者不带SNAPSHOT的版本号:发布版本/稳定版本.  例:0.0.1   
-   其实groupid和artifactid就是对应的一个唯一路径,version对应文件名称.
+   其实groupid和artifactid就是对应的一个唯一路径,version对应问价名称.
 
 
 

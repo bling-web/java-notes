@@ -1,0 +1,17 @@
+1.在上一小结中,我们可以通过http://localhost:3344/master/Config-dev.yml 访问到配置文件信息.是因为SpringCloud规定了默认的读取规则.我们符合他们的规则.
+
+2.那么其实有三种读取规则.
+  label:分支   application:应用名   profile:配置属性,一般指dev,test,prod,deta,release这些
+  (1)/{label}/{application}-{profile}.yml（最推荐使用这种方式）
+     举例:http://localhost:3344/master/Config-dev.yml
+	      会直接返回文件中的内容
+		  
+  (2)/{application}-{profile}.yml
+     举例:http://localhost:3344/Config-dev.yml
+	      会默认返回配置中分支的内容
+		  
+  (3)/{application}-{profile}[/{label}]
+     举例:http://localhost:3344/Config-dev.yml/master
+	      会返回文件中的信息用json格式
+     
+  

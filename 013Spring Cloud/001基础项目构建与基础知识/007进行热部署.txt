@@ -1,0 +1,29 @@
+
+ 在我们程序运行时,每次改动都需要手动重启,这是一个比较繁琐得操作,我们可以通过一些配置,实现改动自动重启生效,也就是热部署.
+ 注意热部署只在自己测试时使用,在生产环境禁止使用
+ 
+1.增加工具依赖在你自己得工程.
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+   <scope>runtime</scope>
+    <optional>true</optional>
+</dependency>
+
+2.增加plugin依赖到父工程.
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+   <scope>runtime</scope>
+    <optional>true</optional>
+</dependency>
+
+
+3.打开setting->Compiler.
+  A,D,B,C四个开头得配置都勾选.
+  
+4.使用快捷键Ctrl+Shift+Alt+/
+   勾选 App running和FromEdt结尾得两个设置.
+   
+   
+5.重启idea

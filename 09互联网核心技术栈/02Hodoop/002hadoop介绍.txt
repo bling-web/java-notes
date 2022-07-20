@@ -1,0 +1,62 @@
+一.Hadoop入门.
+    1.Hadoop是一个由apche基金会所开发的分布式系统基础架构平台,也就是说它都是一个平台,而不是一个架构,处于更高的一个层次.
+    2.主要解决:海量数据存储和分析计算问题.
+    3.广义上来说,Hadoop是一个更广泛的概念--Hadoop生态圈.
+
+二.Hadoop发展历史.
+    1.lucene-Doug Cutting开创的,为了解决大量数据搜索的问题,借鉴了Google的三大论文,GFS->HDFS,Map-Reduce->MR,BigTable->Hbase.
+    2.在2005年Hodoop作为Lucene的子项目Nutch的一部分正式引入Apache基金会.2006年Map-Reduce和Nutch Distributed File System(NDFS)分别纳入成为Hadoop项目中.
+
+三.Hadoop三个发行版本.
+    Apache,   Cloudera,   Hortonworks.
+    1.Apache:最原始,最基础的版本,对于入门学习最好.
+         a.官网地址:http://hadoop.apache.org/releases.html.
+         b.下载地址:https://archive.apache.org/dist/hadoop/common/
+    2.Cloudera:在大型互联网公司中用的较多.
+         a.官网地址:https://www.cloudera.com/downloads/cdh/5-10-0.html
+         b.下载地址:http://archive-primary.cloudera.com/cdh5/cdh/5/
+    3.Hortonworks:文档较好,实际使用也比较多.
+         a.官网地址.https://hortonworks.com/products/data-center/hdp/
+         b.下载地址.https://hortonworks.com/downloads/#data-platform
+
+四.Hadoop的优势.
+    1.高可靠性:Hadoop会假设存储出现故障,所以会同时维护多个文件副本,也就是一个文件会始终会存储多个副本,在出现故障时可以对失败的节点进行重新分配.
+    2.高扩展性:在集群之间分配任务数据,很方便的扩展上千个节点.
+    3.高效性:在MapReduce的思想下,Hadoop是并行工作的,可以加快任务处理速度.
+    4.高容错性:正是因为它会自动保存多份数据,并且可以将失败的任务重新分配.所以也具有高容错性.
+
+五.Hadoop组成.
+    1.Hadoop HDFS(hadoop distribution file system):一个高可靠,高吞吐量的分布式的文件系统.
+    2.Hadoop MapReduce:一个分布式的,离线的,并行计算处理框架.
+    3.Hadoop YARN:  作业调度和集群资源管理的框架.
+    4.Hadoop common:  支持其他模块的工具模块(Configuration,序列化机制,日志操作).
+
+六.HDFS架构概述.
+    1.NameNode(NN)(经理):
+        存储文件的元数据(映射信息,配置信息),比如文件名,文件类型,目录结构,文件属性(生成时间,副本数,文件权限),以及每个文件的快列表和块所在的DataNode等.
+        并不存储真实的数据.                              
+    2.DataNode(DN)(打工者):
+        真正执行存储数据的进程,在本地文件系统存储文件块数据,以及块数据的效验和.掌握着数据真正存储的地址信息.
+    3.Secondary NameNode(2NN)(秘书):
+        用来监控HDFS状态的辅助后台程序,每隔一段时间获取HDFS原数据的快照.
+
+七.MapReduce概述.
+    MapReduce分为两个阶段,map阶段和reduce阶段.
+    1.Map阶段.
+       并行处理数据.就是将输入的数据分成一个一个的数据块,分到不同的节点去执行的过程.
+    2.Reduce阶段.
+       汇总阶段,就是各个节点处理完数据后,将结果汇总并输出的过程.
+
+八.YARN概述.
+    1.ResourceManage(产品经理):
+         接收客户端请求,并分配给具体的NodeManage去执行请求.
+         启动,监控ApplicationMaster,调用监控NodeManage,资源分配和调度.
+    2.NodeManege(开发者):
+         处理具体的请求,处理来自ResourceManege的命令,处理来自ApplicationMaster的命令.
+    3.ApplicationMaster(经理助理):
+          数据切分,为应用程序申请资源,并分配内部任务,任务监控与容错.
+    4.Container:
+          对运行环境的一个抽象,封装了CPU,内存即多维资源,环境变量,启动命令及运行任务.
+     总的来说就是,当ResourceManege接收到客户端的请求后,分配给不同的NodeManage,然后NodeManage去通知ApplicationMaster,ApplicationMaster又去向Contianer申请资源
+     NodeManage最后处理完后返回给ResourceManage
+       

@@ -1,0 +1,205 @@
+一.新建网关项目.
+  1.新建module.
+    cloud-gateway-gateway9527
+	注意在选择依赖时,要搜索并选择gateway,这样就会自动帮你引入依赖并进行版本控制
+	举例:
+		<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+		<groupId>com.atguigu.gulimall</groupId>
+		<artifactId>gulimall-gateway</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<name>gulimall-gateway</name>
+		<description>网关</description>
+
+		<properties>
+			<java.version>1.8</java.version>
+			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+			<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+			<spring-boot.version>2.3.7.RELEASE</spring-boot.version>
+			<spring-cloud.version>Hoxton.SR9</spring-cloud.version>
+		</properties>
+
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-gateway</artifactId>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.junit.vintage</groupId>
+						<artifactId>junit-vintage-engine</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+		</dependencies>
+
+		<dependencyManagement>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-dependencies</artifactId>
+					<version>${spring-cloud.version}</version>
+					<type>pom</type>
+					<scope>import</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-dependencies</artifactId>
+					<version>${spring-boot.version}</version>
+					<type>pom</type>
+					<scope>import</scope>
+				</dependency>
+			</dependencies>
+		</dependencyManagement>
+
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>2.3.7.RELEASE</version>
+					<configuration>
+						<mainClass>com.atguigu.gulimall.gulimallgateway.GulimallGatewayApplication</mainClass>
+					</configuration>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+	在新建后,如果有其他项目一定要记得和其他的Springboot和SpringCloud版本保持一致
+
+	  2.引入pom.
+		<dependencies>
+			<!--新增gateway-->
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-gateway</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.atguigu.springcloud</groupId>
+				<artifactId>cloud-api-commons</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-devtools</artifactId>
+				<scope>runtime</scope>
+				<optional>true</optional>
+			</dependency>
+
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	3.修改yam.
+	  server:
+		  port: 9527
+
+		spring:
+		  application:
+			name: cloud-gateway
+		  cloud:
+			gateway:
+			  routes:               #一个路由  
+				- id: payment_routh #路由的ID，没有固定规则但要求唯一，建议配合服务名
+				  uri: http://localhost:8001   #匹配后提供服务的路由地址
+				  predicates:
+					- Path=/payment/get/**     #断言,路径相匹配的进行路由
+
+				- id: payment_routh2
+				  uri: http://localhost:8001
+				  predicates:
+					- Path=/payment/lb/**      #断言,路径相匹配的进行路由
+
+		eureka:
+		  instance:
+			hostname: cloud-gateway-service
+		  client:
+			service-url:
+			  register-with-eureka: true
+			  fetch-registry: true
+			  defaultZone: http://eureka7001.com:7001/eureka
+    4.启动类.
+	  @SpringBootApplication
+		public class GateMain9527 {
+			public static void main(String[] args) {
+				SpringApplication.run(GateMain9527.class,args);
+			}
+		}
+		
+二.测试.
+   服务网关是不需要业务类的,我们需要启动注册中心,服务提供者payment8001和网关服务.
+   1.首先测试服务本身是否正常.
+     http://localhost:8001/payment/get/01
+   2.测试网关服务.
+     访问http://localhost:9527/payment/get/01
+	 
+	 这时候发现仍旧能够返回http://localhost:8001/payment/get/01所返回的数据.这是为什么呢?
+	 
+	 因为我们在网关服务中配置了断言payment/get,当匹配到后,将地址映射为http://localhost:8001/payment/get/01,从而返回对应数据.
+	 
+	 
+三.路由配置的另一种方式.
+   通过代码进行配置.
+   @Configuration
+	public class GatewayConfig {
+
+		@Bean
+		public RouteLocator custumRouteLocator(RouteLocatorBuilder routeLocatorBuilder){
+			//构建一个路由
+			RouteLocatorBuilder.Builder routes = routeLocatorBuilder.routes();
+			//创建路由中的断言和映射,route1就是路由id
+			RouteLocator curRoute = routes.route("route1", r -> r.path("/guonei").uri("https://news.baidu.com")).build();
+
+			return curRoute;
+		}
+	}
+	
+	这样通过配置就可以将http://localhost:9527/guonei 映射匹配到 https://news.baidu.com/guonei
+
+
+
+	 
+
+

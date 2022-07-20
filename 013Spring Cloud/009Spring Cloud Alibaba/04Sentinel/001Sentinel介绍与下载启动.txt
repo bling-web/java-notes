@@ -1,0 +1,21 @@
+一.Sentinel介绍
+   官网:https://github.com/alibaba/Sentinel
+   1.是什么?
+     分布式系统的流量防卫兵,其实就是对一些微服务的一些功能进行了整合,可以进行流量控制,熔断降级,系统负载保护.本质其实就是整合了Hystrix.
+   2.为什么要用Sentinel?
+     在以前使用Hystrix的时候,我们需要自己搭建监控平台,并且没有一套web界面给我们进行更加细粒度的去配置流控,速率,服务熔断等.
+	 而现在Sentinel就直接是一个单独的组件,可以直接独立运行,并且提供了细粒度的配置界面.
+	 
+二.Sentinel下载与启动.
+   https://github.com/alibaba/Sentinel/releases/tag/1.7.2
+   下载dashboard这个jar包,下载完毕之后直接以java -jar sentinel-dashboard-1.7.2.jar 的方式启动即可.
+   然后访问http://localhost:8080/#/login
+   账号和密码均为sentinel
+   
+   当然这个jar包运行前提是:
+   1.8080端口不能被占用
+   2.java8环境ok
+	 
+	  
+	 
+   

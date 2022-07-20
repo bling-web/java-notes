@@ -1,0 +1,143 @@
+1.新建工程Cloud-provider-payment8004.
+2.改pom.
+  这里注意引入的zk版本一定要和linux安装的zk版本一致,但是spring-cloud-starter-zookeeper-discovery中引入的包会默认引入3.5.3的包,所以需要排除,单独引入对应zk依赖.
+  <dependencies>
+
+        <dependency>
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-zookeeper-discovery -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
+            <!--排除zk3.5.3-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--添加zk 3.5,9版本,单独引入自己安装版本的依赖-->
+        <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.5.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+3.改yam.
+	server:
+	  port: 8004
+
+	spring:
+	  application:
+		name: cloud-provider-payment
+	  cloud:
+		zookeeper:
+		  connect-string: 192.168.1.113:2181    //对应zk的地址和端口,注意要先启动zk服务端和客户端.
+4.主启动.
+  要在启动类上加上这个注解.
+   @EnableDiscoveryClient   //该注册在这里表示注册服务,当注册中心是consul或者zookeeper时
+   
+5.业务类.
+  这里只是简单用一个Controller业务类
+   @RestController
+	@Slf4j
+	public class PaymentController {
+		@Value("${server.port}")
+		private String serverPort;
+
+		@GetMapping("/payment/zk")
+		public String paymentZk(){
+			return "spingCloud port" + serverPort + UUID.randomUUID();
+		}
+	}
+	
+6.验证是否注册成功.
+  在启动之后如果没有报错就应该是注册成功了.
+  (1)验证zk上的节点.
+     打开zk客户端执行  -> ls /services ->如果下面有自己的服务名称节点就证明注册成功了.此处是cloud-provider-payment
+	 此时可以继续查看注册上去的信息.  执行 -> ls /services/cloud-provider-payment -> 查看对应id,执行 -> get /services/cloud-provider-payment/39ff1a51-28d4-4753-bbc3-e5326a8b6cc6 
+	 就可以查看注册上去的信息,类似以下:
+	 {
+		"name": "cloud-provider-payment",
+		"id": "39ff1a51-28d4-4753-bbc3-e5326a8b6cc6",
+		"address": "localhost",
+		"port": 8004,
+		"sslPort": null,
+		"payload": {
+			"@class": "org.springframework.cloud.zookeeper.discovery.ZookeeperInstance",
+			"id": "application-1",
+			"name": "cloud-provider-payment",
+			"metadata": {}
+		},
+		"registrationTimeUTC": 1633496803573,
+		"serviceType": "DYNAMIC",
+		"uriSpec": {
+			"parts": [{
+				"value": "scheme",
+				"variable": true
+			}, {
+				"value": "://",
+				"variable": false
+			}, {
+				"value": "address",
+				"variable": true
+			}, {
+				"value": ":",
+				"variable": false
+			}, {
+				"value": "port",
+				"variable": true
+			}]
+		}
+	}
+  (2)验证工程是否正常.
+     访问http://localhost:8004/payment/zk  看是否返回正确结果.
+	 
+	 
+	 
+	 
+7.这里在zk中生成的节点是临时节点，会随者服务者的消失而删除。
+  再次复习一下，zk是符合CAP中的CP。保证数据一致性。但是在选举的时候不是高可用。

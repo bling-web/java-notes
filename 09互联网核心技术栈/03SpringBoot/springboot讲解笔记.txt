@@ -1,0 +1,92 @@
+
+1.idea集成svn.
+2.resources下面打包自动到jar包,放到config
+3.环境变量可以设置端口号,export SERVER_PORT
+4.单元测试,@TESTPropertySource 好像可以改配置
+
+
+加载顺序(加载从前到后,但是后面会覆盖前面)
+1.jar包中的文件(resource下面的文件/application.yml)
+2.封装在jar包带有profile的配置文件(resource下面的文件/application-dev.yml)
+3.jar包外面的配置文件,config下面的文件.
+4.环境变量的配置
+
+
+注解:
+1.ConfiguraProperties(prefix="")  然后这个注解类读取配置文件中的变量可以默认赋值,可以用EnableConfig...导入,直接使用变量.
+  这个注解也可以放在方法上,会自动将对应路径下的变量封装为一个对象,然后可以注入到容器.与bean绑定
+2.data lombok
+
+
+
+全局报文处理
+1.参数校验
+   引入依赖包 Validation
+
+  @Validated  @NotNul
+     放在参数中
+
+将返回值封装成dataJson报文
+1.在类上加注解@RestContrllerAdive(basePackageClasses=指定的webclass)
+2.或者类继承ResponseBodyAdive
+3.beforeBodyWrite方法中
+   if(body instanceof string){
+      return 
+   }
+
+返回日期格式,可以在配置文件中加,LodataTime不生效
+
+
+异常处理
+1ControllerAdive(basePackageClasses=指定类) 哪个类需要截取.
+2.该注解所使用类中的方法,定义各种异常,
+
+ResponseStatus,全都返回200
+
+
+定时任务.
+
+定时任务需要配置线程池,默认起一个异步线程去跑
+
+initialDelay  初始化加载延迟执行
+fixDelay  如果设置时五分钟,必须在前面任务完成后的五分钟执行
+fixRate  如果设置五分钟,不管前面任务是否执行完毕,五分钟开启一个任务
+cron表达式用的是fixRate还是fixDelay呢?通过配置实现cron表达式配置
+
+
+异步任务:
+@EnableAsync
+ Async
+注意:在同一个类调用Async方法不起作用
+
+参考
+TaskExcution
+
+
+缓存:
+开启功能
+EnableCache
+Cacheable 放在方法上,自动实现缓存查询和将数据放到缓存的代码.
+本地缓存Caffeine.
+
+注意设置缓存的过期时间
+
+@CacheEvict会更新缓存,解决缓存和数据库不一致的问题
+
+
+自定义start
+1.jar包
+2.
+resources ->MATE-INF ->spring.factories->加上Enable=自己的启动类
+
+ConditionOnProperty  根据配置实现是否要加载类
+
+
+开启事务:
+@EnableTransactionManagement
+使用事务的方法上加上@Transactional即可
+	注意要抛出异常才可以回滚
+	
+
+
+  

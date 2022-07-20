@@ -18,7 +18,7 @@
     1.一定要重新Hashcode和equals方法.
       为什么要重写equals方法?
          因为希望要比较对象的内容.而不是对象地址.
-      为什么要重写HashSet方法?
+      为什么要重写Hashcode方法?
          在每个重写equals方法的类中必须重写Hashcode方法,如果不这样做,就违反了Object.hashcode的通用约定,从而导致该类无法与基于散列值(hash)的集合类结合在一起,正常使用.
          自定义类重写了Hashcode方法,两个属性(变量)相同的对象返回的哈希值就一样,不重写肯定不一样.
     2.尽量重写toString方法

@@ -1,0 +1,64 @@
+
+ 在之前我们每次对sentinel进行重启，配置都会消失，说明并没有进行持久化。
+ 
+
+一.持久化。
+   1.将信息持久化到哪里？
+     其实无非两种，一种是本地数据库，一种是借用其他数据库。
+	 在这里是将sentinel的流控规则配置进nacos中，只要nacos中不删除，就会一直存在。
+	 这里其实感觉做的不太好，因为需要自己手动去添加配置到nacos中，并没有做到自动化，只是会去nacos中读取配置而已。
+	 
+	 
+	2.样例。
+	  这里还是针对cloudalibaba-sentinel-service8401进行改造
+	  (1)改造pom.
+	    <dependency>
+			<groupId>com.alibaba.csp</groupId>
+			<artifactId>sentinel-datasource-nacos</artifactId>
+		</dependency>
+      (2)添加yml配置。
+	      spring:
+		   cloud:
+			sentinel:
+			datasource:
+			 ds1:
+			  nacos:
+				server-addr:localhost:8848
+				dataid:${spring.application.name}   #这里就取自己的服务名称即可。
+				groupid:DEFAULT_GROUP
+				data-type:json
+				rule-type:flow
+				
+				
+				
+	   (3)添加nacos业务规则配置.
+	       dataId:cloudalibaba-sentinel-service
+		   Group:就给成默认的即可.
+		   配置格式为JSON,内容为以下:
+		     [
+				{
+					 "resource": "/retaLimit/byUrl",
+					 "limitApp": "default",
+					 "grade":   1,
+					 "count":   1,
+					 "strategy": 0,
+					 "controlBehavior": 0,
+					 "clusterMode": false    
+				}
+			]
+			解释如下:
+			   resource:资源应用
+			   limitApp:来源应用
+			   grade:阈值类型:0:线程数  1:QPS
+			   count:单机阈值
+			   strategy:0:直接  1:关联  2:链路
+			   controlBehavior:流控效果,0:快速失败  1:warm up 2:排队等待
+			   clusterMode:是否集群
+			   
+			   
+    然后重启sentinel测试,这个过程有点慢,需要等一会
+							
+		 
+
+
+   

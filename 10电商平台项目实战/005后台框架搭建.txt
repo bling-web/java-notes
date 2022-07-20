@@ -1,0 +1,222 @@
+
+   首先说明,在我们的项目中,有三个大的模块.后台管理,商城前台,common(在本项目中用service来表示).common主要放一些公共的service,dao可以在后台商场中引用,也可以在前台中引用.
+   那么我们为了方便管理maven,需要新建一个父工程,然后其他的可以继承它的maven.
+
+
+
+一.搭建一个父工程.
+    1.新建一个maven(没有模板)的project,然后创建.名字是mall
+    2.创建之后删除src,因为是个父工程,不需要代码.
+    3.在pom文件中加上如下东西.
+       <packaging>pom</packaging>                            //父工程必须要指定
+
+    <parent>                                                                   //相当于引入了springboot自己的一个父工程,这个依赖可以声明当前项目为spring-boot项目,并且可以提供相关的默认依赖,有了它,常用的包依赖可以省去version标签.
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.3.RELEASE</version>
+    </parent>
+  
+    说明,我们在当前父工程下新建子模块,子模块就可以用父模块的依赖,
+
+二.建立子模块(这里只搭建了mall-admin).
+    1.点击已经建好的mall,右键新建maven即可.名字是mall-admin.	
+    2.相同步骤再新建mall-service(就是common)
+    3.相同步骤新建mall-web.
+
+
+三.引入依赖.
+     1.首先在父工程的pom中引入依赖.
+      <properties>
+        <mysql.connector.verson>5.1.46</mysql.connector.verson>
+        <tk.mybatis.version>4.1.5</tk.mybatis.version>
+        <gson.version>2.7</gson.version>
+        <org.mybatis.version>2.1.1</org.mybatis.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.tim.mall</groupId>
+                <artifactId>mall-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+             
+            为了要引入mall-service这个包?
+         因为mall-service是一个公共的包,在mall-admin和mall-web都需要用这里面的东西,不同模块之间是不能直接引用内容的,所以在mall-admin和mall-web就都需要引入
+         mall-service的依赖.放在这里只是为了版本控制
+
+            <dependency>
+                <groupId>tk.mybatis</groupId>
+                <artifactId>mapper</artifactId>
+                <version>${tk.mybatis.version}</version>
+            </dependency>
+           <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${org.mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.connector.verson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+        </dependencies>
+    
+
+
+     其实这些包本来是在子模块中的,提到这里只是为了更好的进行版本控制,也就是在父工程中管理版本,在子工程引入依赖就不需要加版本了.
+   
+    2.在mall-admin加入以下依赖.
+       <dependencies>
+        <dependency>
+            <groupId>com.tim.mall</groupId>
+            <artifactId>mall-service</artifactId>
+        </dependency>
+
+         其实以下依赖可以放在service包里,因为依赖具有传递性,而且有些依赖在service包里也需要用到.
+       
+        <!--使用springboot需要加上这个包,可以在我们开发的时候去做一些,热启动,热部署-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+       <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+       <!-- 和jsp差不多,但比jsp更强大的前端框架-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <!--mybatis包-->
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <!--这个包对mybatis做了些封装,使得我们开发的时候可以少些很多代码-->
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+        <!--数据库驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!--一个比较好的数据源-->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+        <!--暂时不知道-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>                                   //需要在插件中安装lombok插件.
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <!--该包可以很方便的支持java对象和json数据格式的装换,包括了常见的序列化和反序列化-->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+    </dependencies>
+
+    <!--加上这个插件,当我们把这个springboot打成jar包的时候,直接是一个可执行的文件-->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+     
+    以上只对mall-admin做了引入,下面开始测试:
+    
+三.测试admin.
+    1.在admin的main,java下新建com.tim.mall.admin包,然后新建AdminApplication类,在该类上加上SpringBootApplication注解(标记该类为一个起始类).
+       以前在使用spring的时候,我们最开始都行需要制定一个basePackage,就是指定springMVC,spring的扫描路径,那么在springboot中并没有指定这一个路径,那它去哪里扫描呢?
+           会默认在AdminApplication这个类所在的包下扫描,扫描所有的service,controller
+    2.在main方法中写上以下语句.
+      SpringApplication.run(AdminApplication.class,args)
+    3.在resources下面加上static,templates包.在static下面加上index.html,在浏览器上访问localhost:8080,如果能访问到index.html页面的内容即可.
+       对这两个包的说明:static是直接可以从外部进行访问的.
+                                   templates就相当于以前的WEB-INF,只能从内部进行访问.
+    为什么可以直接访问static包下的文件?
+       因为springboot中默认配置会扫描classpath:static下的文件.(可以在application.yaml中的static-location属性查看.)
+   
+       此时新建application.yaml没有小绿叶,是因为没有添加spring支持,可以按ctrl+shift+alt+s -->点击项目,然后点击+,加上spring即可.
+    
+     小提示: 
+         spring中的return String,即可以返回一个文件,又可以做一个转发的作用太强大了.
+         为什么这么强大?里面封装了request,response,dispacheServlet这些对象.
+         执行顺序:
+             1.先去templates包下看看有无对应的静态文件.
+             2.看有无对应的转发路径.
+    
+        如果添加了@RequestBody,之后会直接返回字符串.而且返回字符串就不能再返回文件或转发了.
+
+四.连接数据库,配置mybatis.
+    1.用generater创建对应表的实体类,这时候可以用lombok工具,在类上加上一个date,就可以在编译时候自动生成getset方法,而不在代码中显示,也可以不用.
+       实体类要实现Seriizable接口,并且在主键的属性上加上@Id(标识主键)
+    2.新建一个mapper包,然后为每一个实体类新建一个对应的mapper接口,继承tk.mybatis的Mapper接口(这个接口中会帮我们实现每个属性的基础的增删查改方法,不用我们自己去写)
+       而且是通过注解方式实现的,不需要每个类配置一个xml文件.
+    3.在application.yaml配置以下.
+       server:
+         port: 9999
+      spring:
+        datasource:
+        url: jdbc:mysql://localhost:3306/mall?characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useUnicode=true&serverTimezone=UTC
+        username: root
+        password: root
+     #    配置数据源
+     driver-class-name: com.mysql.jdbc.Driver
+     type: com.zaxxer.hikari.HikariDataSource
+     hikari:
+     #       指定池最大大小和最小空闲
+          maximum-pool-size: 200
+          minimum-idle: 2
+    4.在含有SpringBootApplication的类上加上注解MapperScanner("包路径"),该注解会将扫描该包下的类并且将其注入到spring中.
+    5.写一个测试用例.
+       @RunWith(SpringRunner.class)                                                    //该注解可以是junit获取spring运行时的上下文,工厂
+       @SpringBootTest(classes = AdminApplication.class)                 //指定启动类
+       public class MybatiTest {
+          @Resource
+          private AdminUserMapper adminUserMapper;
+         @Test
+         public void testSelect(){
+             List<AdminUser> adminUsers = adminUserMapper.selectAll();
+             for (AdminUser adminUser : adminUsers) {
+                  System.out.println(adminUser.getName());
+             }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+补充知识.热启动,热部署.
+   就是springboot项目启动之后,如果我们修改代码,会自动重新启动,重新部署.且重新启动的时间比手动的时间还要快(内部机制不一样,只加载改变的类).
+
+       

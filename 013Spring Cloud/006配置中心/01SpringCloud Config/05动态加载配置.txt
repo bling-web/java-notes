@@ -1,0 +1,55 @@
+一.在上一讲中,我们可以成功的从客户端服务中获取到git上的信息,但是这里还有一个问题.
+   如果git上的配置信息被修改了呢?
+     我们能及时更新配置吗?不能,我们只能通过重启的方式重新加载配置,这是很麻烦的一件事,如果我们有几十个服务呢?
+	
+    所以在次引入动态加载配置方式.来解决这个问题.
+	
+	思考:
+	    动态加载配置其实就两种实现方式,第一种就是客户端定时去刷新配置,其实这个是比较消耗资源的,另一种是服务端修改之后发送一个通知,客户端收到这个通知之后去重新加载配置.
+	 
+二.动态加载配置.
+   1.在客户端3355服务中修改pom,引入actuator监控.
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
+	
+	
+	2.修改客户端3355yml,暴露监控端口.
+	server:
+	  port: 3355
+
+	spring:
+	  application:
+		name: config-client
+	  cloud:
+		config:
+		  label: master
+		  name: config
+		  profile: dev
+		  uri: http://localhost:3344
+	eureka:
+	  client:
+		service-url:
+		  defaultZone: http://eureka7001.com:7001/eureka
+
+	management:            #增加暴露接口配置
+	  endpoints:
+		web:
+		  exposure:
+			include: "*"
+			
+	3.controller类上增加新注解.
+	  @RefreshScope
+	  
+	重新启动客户端程序.
+	
+三.测试.
+   我们在git上修改对应配置,修改完毕之后发送一个post请求.
+   curl -X POST http://localhost:3355/actuator/refresh
+   然后再次查看客户端程序的配置,发现已经对应修改
+   
+四.如何实现?
+   自己猜想.
+     因为引入了这个actuator包,当它的controller收到刷新请求后,会重新执行一些对象的赋值操作(一个bean需要经过实例化,赋值,初始化啊是那个步骤),那是需要执行哪些对象呢?加了@RefreshScope注解的对象
+   从而更新配置.在这个过程中程序还能正餐运行,因为会新启一个进程.	 

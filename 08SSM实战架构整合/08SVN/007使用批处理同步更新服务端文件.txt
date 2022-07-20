@@ -1,0 +1,19 @@
+一.使用批处理同步更新服务端文件.
+    在我们提交数据到服务器后,发现在服务器端并不能找到对应的数据,只有版本,那我们怎样看到同步的数据呢?
+    可以通过钩子程序将SVN服务器中的数据同步到本地文件夹中,然后通过浏览器访问文件地址即可查看,例如http://localhost/demo
+     什么是钩子?
+         也就是当版本库事件触发时,同步触发的程序.默认可以采用批处理或Shell进行编写.
+         默认情况下,钩子的子目录(版本仓库/hooks)中包含各种版本库钩子模板.
+     这里主要介绍post-commit.tmpl,也就是事务完成后触发的钩子程序.
+       
+
+二.具体步骤.
+    1.新建一个文件夹,作为将来同步数据的位置.这里是E:\javaPrograming\SvnRepo\app\demo-sys
+       然后做检出操作.
+    2.将post-commit.tmpl复制并修改文件名称为post-commit.bat.就放在同级目录下.
+    3.将原有代码删除写入以下指令.后面注释记得删掉.
+       SET SVN="C:\Program Files\VisualSVN Server\bin\svn.exe"  #设置服务端执行程序
+       SET DIR="E:\javaPrograming\SvnRepo\app\demo-sys"  #设置同步数据的位置
+       SVN update %DIR%      #更新数据
+
+    然后demo-sys中的数据就可以同步更新.

@@ -1,0 +1,35 @@
+一.多仓库监管.
+    以前我们是监管一个仓库,直接访问svn://localhost即可.
+    那么我们也可以监管多仓库.
+      svnserve -d -r E:\javaPrograming\SvnRepo\app       //app文件夹下有多个项目.
+    此时我们可如果想访问app下的demo项目. 
+      svn://localhost/demo
+
+
+二.权限配置.
+    如果要使用权限控制,要有一个前提,就是必须先开启权限功能.
+    每一个仓库中都有一个conf文件夹,里面有三个文件.
+       auth:授权文件.
+               配置哪些用户具有哪些权限
+      passwd:认证文件
+                   配置当前仓库具有哪些用户以及相应的密码.
+      默认情况下,以上两个文件都是禁用的,如需要使用,首先要开启以上两个文件.在svnserve中开启.
+         开启步骤:
+            1.在svnserve注释匿名用户的可读写
+               # anon-access = write
+            2.在svnserve开启认证文件与授权文件
+               password-db =passwd
+               authz-db = authz
+            3.在认证文件中编辑用户.配置该仓库中可访问的用户.	
+               zhangsan = zhangsan888  //前面账号后面密码.
+               wangwu = wangwu888
+               zhaoliu = zhaoliu888
+            4.在授权文件中进行授权.分组进行管理.
+                [groups]                                            # 组
+                zhangsan = zhangsan,wangwu         #zhangsan这个组中有张三和王五
+                zhaoliu = zhaoliu                              #zhaoliu这个组中有赵六一个人
+                [demo:/]                                           #对哪个项目进行设置
+                @zhangsan = r                                 #张三这一组可以进行读操作
+                @zhaoliu = rw                                  #赵六这一组可以进行读操作.
+                * = r                                                  #匿名用户,只进行读操作
+                

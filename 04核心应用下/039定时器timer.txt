@@ -1,0 +1,12 @@
+一.使用步骤.
+    //设置定时任务
+    TimerTask task = new TimerTask() {
+         @Override
+         public void run() {
+	// TODO Auto-generated method stub
+	System.out.println("运行定时任务......");
+        }
+    };
+   Timer timer = new Timer();
+   //1秒后执行,然后每隔两秒执行一次.
+   timer.schedule(task,1000L,2000L);

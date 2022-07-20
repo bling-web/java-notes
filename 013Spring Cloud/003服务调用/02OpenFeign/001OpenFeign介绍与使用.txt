@@ -1,0 +1,115 @@
+一.Feign介绍.
+  Feign是一个声明式的WebServer客户端,或者说是一个轻量级的HTTP客户端,使用Feign 简单的定义一个接口并添加注解就可以实现远程调用.它内部集成了Ribbon,默认支持软负载均衡.
+  
+  之前进行服务调用是Ribbon+RestTemplate进行方法调用,但是在实际开发过程中,可能在多个地方对同一个远程服务进行调用,所以通常需要包装一个客户端类进行调用,而Feign就是对这个包装客户端例类的工作进行简化的.
+  
+二.OpenFeign和Feign的区别.
+  OpenFeign是Spring Cloud在Feign的基础上进行一层封装,可以支持SpringMVC注解,如@RequestMapping,其底层是通过动态代理的方式,在执行过程中产生实现类,在实现类中进行负载均衡和服务调用.
+
+
+三.OpenFeign使用.  
+   此处是结合Eureka进行测试,其他注册中心应该也一样的.
+   1.新建工程cloud-consumer-feign-order80
+   2.引入pom.
+     <dependencies>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.atguigu.springcloud</groupId>
+        <artifactId>cloud-api-common</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <scope>runtime</scope>
+        <optional>true</optional>
+    </dependency>
+
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+        <dependency>
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+	
+	3.新建yml.
+	  server:
+		  port: 80
+		eureka:
+		  client:
+			register-with-eureka: false
+			service-url:
+			  defaultZone: http://eureka7001.com:7001/eureka, http://eureka7002.com:7002/eureka
+	
+	4.启动类.
+	  要在启动类上增加开启Feign注解.
+	  @EnableFeignClients
+	  
+	5.增加统一接口封装Feign,也就是我们要调用的远程服务封装接口.
+		@FeignClient("cloud-payment-service") //针对哪个微服务进行调用.
+		@Component
+		public interface PaymentFeignService {
+
+			/**
+			 * 这里的参数注解和方法参数要和服务端Controller层接收请求的方法一样
+			 * 否则会请求失败
+			 * @param id
+			 * @return
+			 */
+			@GetMapping(value = "/payment/get/{id}")
+			CommonResult getPayment(@PathVariable("id") Long id);       //这里注意:如果id的类型是Integer,则要使用@PathVariable(value="id") 指定参数,否则会报错.
+
+			@PostMapping(value = "/payment/create")
+			CommonResult create(@RequestBody Payment payment);
+		}
+	6.Controller层进行调用测试.
+	    @RestController
+		public class OrderController {
+
+
+			@Resource
+			private PaymentFeignService paymentFeignService;
+
+			@GetMapping("/consumer/payment/get/{id}")
+			public CommonResult getPaymentById(@PathVariable Long id){
+				return paymentFeignService.getPayment(id);
+			}
+
+			@GetMapping("/consumer/create")
+			public CommonResult createOrder(Payment payment){
+				return paymentFeignService.create(payment);
+			}
+		}
+							
+
+
+		  
+		  

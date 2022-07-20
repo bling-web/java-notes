@@ -1,11 +1,11 @@
 一.springMVC中的拦截器.
-   1.springMVC中的拦截器用于对处理器进行预处理和后处理.用户可以自定义一些拦截器来实现特定的功能.
+   1.springMVC中的拦截器用于对处理器进行预处理和后处理.用户可以自定义一些拦截器来实现特定的功能.比如输出日志.
    2.拦截器和过滤器的区别.
      a.过滤器是servlet规范中的一部分,任何java web工程都能使用,在url-pattern中配置了/*之后,可以对所有要访问任何资源的请求拦截.
      b.拦截器是springMVC框架自己的,只有使用了springMVC框架的工程才能用,拦截器只会拦截访问控制器方法的请求,如果访问的是jsp,html,css等       静态页面是不会进行拦截的.
      总的来说,拦截器只拦截动态资源请求,过滤器啥都能过滤.
 
-
+ 
 二.springMVC拦截器的实际应用.
       比如在一个真实项目中,有些资源时登陆后才能访问的,而有些资源是游客也能访问的,那么当游客去访问登陆后才能查看的内容,就需要进行拦截.     然后返回到登陆页面.
 
@@ -26,7 +26,7 @@
    2.配置拦截器.
      <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/interceptor/**"/>                              //配置拦截的请求,就是访问路径,这个可以配置多个
+            <mvc:mapping path="/interceptor/**"/>                              //配置拦截的请求
             <bean class="com.cc.springMVC.intercept.Intercept"/>
         </mvc:interceptor>
     </mvc:interceptors>

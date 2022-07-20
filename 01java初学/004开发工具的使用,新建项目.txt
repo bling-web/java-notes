@@ -1,0 +1,20 @@
+1  eclipse(IDE),STS
+   下载,解压,使用
+2在D盘下建立文件夹为工作空间(以后的代码会放在工作空间内)
+3配置jdk环境
+ 打开eclipse,找到Tool Bar->Window->Prefrence->java->Installed JREs->点击add->选择Standard VM->加上JRE路径->完成JRE配置
+4配置一些使用工作环境:
+ a:配置Workspace下的字符集为UTF-8
+   配置方法为:Window->Prefrence->Genaral->Workspace
+ b:Startup and Shutdown(提高性能)
+   开机和关闭选项   
+ c:Prefrence下搜索validation,然后禁用所有->disable all(提高性能)
+5配置字体大小
+ window->Prefence->General->Appearance->Colors and Fonts->Baces->Text Font->Edit   然后配置字体大小即可
+6配置背景
+ Window->Prefence->General->Editer->Text Editer 然后设置Bankgrand colar即可
+
+7新建项目
+ a .新建一个java project
+    如果要删除某个工程(Delate the project in disk表示删除磁盘上的项目)
+    注:项目中的文件src(source)中包含自己写的代码

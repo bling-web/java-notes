@@ -1,0 +1,72 @@
+一.说明
+   一句话说明就是我们可以用这个热点配置对请求中的某个参数访问次数进行限制,当超过当前QPS之后,直接对请求进行降级.
+   官网地址:https://github.com/alibaba/Sentinel/wiki/%E7%83%AD%E7%82%B9%E5%8F%82%E6%95%B0%E9%99%90%E6%B5%81
+   官网说明:
+     何为热点？热点即经常访问的数据。很多时候我们希望统计某个热点数据中访问频次最高的 Top K 数据，并对其访问进行限制。比如：
+		商品 ID 为参数，统计一段时间内最常购买的商品 ID 并进行限制
+		用户 ID 为参数，针对一段时间内频繁访问的用户 ID 进行限制
+	 热点参数限流会统计传入参数中的热点参数，并根据配置的限流阈值与模式，对包含热点参数的资源调用进行限流。热点参数限流可以看做是一种特殊的流量控制，仅对包含热点参数的资源调用生效。
+	Sentinel Parameter Flow Control:
+		Sentinel 利用 LRU 策略统计最近最常访问的热点参数，结合令牌桶算法来进行参数级别的流控。热点参数限流支持集群模式。
+		
+		
+二.样例配置
+   1.代码层面
+     SentinelResources初步使用
+     配置热点规则需要用到@SentinelResources注解,其实就可以把这个注解当作@HystrisCommond,继续使用.
+	 
+	    @GetMapping("/testHostKey")
+		//这里的value就指的是sentinel配置的资源名,相当于该配置的一个唯一id,一般和上面的访问路径保持一致,不过没有/
+		//blockHandler为当超过当前热点配置条件时,执行的方法,如果不指定就会直接抛出异常
+		@SentinelResource(value = "testHostKey",blockHandler = "deal_testHostKey")
+		public String getTest3(@RequestParam(value = "a2",required = false)String a2,
+								@RequestParam(value = "a1",required = false)String a1)
+		{
+			return "testHostKey";
+		}
+
+		//注意这个备用方法,方法参数一定要多加一个,就是BlockException,否则相当于没有写这个方法,还是会抛出异常
+		public String deal_testHostKey(String a2, String a1, BlockException exception){
+			return "testHostKey,执行备用方法";
+		}
+   
+   2.配置层面
+     资源名	        参数索引	流控模式	阈值	是否集群	例外项数目  统计时间窗口(s)
+	testHostKey	      0          QPS	      1	      否	       0           2
+	
+	说明:
+	    资源名对应上面指定的value
+		参数索引就是对应方法中的第0个参数,这里也就是a2,只有当请求参数中出现a2时,才会进行限流.
+		阈值为1,统计时间窗口为2,表示在当前时间窗口内,当QPS超过1时,剩下的请求均直接走备用方法.如果没有就抛异常.
+		
+	3.测试.
+	  这两个请求均会进行限制
+	  http://localhost:8401/testHostKey?a1=1&a2=1
+	  http://localhost:8401/testHostKey?a2=1
+	  这个则不会
+	  http://localhost:8401/testHostKey?a1=1
+	  
+	  
+三.其他配置项.
+   在上面我们对testHostKey资源下的a2参数做了限制,限制QPS为1,超过就直接降级.
+   但是还有一种特殊情况就是我们希望当a2为某个特殊值时,它的限流值和平时不一样.
+   这个时候我们增加一个特殊值的配置即可.
+   举例:
+    当a2=100时,QPS设置为100,其他情况QPS仍为1
+	
+	在上面配置的基础上,点击高级选项,输入参数类型,对应值和阈值即可,最后点击添加
+	
+	此时输入http://localhost:8401/testHostKey?a1=1&a2=100访问,就会发现a2=100时的限流qps已经变化.
+	
+	
+	
+	
+	
+	
+	
+注意项:此时如果在getTest3方法本身抛出异常,会直接返回到界面上,因为我们并没有指定fallback方法.
+		
+	  
+   
+   
+   

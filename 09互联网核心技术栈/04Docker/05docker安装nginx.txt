@@ -1,0 +1,29 @@
+1.因为之前我们给的虚拟机内存太小了,所以要先调大再安装nginx.这里调节到3G
+2.我们所有的软件都安装再mydata文件夹下,在mydata下创建nginx
+3.随便启动一个 nginx 实例，只是为了复制出配置
+ docker run -p 80:80 --name nginx -d nginx:1.10
+   这里虽然我们没有nginx镜像,但是docker在检测到没有后会自动帮我们进行下载并启动.
+4.将容器内的配置文件拷贝到当前目录：
+  docker container cp nginx:/etc/nginx .
+  这里注意我们当前的路径应该是在 /mydata
+5.规范路径,将这些考出来的配置文件放到conf文件夹下.
+ 修改文件名称：mv nginx conf 
+   重新创建nginx文件夹
+   将conf 转移到 nginx下
+6.终止原容器：
+   docker stop nginx
+7.执行命令删除原容器：
+  docker rm $ContainerId
+8.创建新的 nginx容器.
+	docker run -p 80:80 --name nginx \
+	-v /mydata/nginx/html:/usr/share/nginx/html \
+	-v /mydata/nginx/logs:/var/log/nginx \
+	-v /mydata/nginx/conf:/etc/nginx \
+	-d nginx:1.10
+9.简单测试.
+  在nginx/html 创建一个新文件index.html
+  如果成功的话,nginx会自动返回index.html中的内容.
+  这里我们直接访问 http://10.1.1.129/ 即可.
+10.设置nginx开启自启动.
+  docker update nginx --restart=always
+  

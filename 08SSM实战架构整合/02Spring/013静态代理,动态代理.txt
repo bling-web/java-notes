@@ -121,9 +121,9 @@
                      */
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         System.out.println("正在执行的方法" + method);
-                        Double money = (Double) args[0];                   //这里的args[0]就是执行方法时传入的1000.
+                        Double money = (Double) args[0];                  //这里的args[0]就是执行方法时传入的1000.
                         //这一步就相当于真正执行被代理对象的方法
-                        Object obj = method.invoke(producer, money * 0.8); //第一个参数要执行方法的对象,第二个就是方法真正的参数
+                        Object obj = method.invoke(producer, money * 0.8);
                         return obj;
 
                     }

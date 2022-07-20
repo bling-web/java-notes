@@ -1,5 +1,7 @@
 一.spring介绍:
-     Spring 是分层的 Java SE/EE 应用 full-stack 轻量级开源框架，以 IoC（Inverse Of Control： 反转控制）和AOP（Aspect    OrientedProgramming   ：面向切面编程）为内核，提供了展现层 Spring MVC 和持久层 Spring JDBC 以及业务层事务管理等众多的企业级应用技术    还能整合开源世界众多著名的第三方框架和类库，逐渐成为使用最多的 Java EE 企业应用开源框架。   
+     Spring 是分层的 Java SE/EE 应用 full-stack 轻量级开源框架，
+     以 IoC（Inverse Of Control： 反转控制）和AOP（Aspect    OrientedProgramming   ：面向切面编程）为内核，
+     提供了展现层 Spring MVC 和持久层 Spring JDBC 以及业务层事务管理等众多的企业级应用技术    还能整合开源世界众多著名的第三方框架和类库，逐渐成为使用最多的 Java EE 企业应用开源框架。   
 二.Spring的优势
    1.方便解耦，简化开发
      通过 Spring 提供的 IoC 容器，可以将对象间的依赖关系交由 Spring 进行控制，避免硬编码所造 成的过度程序耦合。用户也不必再为单例模         式类、属性文件解析等这些很底层的需求编写代码，可 以更专注于上层的应用。

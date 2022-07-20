@@ -26,7 +26,7 @@ import java.sql.SQLException;
 @EnableTransactionManagement
 public class DruidDateSourceConfig {
 
-    private static Logger log= LoggerFactory.getLogger(DruidDateSourceConfig.class);
+    private static Logger log = LoggerFactory.getLogger(DruidDateSourceConfig.class);
 
     @Resource
     private DruidDateSourceSet druidSettings;
@@ -34,35 +34,35 @@ public class DruidDateSourceConfig {
     public static String DRIVER_CLASSNAME;
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyConfig(){
+    public static PropertySourcesPlaceholderConfigurer propertyConfig() {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
     @Bean
     //druid数据源监控台的一些配置
-    public ServletRegistrationBean druidServlet(){
+    public ServletRegistrationBean druidServlet() {
         ServletRegistrationBean<Servlet> reg = new ServletRegistrationBean<>();
         reg.setServlet(new StatViewServlet());
         //以/druid开头的才可以访问,访问alibaba提供的druid可视化界面
         reg.addUrlMappings("/druid/*");
         //允许本地访问
-        reg.addInitParameter("allow","127.0.0.1");
+        reg.addInitParameter("allow", "127.0.0.1");
         //其他地址不允许访问
-        reg.addInitParameter("deny","/deny");
+        reg.addInitParameter("deny", "/deny");
 
-        log.info("druid console manager init:{}",reg);
+        log.info("druid console manager init:{}", reg);
         return reg;
     }
 
     @Bean
     //druid连接池过滤器的配置,显示于监控台.
-    public FilterRegistrationBean filterRegistrationBean(){
-        FilterRegistrationBean filterRegistrationBean=new FilterRegistrationBean();
+    public FilterRegistrationBean filterRegistrationBean() {
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(new WebStatFilter());
         filterRegistrationBean.addUrlPatterns("/*");
         //排除以jsp,jpg,png等结尾的请求连接.
-        filterRegistrationBean.addInitParameter("exclusions","*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
-        log.info("druid filter register :{}",filterRegistrationBean);
+        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
+        log.info("druid filter register :{}", filterRegistrationBean);
         return filterRegistrationBean;
     }
 
@@ -90,6 +90,7 @@ public class DruidDateSourceConfig {
         log.info(" druid datasource config : {} ", ds);
         return ds;
     }
+
     @Bean
     //配置事务管理,在事务对象中传入数据库连接池
     public PlatformTransactionManager transactionManager() throws SQLException {

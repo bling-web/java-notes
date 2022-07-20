@@ -1,0 +1,85 @@
+一.Hystrix提供了准实时得调用监控,它会持续得记录所有通过Hystrix发起得请求执行信息,
+  并以统计报表和图形得形式展示给用户.包括每秒执行多少请求多少成功,多少失败等,Spring Cloud也提供Hystrix Dashboard得整合,但是
+   我们需要专门运行一个项目去展示这个功能.
+   
+二.新建Hystrix Dashboard项目.
+1.新建module  cloud-consumer-hystrix-dashboard9001
+2.引入pom.
+   <dependencies>
+        <!--新增hystrix dashboard-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+	
+3.yam.
+  server:
+    port: 9001
+  
+4.启动类.
+  @SpringBootApplication
+	@EnableHystrixDashboard   //开启注解
+	public class HystrixDashboardMain9001 {
+		public static void main(String[] args) {
+			SpringApplication.run(HystrixDashboardMain9001.class,args);
+		}
+	}
+
+5.直接访问 http://localhost:9001/hystrix  出现对应界面即可.
+
+上面是启动了一个单独得监控所用得项目,下面启动对应需要被监控得项目.
+
+6.在需要被监控得项目启动类上加上bean. 这里用得 cloud-provider-hystrix-payment8001 项目.
+  @Bean
+	public ServletRegistrationBean getServlet(){
+		HystrixMetricsStreamServlet streamServlet = new HystrixMetricsStreamServlet();
+		ServletRegistrationBean registrationBean = new ServletRegistrationBean(streamServlet);
+		registrationBean.setLoadOnStartup(1);
+		registrationBean.addUrlMappings("/hystrix.stream");
+		registrationBean.setName("HystrixMetricsStreamServlet");
+		return registrationBean;
+	} 
+	
+	注意被监控得项目中也需要引入依赖.
+	 
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
+ 
+
+
+7.启动cloud-provider-hystrix-payment8001 项目和注册中心7001(因为服务提供者需要依赖注册中心,否则启动报错)
+
+8.在浏览器输入http://localhost:8001/hystrix.stream  点击Monitor Stream即可.
+
+9.然后就可以观察了.
+
+
+
+原理:
+   其实这些成功失败数据本身在Hystrix中就有统计,只不过Spring Cloud也进行了整合,将这些数据以图形化得方式展示出来.
+   会检测每一个加了HystrixCommond注解得方法,监控对应成功,失败,执行时间等等.

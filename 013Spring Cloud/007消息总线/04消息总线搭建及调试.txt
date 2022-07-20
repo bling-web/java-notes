@@ -1,0 +1,36 @@
+一.说明
+    整个过程很简单,只需要引入pom,改一下yam.都不需要写消息队列的代码,为什么?因为什么都是默认规定好的,topic的名字,发送消息的格式,接收到消息后做什么?怎么做?这些都是默认约定好的.
+	所以这些在引入的包中已经写好了,我们就不需要管了.
+	
+	
+二.新建一个客户端工程3366.
+   和3355是基本一样的,这里不再叙述.
+   
+三.添加总线支持.
+    在配置中心服务端和各个客户端分别加上以下配置即可.都是一样的.
+	1.pom文件中:
+	  这个依赖就是和rabbitmq集成的依赖
+	  <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+        </dependency>
+		
+	2.yam文件中
+	  rabbitmq:              #指定rabbit信息
+		  host: localhost
+		  port: 15672
+		  username: guest
+		  password: guest
+  
+	  management: 
+		  endpoints:
+			web:
+			  exposure:
+				include: 'bus-refresh'     #暴露消息总线端口
+				
+				
+				
+    在工程都启动后,更改git上的文件配置,然后发一个post请求给3344服务端,curl -X POST "http://localhost:3344/actuator/bus-refresh" 3355,3366配置信息就会都随之改变.
+	
+	
+

@@ -1,0 +1,105 @@
+一.整体流程.
+   配置中心服务端从github上获取最新的配置信息,并暴露接口,客户端程序在启动时,先从服务端获取配置信息,再从本地文件配置信息,组成自己的完整的配置.
+   
+   
+二.搭建客户端服务.
+   1.新建Module.  cloud-config-client-3355
+   2.引pom.
+      <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+	
+	3.建yam.
+	  在resource中新建bootstrap.yml文件.
+	  server:
+		  port: 3355
+
+		spring:
+		  application:
+			name: config-client
+		  cloud:
+		#    去Config配置中心服务端拉取配置
+			config:
+			  label: master
+			  name: config
+			  profile: dev
+			  uri: http://localhost:3344
+		eureka:
+		  client:
+			service-url:
+			  defaultZone: http://eureka7001.com:7001/eureka
+			  
+	这里为什么要建立bootstrap.yml文件?
+	   因为此服务需要从外部获取资源,application.yml是用户级的,bootstrap.yml是系统级的优先级更高.
+	   我们都知道Spring有一个总体对象Application Context,会默认从application.yml获取配置信息,那么Spring Cloud还会创建一个BootStrap Context,作为Application Context的父上下文,初始化的时候,
+	  Bootstrap Context负责从外部源加载配置并解析.这两个上下文共享一个从外部获取的Environment.
+		Bootstrap属性有更高优先级,默认情况下,不会被本地配置所覆盖.
+		
+	4.新建启动类.
+	   @SpringBootApplication
+		@EnableEurekaClient
+		public class ConfigClientMain3355 {
+			public static void main(String[] args) {
+				SpringApplication.run(ConfigClientMain3355.class,args);
+			}
+		}
+    
+    5.新建业务类.
+	   这里就只创建一个controller类.
+	    
+		@RestController
+		public class TestController {
+
+			@Value("${config.info}")
+			private String config;
+
+			@GetMapping("/info")
+			public String getInfo(){
+				return config;
+			}
+		}
+  
+三.测试.
+    启动服务中心,配置中心服务端,客户端.
+	先确保服务端正常访问.
+	访问http://localhost:3355/info  如果能出来config-dev.yml配置文件中的config.info信息,则启动完成.

@@ -1,0 +1,73 @@
+一.前置.
+	其实也就是跟着官方文档去执行命令:  https://docs.docker.com/engine/install/centos/
+
+	首先,docker要求CentOS内核版本大于3.0,如果小于,首先要升级内核版本:
+	查看版本命令: uname -r
+    1.升级CentOS内核
+	  https://blog.csdn.net/u013282737/article/details/85246755
+
+
+1 卸载系统之前的docker 
+	sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
+
+2  设置存储库
+	sudo yum install -y yum-utils
+	sudo yum-config-manager \ --add-repo \ https://download.docker.com/linux/centos/docker-ce.repo
+
+3  安装DOCKER引擎
+	sudo yum install docker-ce docker-ce-cli containerd.io
+	如果报错:
+	Loading mirror speeds from cached hostfile
+	 * base: mirrors.aliyun.com
+	 * extras: mirrors.aliyun.com
+	 * updates: mirrors.aliyun.com
+	No package docker-ce available.
+	No package docker-ce-cli available.
+	No package containerd.io available
+
+    按以下博客进行操作:
+	  https://blog.csdn.net/Dan1374219106/article/details/112484549
+
+
+4  启动Docker.
+	sudo systemctl start docker
+	如果启动不成功使用service替换,执行以下命令:service httpd start
+	还可以使用这个命令查看状态:service httpd status
+	
+	
+
+5 配置镜像加速
+    登录自己的阿里云-->点击控制台->进入容器镜像服务-->点击镜像加速器-->centos/-->依次执行以下命令.
+	sudo mkdir -p /etc/docker
+	sudo tee /etc/docker/daemon.json <<-'EOF'
+	{
+	  "registry-mirrors": ["https://90sl8mts.mirror.aliyuncs.com"]
+	}
+	EOF
+	sudo systemctl daemon-reload
+	sudo systemctl restart docker
+	
+	
+6.设置docker开机自启动.
+   systemctl enable docker
+
+
+
+
+报错:
+	更新yum update时报错
+	Cannot retrieve repository metadata (repomd.xml) for repository: docker-ce-stable. Please verify its path an d try again
+
+	解决办法：
+
+	进入 cd /etc/yum.repos.d
+	vim docker-ce.repo
+	enabled=1 改为 enabled=0
+	重启centos即可～

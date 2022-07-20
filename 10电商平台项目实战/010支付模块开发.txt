@@ -1,0 +1,140 @@
+一.根据文件注册支付宝账号.
+    然后解压文件.
+    配置alipayConfig这个类中的信息.根据pdf文件.
+
+二.在自己项目中配置.
+    1.引入依赖.
+     <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>3.1.0</version>
+     </dependency>
+    2.把alipayConfig类拷到自己的项目中.(为的是能设置一些变量,去引用)
+    3.设置各种,其实也很简单.
+     @Controller
+     @RequestMapping
+     public class PayController {
+
+    @Resource
+    private ShippingServcie shippingServcie;
+
+    @Resource
+    private MyOrderService myOrderService;
+
+    private int count=0;
+
+    //定义订单编号的位数
+    private static final int digit=20;
+
+
+    @RequestMapping(value = "pay",produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String alipay(Shipping shipping, HttpSession session) throws AlipayApiException {
+        //接收地址信息存储到送货地址表
+        User current_user = (User) session.getAttribute("current_user");
+        Integer id = setShipping(shipping, current_user);
+        //生成订单编号,当前时间+当前用户id+序列号
+        String orderNo = createOrderNo(current_user);
+        //从session对象中接收付款信息,商品,价格这些,并加入到order对象中
+        MyOrder myOrder = setOrder(session, orderNo, current_user.getId(), id, shipping.getRemark());
+        //存储订单
+        myOrderService.insert(myOrder);
+        //同时也要存储order_item,现在暂时没有存储
+
+
+        //设置交易内容
+        String result = setAlipay(session, orderNo, shipping);
+
+        return result;
+    }
+
+    private String setAlipay(HttpSession session, String orderNo, Shipping shipping) throws AlipayApiException {
+        //1.初始化alipay,也就是主要的支付代理对象
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AlipayConfig.app_id, AlipayConfig.merchant_private_key,
+                "json", AlipayConfig.charset, AlipayConfig.alipay_public_key, AlipayConfig.sign_type);
+        //2.设置请求参数
+        AlipayTradePagePayRequest alipayTradePagePayRequest = new AlipayTradePagePayRequest();
+        alipayTradePagePayRequest.setNotifyUrl(AlipayConfig.notify_url);
+        alipayTradePagePayRequest.setReturnUrl(AlipayConfig.return_url);
+        //商户订单号
+        String out_trade_no=orderNo;
+        //付款金额
+        String totalAmount=String.valueOf(session.getAttribute("sum"));
+        //订单名称
+        String subject="";
+        List<Cart> checktout_cart = (List<Cart>) session.getAttribute("checktout_cart");
+        for (Cart cart : checktout_cart) {
+            subject += cart.getProductName()+" ";
+        }
+        //订单描述,备注
+        String body=shipping.getRemark();
+        //订单允许的最晚付款时间,逾期将关闭交易
+        String timeoutExpire="10m";
+
+        alipayTradePagePayRequest.setBizContent("{\"out_trade_no\":\""+ out_trade_no +"\","
+                + "\"total_amount\":\""+ totalAmount +"\","
+                + "\"subject\":\""+ subject +"\","
+                + "\"body\":\""+ body +"\","
+                + "\"timeout_express\":\""+ timeoutExpire +"\","
+                + "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"}");
+
+        //支付对象执行支付页面方法,getbody返回的是一个html文本,也就是那个支付二维码页面
+        return alipayClient.pageExecute(alipayTradePagePayRequest).getBody();
+
+    }
+
+    private Integer setShipping(Shipping shipping,User current_user) {
+        shipping.setUserId(current_user.getId());
+        shipping.setCreateTime(new Date());
+        return shippingServcie.insert(shipping);
+    }
+
+    private MyOrder setOrder(HttpSession session, String orderNo, int UserId, int shippingId, String remark) {
+        MyOrder myOrder = new MyOrder();
+        myOrder.setOrderNo(orderNo);
+        myOrder.setUserId(UserId);
+        myOrder.setShippingId(shippingId);
+        myOrder.setPayment((Double) session.getAttribute("sum"));
+        myOrder.setPostage(0);
+        myOrder.setRemark(remark);
+        myOrder.setStatus(10);
+        return myOrder;
+    }
+
+    private String createOrderNo(User current_user) {
+        String first="";
+        String second="";
+        String third="";
+        //第一部分,长度为三的userId的标识
+        Integer userId = current_user.getId();
+        if(userId<10) first="00"+userId;
+        else if(userId<99) first="0"+userId;
+        else first=String.valueOf(userId);
+        //第二部分,长度为12的时间标识
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyyMMddHHmm");
+        second=formatDate.format(new Date());
+        //第三部分,长度为5的,第几个订单的标识
+        count++;
+        int bigit_0=5-String.valueOf(count).length();
+        String help="";
+        for (int i = 0; i < bigit_0; i++) {
+            help += "0";
+        }
+        third=help+String.valueOf(count);
+        return first+second+third;
+    }
+}
+
+二.支付宝回调处理.
+    1.日志处理.
+        在以前使用logback日志的时候,如果想使用日志,	需要写上,
+        private static final Logger log=LoggerFactory.getLogger(当前类),然后就可以使用日志输出了.	
+        在我们有lombook这个插件后.
+       <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+       在类上加上Slf4J这个注解,就可以直接使用日志输出功能了.
+    2.编写两个方法,异步通知和同步通知方法.
+
+     

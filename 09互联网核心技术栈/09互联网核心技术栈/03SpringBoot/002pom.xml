@@ -1,98 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.bfxy</groupId>
-	<artifactId>bfxy-001-springboot-quickstart</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    <groupId>com.bfxy</groupId>
+    <artifactId>bfxy-001-springboot-quickstart</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-	<name>bfxy-001-springboot-quickstart</name>                        //一般这里加上序列号,更容易区分.
-	<description>bfxy-001-springboot-quickstart</description>
+    <name>bfxy-001-springboot-quickstart</name>
+    //一般这里加上序列号,更容易区分.
+    <description>bfxy-001-springboot-quickstart</description>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.14.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.14.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
-	</properties>
-	
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+    </properties>
+
     <!-- profile 配置切换: mvn clean install -P dev / prod / local / test /  -->    //dev 开发环境, prod 生产环境,local 本地,test 测试
-    
+
     <profiles>
-       <profile>
-          <id>dev</id>                                                    //开发环境
-          <activation>
-             <activeByDefault>true</activeByDefault>                      //该标签指定了默认打哪个环境的包,就是直接mvn clean install,会使用的dev下的配置.
-          </activation>                                                   //mvn clean install 清除上次产出的文件并打包到本地.
-          <dependencies>                                                  //必须要引入的一个依赖包
-             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-undertow</artifactId>
-             </dependency>
-          </dependencies>         
-          <properties>
-             <spring.profiles.active>dev</spring.profiles.active>         //具体指定使用哪个文件的配置.springboot对于配置文件有一个命名规范,application-dev.properties,必须用这种形式.
-             <bfxy.dynamic>2018-001</bfxy.dynamic>                        //这个是自己指定的属性.可以在配置文件中去读取使用.           
-          </properties> 
-       </profile>
-    
-       <profile>
-          <id>prod</id>                                                    //生产环境
-          <dependencies>
-             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-undertow</artifactId>
-             </dependency>
-          </dependencies>
-          <properties>
-             <spring.profiles.active>prod</spring.profiles.active>
-             <bfxy.dynamic>2018-002</bfxy.dynamic>                         //dynamic动态的
-          </properties>
-       </profile>
+        <profile>
+            <id>dev</id>
+            //开发环境
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                //该标签指定了默认打哪个环境的包,就是直接mvn clean install,会使用的dev下的配置.
+            </activation>
+            //mvn clean install 清除上次产出的文件并打包到本地.
+            <dependencies>//必须要引入的一个依赖包
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-undertow</artifactId>
+                </dependency>
+            </dependencies>
+            <properties>
+                <spring.profiles.active>dev</spring.profiles.active>
+                //具体指定使用哪个文件的配置.springboot对于配置文件有一个命名规范,application-dev.properties,必须用这种形式.
+                <bfxy.dynamic>2018-001</bfxy.dynamic>
+                //这个是自己指定的属性.可以在配置文件中去读取使用.
+            </properties>
+        </profile>
+
+        <profile>
+            <id>prod</id>
+            //生产环境
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-undertow</artifactId>
+                </dependency>
+            </dependencies>
+            <properties>
+                <spring.profiles.active>prod</spring.profiles.active>
+                <bfxy.dynamic>2018-002</bfxy.dynamic>
+                //dynamic动态的
+            </properties>
+        </profile>
     </profiles>
-    
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency> 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>		
-	</dependencies>
-	<!-- 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-	-->
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <!--
     <build>
-        <finalName>bfxy-001-springboot-quickstart</finalName>                  //指定整个工程打包之后的名字
-        <plugins>                                                              //在这之后的内容也就是加了一些插件.
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin> 
-			<!--       
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    -->
+    <build>
+        <finalName>bfxy-001-springboot-quickstart</finalName>
+        //指定整个工程打包之后的名字
+        <plugins>//在这之后的内容也就是加了一些插件.
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
             </plugin> 
-            -->          
+            -->
             <!-- 解解决maven update project 后版本降低为1.5的bug -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -100,68 +109,73 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-					<fork>true</fork> 
-                    <executable>C:\Program Files (x86)\Java\jdk1.8.0_221\bin\javac</executable>    //这个是你自己电脑上的javac路径,不然会无法编译
+                    <fork>true</fork>
+                    <executable>C:\Program Files (x86)\Java\jdk1.8.0_221\bin\javac</executable>
+                    //这个是你自己电脑上的javac路径,不然会无法编译
                 </configuration>
             </plugin>
-            
+
             <!-- MAVEN打包时动态切换: mvn clean package -P prod/dev/local -->
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-resources-plugin</artifactId>
-               <executions>
-                  <execution>
-                     <id>default-resources</id>
-                     <phase>validate</phase>
-                     <goals>
-                        <goal>copy-resources</goal>
-                     </goals>
-                     <configuration>
-                        <outputDirectory>target/classes</outputDirectory>
-                        <useDefaultDelimiters>false</useDefaultDelimiters>
-                        <delimiters>
-                           <delimiter>$</delimiter>                               //自己可以指定一个通配符.用处:在配置文件中,使用 $标签$, 就可以读取pom文件的属性.
-                        </delimiters>
-                        <resources>
-                           <!-- 打包时包含properties、xml --> 
-                           <resource>  
-                              <directory>src/main/java</directory>                //一个java
-                              <includes>  
-                                  <include>**/*.properties</include>  
-                                  <include>**/*.xml</include>  
-                              </includes>  
-                              <!-- 是否替换资源中的属性-->  
-                              <filtering>true</filtering>  
-                           </resource>                          
-                           <resource>
-                              <directory>src/main/resources/</directory>          //一个resource,
-                              <filtering>true</filtering>
-                              <includes>
-                                 <include>**/*.xml</include>
-                                 <include>**/*.yml</include>
-                                 <include>**/*.properties</include>  
-                              </includes>
-                           </resource>
-                           <resource>
-                              <directory>src/main/resources/</directory>
-                              <filtering>false</filtering>
-                              <excludes>                                          //excludes排除.
-                                 <exclude>**/*.xml</exclude>
-                                 <exclude>**/*.yml</exclude>
-                                 <include>**/*.properties</include>  
-                              </excludes>
-                           </resource>
-                        </resources>
-                     </configuration>
-                  </execution>
-               </executions>
-            </plugin>               
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/classes</outputDirectory>
+                            <useDefaultDelimiters>false</useDefaultDelimiters>
+                            <delimiters>
+                                <delimiter>$</delimiter>
+                                //自己可以指定一个通配符.用处:在配置文件中,使用 $标签$, 就可以读取pom文件的属性.
+                            </delimiters>
+                            <resources>
+                                <!-- 打包时包含properties、xml -->
+                                <resource>
+                                    <directory>src/main/java</directory>
+                                    //一个java
+                                    <includes>
+                                        <include>**/*.properties</include>
+                                        <include>**/*.xml</include>
+                                    </includes>
+                                    <!-- 是否替换资源中的属性-->
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources/</directory>
+                                    //一个resource,
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/*.xml</include>
+                                        <include>**/*.yml</include>
+                                        <include>**/*.properties</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources/</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>//excludes排除.
+                                        <exclude>**/*.xml</exclude>
+                                        <exclude>**/*.yml</exclude>
+                                        <include>**/*.properties</include>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- 单元测试 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <skip>true</skip>                                             //打包的时候跳过测试,不去走junit Test,防止测试不过不能打包
+                    <skip>true</skip>
+                    //打包的时候跳过测试,不去走junit Test,防止测试不过不能打包
                     <includes>
                         <include>**/*Test*.java</include>
                     </includes>
@@ -180,8 +194,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>   
-        </plugins>    
+            </plugin>
+        </plugins>
     </build>
 
 </project>

@@ -1,0 +1,25 @@
+
+  之前已经将服务提供者payment成功注册进去zk,现在只需要将consumer注册进zk,并实现服务调用即可。
+
+
+一.建module.
+   cloud-consumerzk-order80  
+二.引pom
+   和服务提供者payment引入的pom一样。
+三.改yam
+   server:
+	  port: 80
+
+	spring:
+	  application:
+		name: cloud-consumerzk-order
+	  cloud:
+		zookeeper:
+		  connect-string: 192.168.1.113:2181
+四.主启动。
+   和服务提供者payment启动类一样。
+五.业务类。
+   这里只是简单使用restTemplate通过注册微服务名称成功调用即可。
+   所以就两个类，一个配置类，注入RestTemplate对象，一个Controller类。
+   
+   这里注意注入RestTemplate的时候还是需要 @LoadBalanced 注解，加上该注解才会去注册中心取对应服务信息进行调用。

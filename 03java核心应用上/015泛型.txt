@@ -100,3 +100,8 @@
         Interface2<String> objectInterface2 = new Interface2<>();  //这里的String只能约束该类中定义时要传入泛型的方法.
         objectInterface2.print("sdad");                            //其他方法可以自由定义传入类型.
      }
+
+
+其实就是当希望在方法参数中传入泛型时,必须有个地方去声明它,可以在类上,可以在方法上.
+
+其实写成T还是E都是可以得,原理是一样得.

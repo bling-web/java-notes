@@ -1,0 +1,28 @@
+
+  现在注册中心集群也构建好了,但是现在其实我们消费者调用服务者的时候还是最简单的根据真实url调用的,那怎样使用微服务方式进行调用呢?
+  
+
+1.微服务调用.
+  以消费者order和服务提供者payment为例.注意order和payment都是作为Euraka Client
+  
+  (1)在order工程中,修改服务调用地址为
+     private String SERVICE_PATH="http://CLOUD-PAYMENT-SERVICE/";
+  (2)我们是使用RestTemplate进行远程调用的,这里要开启RestTemplate的负载均衡功能,即使只有一个服务提供者,如果不开启就不会根据服务名称找真实的服务地址.
+    @Bean
+    @LoadBalanced  //标识开启负载均衡功能,所有需要根据在注册中心中根据服务名调用的都需要加该注册,否则不会启动服务发现功能
+    public RestTemplate getRestTemplate(){
+        return new RestTemplate();
+    }
+	
+	以上两部即可完成.
+	
+	
+2.服务提供payment集群搭建.
+  和Cloud-provider-payment8001 一样 构建Cloud-provider-payment8002,两点需要调整.
+  (1)yam文件中修改port8002
+  (2)因为现在有两个实例,在实际操作中,我们需要知道是哪一个实例处理我们的请求,所以需要早返回参数上加上端口号.8001和8002都需要改
+   @Value("${server.port}")
+    private String serverPort;
+  
+	  
+  

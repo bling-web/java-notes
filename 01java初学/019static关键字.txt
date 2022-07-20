@@ -1,0 +1,47 @@
+1.用static修饰的变量是属于类的,而不单单是属于某个对象的,所以调用方法不需要构造对象来实现,直接通过  类名.方法  实现调用
+  public/private static 类型 变量名
+2.在静态方法中,不能使用this关键字
+
+3.静态方法可以直接被成员方法,静态方法访问,而只可以访问静态的(类变量也叫静态变量)(static自成一体,处于被动地位:就是用static修饰的,可以相互访问,否则只能被访问)
+    a.静态方法不能直接访问成员变量
+      例:
+      public class Student{
+	int a=3;
+	public static void main(String[] arga){
+	    System.out.println(a);//该句语法错误,main方法就是静态的,不能直接访问成员变量
+	}    
+      }
+    b.静态方法也不能直接访问成员方法
+      例: 
+      public class Student{
+	public void print(){
+  	    System.out.print("你好");
+        }
+	public static void main(String[] arga){
+	    print();//该句语法错误,main方法就是静态的,不能直接访问非静态方法
+	}    
+      }
+
+4.特殊写法,静态代码块(里面可以定义各种类型变量,都属于static类型,给类变量初始化赋值)
+    格式:
+    public class Student{
+	static{
+	//代码
+	}
+
+    }
+   静态代码块里的内容主动执行的,和类一起加载,而static修饰的方法是被调用才执行的(不包括main方法),是被动的.
+
+注意:static修饰的内容
+    a.是和类一起加载的,且只加载一次
+    b.存储于一块固定的内存区域(静态区),所以可以被类名调用
+    c.是优先与对象存在的,所以可以被所有对象共享
+
+
+分析:
+    private String name;
+    private int age;
+    private static int id;
+    这三行代码在一个类中,new两个对象s1,s2,s1.s2的name和age是各自私有的,使用互不干扰,而id是属于类的,共有的,一改就都改了
+
+      

@@ -1,0 +1,29 @@
+1.下载源
+   docker pull redis
+2.预先创建好外部的文件和文件夹.
+	mkdir -p /mydata/redis/conf
+	touch /mydata/redis/conf/redis.conf
+3.创建实例并启动.
+  docker run -p 6379:6379 --name redis -v /mydata/redis/data:/data \
+	-v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \
+	-d redis redis-server /etc/redis/redis.conf
+   说明:
+      -v 就是文件挂载
+	  -d 以后台方式启动
+4.测试redis.
+  其实就是启动redis客户端
+  docker exec -it redis redis-cli
+  执行一个set命令,get命令即可
+5.设置redis持久化。
+  在本机linux环境下编辑文件：/mydata/redis/conf/redis.conf
+  在文件中输入(就是以aof的方式开启持久化)：
+  appendonly yes
+6.重启测试redis看持久化是否生效。
+  docker restart redis	
+7.使用windows中的redis客户端链接测试redis.
+  新建链接，链接192.168.247.128即可
+  
+8.查看docker中某一个容器的日志.
+  docker logs 指定服务名(比如redis,mysql)
+  
+   

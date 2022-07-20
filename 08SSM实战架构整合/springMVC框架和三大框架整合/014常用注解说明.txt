@@ -118,7 +118,7 @@
        1.value:用于指定存入的属性名称.
        2.type:用于指定存入的数据类型
    设置session:
-       1.原来在servlet中,可以使用request传递数据,在springMVC中当然也可以,但是有点low,在springMVC中有model对象,使用model对象添加属性相当于把属性加到request域中.
+       1.原来在servlet中,可以使用request传递数据,在springMVC中当然也可以,但是有点low,在springMVC中有model对象,使用model对象添加属性             相当于把属性加到request域中.
        2.然后在该类上使用@SessionAttribute(value={"对应属性的键"}),就会把该属性同时添加到session域中.
        例:
           @GetMapping("/sa")

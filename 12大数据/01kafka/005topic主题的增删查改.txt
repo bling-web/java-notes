@@ -1,0 +1,46 @@
+ 
+    zookeeper存储了kafka中的元数据,比如主题名称啊,有几个分区啊,这些.
+    因为kafka集群的信息依赖于zk,所以关于topic操作的都需要连接zookeeper.
+一.查看当前所有的topic.
+    bin/kafka-topics.sh --list --zookeeper 192.168.1.116:2181
+    --list:查看                                                                   
+
+二.创建一个topic.
+    bin/kafka-topic.sh --create --zookeeper 192.168.1.116:2181 --topic first --partitions 2 --replication-factor 2
+     解析:--create  创建主题
+             --topic  first:   first就是主题的名字
+             --partitions 2:  2就是该主题分区的数目.
+             ----replication-factor 2: 2就是该主题副本的数目,本集群有三台机,所以2个副本足够了.
+
+
+三.删除topic.
+    bin/kafka-topics.sh --delete --zookeeper 192.168.1.116:2181 --topic first
+
+
+四.查看topic的详情.
+    bin/kafka-topics.sh --describe --zookeeper 192.168.1.116:2181 --topic first
+    这个命令会显示分区的数目,leader,备份等信息.
+   
+   如果某个主题标记被删除了:leader id 就是-1
+
+
+
+五.注意的点.
+    1.一个主题可以有n多个分区,这些分区都会在一个broker中,
+       有几个副本,就会在几个broker中进行备份.每一个分区都进行备份.
+    
+      举例: 一个topic,三个分区,三个服务器. 一个副本
+    
+       broker1:   
+          topic1:                 topic1:                   topic1:
+         partition1:         partition2:              partition3:   
+
+      broker2:   
+          topic1:                 topic1:                   topic1:
+         partition1:         partition2:              partition3:           
+         
+     然后分别对于三区1,2,3各选出一个leader.
+    
+  
+
+

@@ -1,0 +1,28 @@
+1.下载.
+  https://zookeeper.apache.org/
+  
+2.下载之后将安装包移到linux环境下.
+   (1)安装jdk,已经安装过了
+   (2)关闭linux服务器防火墙,确保windows和linux服务器能相互ping通.
+      此次使用的是CentOS 192.168.5.113这个机器
+   (3)将安装包解压到指定目录
+      tar -zxvf zookeeper-3.5.9.tar.gz -C /apps/zookeeper
+   (4)将/apps/zookeeper/apache-zookeeper-3.5.9-bin/conf下的zoo_sample.cfg修改为zoo.cfg
+      mv zoo_sample.cfg zoo.cfg
+   (5)打开zoo.cfg,修改dataDir路径.
+      dataDir=/apps/zookeeper/apache-zookeeper-3.5.9-bin/zkData
+   (6)在对应目录创建zkData文件夹
+   
+3.启动zookeeper.
+  这里不仅要启动服务端还要启动客户端.通过客户端去操作服务端.
+  (1)启动服务端
+     sh zkServer.sh start
+  (2)启动客户端
+     sh zkCli.sh
+  (3)推出客户端
+     quit
+  (4)关闭服务端
+     sh zkServer.sh stop
+  
+	  
+	

@@ -1,0 +1,32 @@
+一.SVN.
+     版本控制软件,全称是SubVersion.
+ 
+二.特点.
+    1.操作简单,入门容易.
+    2.可跨平台操作
+    3.可回退.
+
+三.安装.
+    1.服务端.
+       下载地址:https://www.visualsvn.com
+       点击安装包进行安装.
+       (1)在Select Components界面.
+             勾选第一个和第三个.
+       (2)在Install Server Configration界面.
+           Server port:选大的,不容易被占用.
+           Reposition:就是仓库的位置.
+       (3)Authentication Mode界面.
+           选第一个.
+        其他步骤直接下一步.
+     2.客户端:https://www.tortoisesvn.net/downloads
+        直接一直下一步即可.
+        注意:在安装客户端之后,要重启计算机.自己的应该不需要.
+   
+     直接鼠标右键出现SVNCheckout和TortoiseSVN代表安装成功.
+      
+
+
+
+           
+       
+

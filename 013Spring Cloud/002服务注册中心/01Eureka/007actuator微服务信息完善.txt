@@ -1,0 +1,21 @@
+
+  该信息其实修改的是Eureka管理页面上显示的注册服务名称.也就是payment支付服务
+  
+
+1.修改显示主机名称
+  (1)pom中记得要有web和actuator.
+  (2)yam中引入配置
+  instance:
+    instance-id: payment8002     //这里就是主机名称
+	
+2.显示ip地址(当鼠标放在Eureka服务名称之上,左下角会出现对应ip地址)
+  yam中引入配置
+  prefer-ip-address: true
+  
+  
+其实总共也就是引入配置.
+instance:
+    instance-id: payment8001
+    prefer-ip-address: true
+	
+	

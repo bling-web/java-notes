@@ -1,0 +1,57 @@
+
+  在前面我们已经搭建好单机版的Euraka了,现在只需要再新建几个服务即可.
+  
+  
+1.仿造cloud-euraka-server7001 构建工程cloud-euraka-server7002
+2.修改pom
+  其实是和cloud-euraka-server7001中pom引入的依赖一样的
+  
+3.在本地host文件中增加如下配置.
+	127.0.0.1  eureka7001.com
+	127.0.0.1  eureka7002.com
+	
+	这样对外的域名就可以统一为127.0.0.1
+	
+4.改yam.
+  (1)7001
+server:
+  port: 7001
+
+eureka:
+  instance:
+    hostname: eureka7001.com    #eureka服务端的实例名字
+  client:
+    register-with-eureka: false    #表识不向注册中心注册自己
+    fetch-registry: false   #表示自己就是注册中心，职责是维护服务实例，并不需要去检索服务
+    service-url:
+	  #这里其实就是进行互备,能够访问到对应的服务地址.
+      defaultZone: http://eureka7002.com:7002/eureka/    #设置与eureka server交互的地址查询服务和注册服务都需要依赖这个地址
+ 
+ (2)7002
+server:
+  port: 7002
+
+eureka:
+  instance:
+    hostname: eureka7002.com #eureka服务端的实例名字
+  client:
+    register-with-eureka: false    #表识不向注册中心注册自己
+    fetch-registry: false   #表示自己就是注册中心，职责是维护服务实例，并不需要去检索服务
+    service-url:
+      defaultZone: http://eureka7001.com:7001/eureka/     #设置与eureka server交互的地址查询服务和注册服务都需要依赖这个地址
+ 
+5.启动类.
+  和cloud-euraka-server7001一样即可.
+
+6.访问.
+  可以发现访问eureka7001.com:7001 或者访问eureka7001.com:7002都可以反问通,因为这两个都引射到了127.0.0.1
+  
+
+7.然后记得要把之前的两个服务payment和order中的Euraka地址换成集群版的
+	service-url:
+	  defaultZone: http://eureka7001.com:7001/eureka,http://eureka7002.com:7002/eureka  #集群版
+ 
+
+ 
+
+	

@@ -1,0 +1,72 @@
+一.在之前的使用Hystrix降级中,我们可以发现存在目前两个问题.
+   1.每一个调用服务的方法都需要有一个兜底方法,那么就造成代码逻辑混乱.
+   2.兜底方法和业务逻辑代码混在一起,耦合度高.
+   
+   
+   
+二.解决第一个问题,设置全局兜底方法.
+   样例:
+      @RestController
+		@DefaultProperties(defaultFallback="globalFallback")        //这是默认兜底方法注解
+		public class OrderController {
+			@Resource
+			private PaymentService paymentService;
+
+			@GetMapping("/consumer/payment/get/timeout/{id}")
+			@HystrixCommand                                            //方法上只需要加一个注解本身即可
+			public String getPaymentId_timeout(@PathVariable("id") Integer id){
+			   return paymentService.getPaymentId_timeout(id);
+			}
+
+
+			public String getPaymentId_timeoutFallbak(@PathVariable("id") Integer id){
+				return "对方服务出现异常,执行降级方法";
+			}
+
+			public String globalFallback(){
+				return "服务异常,执行默认兜底方法";
+			}
+		}
+		
+	注意:此时默认的超时时间就是在yam中设置的hystrix的超时时间,如果想对某一个方法进行单独设置,那就直接用之前的配置即可,在@HystrixCommand指定fallback方法.
+	
+
+三.彻底解决第一个和第二个问题.
+   在我们的工程中都是用了Feign进行远程调用,那么就直接对Feign接口中的方法进行监控不就好了吗,并且Feign也自身做了这一点,我们直接开启即可.
+   1.yam中开启.
+     feign:
+		hystrix:
+		  enabled: true #如果处理自身的容错就开启。比如超时会进行重试,开启方式与生产端不一样。
+		  
+   2.针对于Feign远程调用接口给一个实现类,这里是paymentService.
+     实现类中的对应重写方法就是默认的兜底方法.
+	 @Component
+	public class PaymentServiceImpl  implements  PaymentService{
+
+		@Override
+		public String getPaymentId_OK(Integer id) {
+			return "getPaymentId_OK方法调用出错,执行默认的兜底方法";
+		}
+
+		@Override
+		public String getPaymentId_timeout(Integer id) {
+			return "getPaymentId_timeout方法调用出错,执行默认的兜底方法";
+		}
+	}
+	
+	3.在FeignClient注解中指定兜底方法实现类.
+	@FeignClient(value = "CLOUD-PROVIDER-HYSTRIX-PAYMENT",fallback = PaymentServiceImpl.class) //增加对应实现类.
+	@Component
+	public interface PaymentService {
+
+		@GetMapping(value = "/payment/get/ok/{id}")
+		String getPaymentId_OK(@PathVariable(value = "id") Integer id);
+
+		@GetMapping(value = "/payment/get/timeout/{id}")
+		String getPaymentId_timeout(@PathVariable(value = "id") Integer id);
+	}
+	   
+	   
+     
+	在这种方式下，我们也可以使用HystrixCommand注解针对特殊方法做特殊处理，指定相应的兜底函数和超时时间，注意这个超时时间要小于等于yam中设置的Hystrix超时时间才能起作用.
+	   

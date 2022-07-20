@@ -1,0 +1,57 @@
+
+  这里其实是整合Ribbon和OpenFeign，所以就直接在上一节中的84项目中改造。
+
+
+一。样例
+  1.改造pom
+    新增
+	<dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+  
+  2.改造yml
+    增加。
+	  
+	#对Feign的支持
+	feign:
+	  sentinel:
+		enabled: true
+		
+   3.改造启动类
+     增加注解@EnableFeignClients
+	 
+   4.增加业务类
+     （1）Feign接口
+	    @FeignClient(value = "nacos-payment-provider",fallback = PaymentFallbackServiceI.class)
+		public interface PaymentService {
+			@GetMapping("/paymentSQL/{id}")
+			CommonResult doPayment(@PathVariable("id") String id);
+		}
+	  (2)Feign接口实现类（用于异常时回调）
+	  @Component
+		public class PaymentFallbackServiceI implements PaymentService{
+			@Override
+			public CommonResult doPayment(String id) {
+				return new CommonResult(200,"执行支付接口回调方法",new Payment(Long.valueOf(id),""));
+
+			}
+		}
+	 （3）controller类。
+	   @RestController
+		public class FeignController {
+
+			@Resource
+			private PaymentService paymentService;
+
+			@GetMapping("/consumer/feign/{id}")
+			public CommonResult test(@PathVariable("id")String id){
+				return paymentService.doPayment(id);
+			}
+		}
+		
+		然后就可以直接调用
+
+	 
+			
+			

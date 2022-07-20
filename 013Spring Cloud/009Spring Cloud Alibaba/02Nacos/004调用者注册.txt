@@ -1,0 +1,102 @@
+1.新建Module cloudalibaba-consumer-nacos-order83
+2.增加pom
+  <dependencies>
+        <!--SpringCloud ailibaba nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+3.建立yml
+	server:
+	  port: 83
+
+
+	spring:
+	  application:
+		name: nacos-order-consumer
+	  cloud:
+		nacos:
+		  discovery:
+			server-addr: localhost:8848
+
+
+	service-url:
+	  nacos-user-service: http://nacos-producer
+
+4.启动类.
+  @EnableDiscoveryClient
+	@SpringBootApplication
+	public class OrderNacosMain83
+	{
+		public static void main(String[] args)
+		{
+			SpringApplication.run(OrderNacosMain83.class,args);
+		}
+	}
+
+
+5.业务类
+  配置类.
+  @Configuration
+	public class ApplicationConfig {
+
+		@Bean
+		@LoadBalanced
+		public RestTemplate getRestTemplate(){
+			return new RestTemplate();
+		}
+	}
+
+  访问类.
+  @RestController
+	public class TestController {
+
+		@Resource
+		private RestTemplate restTemplate;
+
+
+		@Value("${service-url.nacos-user-service}")
+		private String serverUrl;
+
+		@GetMapping("/consumer/nacos/{string}")
+		public String test(@PathVariable String string){
+			return restTemplate.getForObject(serverUrl+"/nacos/"+string,String.class);
+		}
+	}
+
+	  

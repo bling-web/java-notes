@@ -27,21 +27,3 @@
                return Objects.equals(name, test4.name) &&                //分别比较各个属性,这个方法其实比较的还是这个属性的地址
                        Objects.equals(age, test4.age);
            }
-
-
-
-补充:
-   Integer a=new Integer(2);
-   Integer b=new Integer(2);
-   System.out.println(a.equals(b));
-
-   String a="王";
-   System.out.println(a.equals("王"));
-
-   Character a1 = new Character('a');
-   System.out.println(a1.equals('a'));
-
-   这三个结果都是true,为什么呢?不是说equals是比较对象地址的吗?
-     因为这里用的equals都是被重写过的,并不是Object中的equals方法.分别用的是Integer和String中的equals方法.
-  
-   

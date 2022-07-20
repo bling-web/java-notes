@@ -1,0 +1,140 @@
+
+一.取一个key值,可以直接去request对象的,model对象,session对象.
+    获取顺序:
+       model
+       request
+       session.
+    注意:freeworker语法比较严格,如果某个key不存在,会报错,需要指定默认值,如果不存在会显示默认值.
+      session:${session!"null"}      !后面的就是默认值
+
+二.获取当前时间
+    1.${.now}  直接是年月日,时分秒的形式.
+    2.用string()可以转换成自己想要的格式.
+       当前时间:${.now?string("yyyy-MM-dd")}
+    输出结果:
+      2019-11-17 17:14:48
+      当前时间:2019-11-17
+    3.也可以自己在后端传过来一个date对象.
+       日期格式<br>   
+       <bt>日期:${mydate?date}</bt>        //mydate就是传过来的日期对象
+       <bt>时间:${mydate?time}</bt>
+       <bt>格式化:${mydate?string("yyyy-MM-dd HH-mm-ss")}</bt>
+
+三.获取循环体中的内容.
+    1.循环list
+      <#list  list as item>
+         单个:${item},下标:${item_index},  下一个是否有值:${item_has_next?c}<br>       ?c的作用是将其转换为string,以便能输出到页面.
+      </#list>
+    2.循环数字.
+     <#list 1..5 as item>
+        ${item} <br>
+     </#list>
+    3.循环map.
+     <#list map?keys as key>
+        ${key}:${map[key]},索引:${key_index} ,是否有下一个entry:${key_has_next?c}<br>
+     </#list>
+     输出结果:
+        关羽:战士,索引:0 ,是否有下一个entry:true
+        韩信:刺客,索引:1 ,是否有下一个entry:true
+        虞姬:射手,索引:2 ,是否有下一个entry:false
+
+     key就是key,value是map[key]
+
+
+四.各种小知识.
+    <dd>首字母大写:${session?cap_first}</dd>    
+    <dd>首字母小写:${session?uncap_first}</dd>
+    <dd>全小写:${session?lower_case}</dd>
+    <dd>全大写:${session?upper_case}</dd>
+    <dd>去除空格:${session?trim}</dd>                                          //这个暂时不起作用.
+    <dd>是否包含某个字符串:${session?contains("se")?c}</dd>      //contains表示一个字符串是否包含某一个部分.seq_contains表示一个序列(列表)是否包含某一部分.
+    <dd>字符串拼接:${session+"加油 "}</dd>
+    <dd>字符串截取:${session?substring(0,3)}</dd>
+    <dd>字符串截取:${session?substring(2)}</dd>                          //截取从第二个下标开始的所有的字符串.
+    <dd>下标值:${session?index_of("s")}</dd>
+    <dd>split:
+        <#list "a|b|c"?split("|") as item>
+           ${item}
+        </#list>
+    </dd>
+     
+    
+
+
+五.流程执行语句.
+     1.if的用法:
+       <#if sess??> hello<#else>world</#if>              //如果有这个sess键,就显示hello,否则显示world,这个if取不到ModelMap中的属性,暂时知道可以取到session中的.
+        <#if good.categoryId==0>女装</#if>             //如果该属性等于0就显示0,这样可以取到MoldeMap中的.
+       <#if good.categoryId==1>男装</#if>
+     2.switch用法
+        <#switch session>                                            //这里只能匹配单个的键,值,不能匹配list,map.
+           <#case "session ms">                                   //如果是相应的value,则执行某个动作.
+           <h> 匹配成功</h>
+           <#break>                                                      //记得加上break和default.
+          <#case "session">
+          <h>匹配失败</h>
+          <#break>
+          <#default> 默认
+        </#switch>
+  
+五.数字和运算符.
+     <dt>数字</dt>
+     <dt>普通数字:${num}</dt>
+     <dt>数字类型:${num?string.number}</dt>
+     <dt>货币类型:${num?string.currency}</dt>
+     <dt>百分比类型:${num?string.percent}</dt>
+     <dt>格式化数据:${num?string("#.#")}</dt>
+     <dt>取整:${num?int}</dt>
+
+      运算符<br>
+     <dt>直接boolean:${(true)?string("true","false")}</dt>
+     <dt>不等于:${(1!=2)?string("true","false")}</dt>
+     <dt>大于:${(1>2)?string("true","false")}</dt>
+     <dt>小于:${(1<2)?string("true","false")}</dt>
+     <dt>大于:${(1 gt 2)?string("true","false")}</dt>
+     <dt>大于等于:${(1 gte 2)?string("true","false")}</dt>
+     <dt>小于:${(1 lt 2)?string("true","false")}</dt>
+     <dt>大于等于:${(1 lte 2)?string("true","false")}</dt>
+   
+     boolean<br>
+     <bt>普通boolean:${flag?c}</bt>                      //flag是传过来的一个boolean类型数据,?c将其转为String类型,以便能输出到页面上.
+     <bt>普通boolean:${flag?string("true",'false')}</bt>
+
+六.导入另一个文件中的内容.
+    1.导入import.ftl文件的内容.
+    <bt><#import "import.ftl" as item>
+            ${item.str}<br>                          //这里就可以输出 this is str
+            ${item.str1}<br>
+    </bt>
+    2.在import.ftl文件中.	
+      <#assign str="this is str">              
+      <#assign str1="this is str1">
+
+七.直接包含另一个文件的内容.
+    <#include "freeworkerTest.ftl">    会直接把另一个文件的内容全部取过来,当然如果里另一个文件没有获取到某个键值,会报错.
+
+八.定义宏.                                                      //应该是批量操作,可以提出来减少代码的那种,暂时没感觉到用处.
+    <dd>
+     <#macro listmacro title items>                
+         <p>${title?cap_first}</p>
+     <#--这里是一个无序列表-->
+         <ul>
+            <#list items as item>
+                <li>
+                    ${item}                                                       //这里会依次显示1,2,3,4,5.
+                </li>
+            </#list>
+         </ul>
+     </#macro>
+</dd>
+
+<dd>
+    <@listmacro title="listmacro" items=[1,2,3,4,5]>       //这里分别对应上面第一个,第二个,第三个参数
+    </@listmacro>
+</dd>
+
+    
+
+   
+    
+  

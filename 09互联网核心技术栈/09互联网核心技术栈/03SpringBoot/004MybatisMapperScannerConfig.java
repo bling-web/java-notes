@@ -16,13 +16,12 @@ public class MybatisMapperScannerConfig {
     @Bean
     //配置扫描类,配置了该扫描类后会自动将每一个mapper类自动注入spring工厂中,并注入到sqlSessionFactory对象中.
 
-    public MapperScannerConfigurer mapperScannerConfigurer(){
+    public MapperScannerConfigurer mapperScannerConfigurer() {
         MapperScannerConfigurer scannerConfigurer = new MapperScannerConfigurer();
         scannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory");
         scannerConfigurer.setBasePackage("com.bfxy.springboot.mapper");
         return scannerConfigurer;
     }
-
 
 
 }

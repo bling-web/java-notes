@@ -1,0 +1,49 @@
+
+  首先清楚我们目前得工程是通过 订单模块->支付模块
+  
+  之前支付模块已经搭建成功了.
+  
+  
+1.现在搭建订单模块.还是原来得五步.
+  建module
+  改pom
+  改yml
+  主启动
+  业务类
+2.这个工程 cloud-consumer-order80
+  只需要写一个Controler,去调用支付模块即可,当然还涉及到一些实体类.
+  这里其实还没有涉及到rpc框架,只是最简单得http调用,这里使用得是restTemplate
+  
+  restTemplate是一种简单便捷访问restFul服务模板类,也可以认为是httpClient得升级版
+  
+  使用地址:
+  https://docs.spring.io/spring-framework/docs/5.2.2.RELEASE/javadoc-api/org/springframework/web/client/RestTemplate.html
+
+  使用方式非常简单,读操作一般用get开头方法,写操作用post开头方法
+  
+  
+  
+  
+  注意这里RequestBody注解得区别:
+  /**
+     * RequestBody用于绑定请求体中得数据,其实主要作用是于RestFul请求风格中绑定请求体中得数据
+     * 比如加上该注解:那么使用post请求 localhost:8001/payment/create?serial=来静 就不能访问通
+     *              必须加上请求体  {"serial":"王亮亮"} 还必须是json格式
+     *
+     * 如果不加该注解,那么会默认将url中?后面得数据封装成你传入得数据
+	                  通过localhost:8001/payment/create?serial=来静就能访问成功
+     */
+    public CommonResult create(@RequestBody Payment payment) {
+        int result = paymentService.create(payment);
+        if(result>0){
+            return new CommonResult<Integer>(200,"创建数据成功",result);
+        }
+        return new CommonResult<Integer>(404,"创建数据失败",result);
+    }
+  
+
+
+  
+  
+  
+  
